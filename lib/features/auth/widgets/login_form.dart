@@ -62,11 +62,11 @@ class LoginForm extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            const AppTextField(hint: 'Enter work email', prefixIcon: Icons.email_outlined),
+            AppTextField(controller: controller.emailController, hint: 'Enter work email', prefixIcon: Icons.email_outlined),
 
             const SizedBox(height: 16),
 
-            const AppTextField(hint: 'Enter password', prefixIcon: Icons.lock_outline, obscureText: true),
+            AppTextField(controller: controller.passwordController, hint: 'Enter password', prefixIcon: Icons.lock_outline, obscureText: true),
 
             const SizedBox(height: 12),
 
@@ -87,7 +87,7 @@ class LoginForm extends StatelessWidget {
                   elevation: 0,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
-                onPressed: () {},
+                onPressed: controller.login,
                 child: const Text('Sign In', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               ),
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../generated/assets.dart';
 import '../widgets/login_form.dart';
 import '../widgets/login_hero_section.dart';
 
@@ -17,7 +18,12 @@ class LoginView extends StatelessWidget {
           if (isDesktop)
             Expanded(
               flex: 5,
-              child: Container(color: const Color(0xFFEEF2FF), child: const LoginHeroSection()),
+              child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(image: AssetImage(Assets.images.loginBg.path), fit: .fitWidth),
+                ),
+                child: const LoginHeroSection(),
+              ),
             ),
 
           Expanded(
