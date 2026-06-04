@@ -5,12 +5,14 @@ class AppTextField extends StatelessWidget {
   final bool obscureText;
   final IconData prefixIcon;
   final TextEditingController? controller;
+  final String? initialValue;
 
-  const AppTextField({super.key, required this.hint, required this.prefixIcon, this.obscureText = false, this.controller});
+  const AppTextField({super.key, required this.hint, required this.prefixIcon, this.obscureText = false, this.controller, this.initialValue});
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
+      initialValue: initialValue,
       controller: controller,
       obscureText: obscureText,
       decoration: InputDecoration(

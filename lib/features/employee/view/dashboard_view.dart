@@ -15,9 +15,9 @@ class DashboardView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: const Color(0xFFF5F7FA),
-      child: const Column(
+      child: Column(
         children: [
-          DashboardHeader(),
+          const DashboardHeader(),
 
           Expanded(
             child: SingleChildScrollView(
@@ -28,12 +28,20 @@ class DashboardView extends StatelessWidget {
                   Expanded(
                     flex: 7,
                     child: Column(
-                      children: [ShiftCard(), SizedBox(height: 24), QuickStatsRow(), SizedBox(height: 24), AttendanceTable(), SizedBox(height: 24), BottomMetricsRow()],
+                      children: [
+                        ShiftCard(),
+                        const SizedBox(height: 24),
+                        const QuickStatsRow(),
+                        const SizedBox(height: 24),
+                        const AttendanceTable(),
+                        const SizedBox(height: 24),
+                        const BottomMetricsRow(),
+                      ],
                     ),
                   ),
 
-                  SizedBox(width: 32),
-                  Expanded(
+                  const SizedBox(width: 32),
+                  const Expanded(
                     flex: 3,
                     child: Column(children: [CompanyAnnouncementsCard(), SizedBox(height: 24), UpcomingHolidaysCard(), SizedBox(height: 24), RecentActivityCard()]),
                   ),

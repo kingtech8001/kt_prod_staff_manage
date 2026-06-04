@@ -11,7 +11,9 @@ class Assets {
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
-  final AssetGenImage loginBg = const AssetGenImage('assets/images/login_bg.png');
+  final AssetGenImage loginBg = const AssetGenImage(
+    'assets/images/login_bg.png',
+  );
 }
 
 class AssetGenImage {
@@ -79,8 +81,14 @@ class AssetGenImage {
     return AssetImage(_assetName, bundle: bundle, package: package);
   }
 
-  Widget custom({Key? key, required Widget Function(BuildContext context, String assetPath) builder}) {
-    return Builder(key: key, builder: (context) => builder(context, _assetName));
+  Widget custom({
+    Key? key,
+    required Widget Function(BuildContext context, String assetPath) builder,
+  }) {
+    return Builder(
+      key: key,
+      builder: (context) => builder(context, _assetName),
+    );
   }
 
   String get path => _assetName;

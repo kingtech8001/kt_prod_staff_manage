@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import 'core/controllers/auth_controller.dart';
-import 'features/auth/screens/login_view.dart';
+import 'core/routes/app_pages.dart';
+import 'core/routes/app_routes.dart';
 import 'core/theme/app_theme.dart';
 
 Future<void> main() async {
@@ -25,6 +25,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(debugShowCheckedModeBanner: false, title: 'ProWorkforce', theme: AppTheme.lightTheme, home: const LoginView());
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'ProWorkforce',
+      theme: AppTheme.lightTheme,
+      initialRoute: AppRoutes.splash,
+      getPages: AppPages.pages,
+    );
   }
 }

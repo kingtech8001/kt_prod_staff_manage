@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../../../core/controllers/auth_controller.dart';
 import '../../../core/models/user_model.dart';
-import '../../employee/view/employee_layout_view.dart';
+import '../../../core/routes/app_routes.dart';
 
 class LoginController extends GetxController {
   final selectedRole = 'Employee'.obs;
@@ -14,6 +13,17 @@ class LoginController extends GetxController {
 
   final isLoading = false.obs;
 
+  @override
+  void onInit() {
+    super.onInit();
+
+    emailController.text = "admin@proworkforce.com";
+    passwordController.text = "Admin@123";
+
+    print(emailController.text);
+    print(passwordController.text);
+  }
+
   void changeRole(String role) {
     selectedRole.value = role;
   }
@@ -22,7 +32,10 @@ class LoginController extends GetxController {
     try {
       isLoading.value = true;
 
-      final response = await Supabase.instance.client.auth.signInWithPassword(email: emailController.text.trim(), password: passwordController.text.trim());
+      final response = await Supabase.instance.client.auth.signInWithPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
 
       final user = response.user;
 
@@ -31,7 +44,11 @@ class LoginController extends GetxController {
         return;
       }
 
-      final profile = await Supabase.instance.client.from('profiles').select().eq('id', user.id).single();
+      final profile = await Supabase.instance.client
+          .from('profiles')
+          .select()
+          .eq('id', user.id)
+          .single();
 
       /*
       if (profile['role'] != selectedRole.value) {
@@ -49,7 +66,7 @@ class LoginController extends GetxController {
 
       Get.find<AuthController>().setUser(userModel);
 
-      Get.offAll(() => EmployeeLayoutView());
+      Get.offAllNamed(AppRoutes.employee);
     } catch (e) {
       Get.snackbar('Error', e.toString());
     } finally {

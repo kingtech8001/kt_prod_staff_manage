@@ -23,7 +23,16 @@ class EmployeeLayoutView extends StatelessWidget {
           EmployeeSidebar(),
           Expanded(
             child: Obx(
-              () => IndexedStack(index: controller.selectedIndex.value, children: const [DashboardView(), AttendanceView(), LeaveView(), PerformanceView(), PolicyView()]),
+              () => IndexedStack(
+                index: controller.selectedIndex.value,
+                children: [
+                  const DashboardView(),
+                  AttendanceView(),
+                  LeaveView(),
+                  PerformanceView(),
+                  const PolicyView(),
+                ],
+              ),
             ),
           ),
         ],

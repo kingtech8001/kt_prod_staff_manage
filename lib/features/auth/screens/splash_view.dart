@@ -1,0 +1,60 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../../core/controllers/auth_controller.dart';
+import '../../../core/models/user_model.dart';
+import '../../../core/services/auth_service.dart';
+import '../../../core/routes/app_routes.dart';
+
+class SplashView extends StatefulWidget {
+  const SplashView({super.key});
+
+  @override
+  State<SplashView> createState() => _SplashViewState();
+}
+
+class _SplashViewState extends State<SplashView> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkLogin();
+    });
+  }
+
+  Future<void> checkLogin() async {
+    print('SPLASH START');
+
+    final authService = AuthService();
+
+    print('IS LOGGED IN => ${authService.isLoggedIn}');
+
+    if (!authService.isLoggedIn) {
+      Get.offAllNamed(AppRoutes.login);
+      return;
+    }
+
+    final profile = await authService.getCurrentProfile();
+
+    print('PROFILE => $profile');
+
+    if (profile == null) {
+      Get.offAllNamed(AppRoutes.login);
+      return;
+    }
+
+    final userModel = UserModel.fromJson(profile);
+
+    Get.find<AuthController>().setUser(userModel);
+
+    print('USER STORED => ${userModel.fullName}');
+
+    Get.offAllNamed(AppRoutes.employee);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+  }
+}
