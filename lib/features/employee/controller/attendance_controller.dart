@@ -33,8 +33,14 @@ class AttendanceController extends GetxController {
   Future<void> loadAttendance(String userId) async {
     try {
       isLoading.value = true;
+
       final data = await service.getAttendance(userId);
+
       attendanceList.value = data;
+
+      _calculateAttendanceMetrics();
+
+      print('ATTENDANCE => ${attendancePercentage.value}%');
     } finally {
       isLoading.value = false;
     }
@@ -45,11 +51,18 @@ class AttendanceController extends GetxController {
 
     if (attendanceList.isEmpty) {
       attendancePercentage.value = 0;
+
+      print('NO ATTENDANCE RECORDS');
+
       return;
     }
 
     final presentCount = attendanceList.where((e) => e['status'] == 'Present').length;
 
     attendancePercentage.value = (presentCount / attendanceList.length) * 100;
+
+    print(
+      'PRESENT=$presentCount TOTAL=${attendanceList.length} PERCENT=${attendancePercentage.value}',
+    );
   }
 }

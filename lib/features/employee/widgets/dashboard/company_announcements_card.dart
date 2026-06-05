@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../controller/dashboard_controller.dart';
 
 class CompanyAnnouncementsCard extends StatelessWidget {
-  const CompanyAnnouncementsCard({super.key});
+  CompanyAnnouncementsCard({super.key});
+
+  final controller = Get.find<DashboardController>();
 
   @override
   Widget build(BuildContext context) {
@@ -22,27 +27,48 @@ class CompanyAnnouncementsCard extends StatelessWidget {
 
           const SizedBox(height: 24),
 
-          _announcementItem(
-            icon: Icons.campaign_outlined,
-            iconColor: Colors.blue,
-            title: 'New Remote Work Policy',
-            description: 'Updated guidelines for hybrid schedules are now available.',
-          ),
+          Obx(() {
+            if (controller.announcements.isEmpty) {
+              return const Text(
+                'No announcements available',
+                style: TextStyle(color: Color(0xFF64748B)),
+              );
+            }
 
-          const Padding(padding: EdgeInsets.symmetric(vertical: 20), child: Divider(height: 1)),
+            return Column(
+              children: List.generate(controller.announcements.length, (index) {
+                final item = controller.announcements[index];
 
-          _announcementItem(
-            icon: Icons.groups_2_outlined,
-            iconColor: Color(0xFF0F172A),
-            title: 'System Maintenance',
-            description: 'Internal portal will be offline this Sunday at 2 AM.',
-          ),
+                return Column(
+                  children: [
+                    _announcementItem(
+                      icon: Icons.campaign_outlined,
+                      iconColor: Colors.blue,
+                      title: item['title'] ?? '',
+                      description: item['description'] ?? '',
+                    ),
+
+                    if (index != controller.announcements.length - 1)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        child: Divider(height: 1),
+                      ),
+                  ],
+                );
+              }),
+            );
+          }),
         ],
       ),
     );
   }
 
-  Widget _announcementItem({required IconData icon, required Color iconColor, required String title, required String description}) {
+  Widget _announcementItem({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String description,
+  }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -54,14 +80,11 @@ class CompanyAnnouncementsCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF0F172A)),
-              ),
+              Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
 
               const SizedBox(height: 8),
 
-              Text(description, style: const TextStyle(fontSize: 15, color: Color(0xFF64748B), height: 1.5)),
+              Text(description, style: const TextStyle(color: Color(0xFF64748B))),
             ],
           ),
         ),

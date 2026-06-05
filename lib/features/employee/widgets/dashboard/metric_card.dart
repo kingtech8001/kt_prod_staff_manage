@@ -1,29 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../controller/attendance_controller.dart';
+import '../../controller/dashboard_controller.dart';
 
 class BottomMetricsRow extends StatelessWidget {
   const BottomMetricsRow({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: const [
-        Expanded(
-          child: MetricCard(title: 'Attendance Reliability', value: '96%', icon: Icons.verified_outlined, iconColor: Colors.green),
-        ),
+    final attendanceController = Get.find<AttendanceController>();
+    final dashboardController = Get.find<DashboardController>();
 
-        SizedBox(width: 20),
+    return Obx(() {
+      return Row(
+        children: [
+          Expanded(
+            child: MetricCard(
+              title: 'Attendance Reliability',
+              value: '${attendanceController.attendancePercentage.value.toStringAsFixed(0)}%',
+              icon: Icons.verified_outlined,
+              iconColor: Colors.green,
+            ),
+          ),
 
-        Expanded(
-          child: MetricCard(title: 'Leave Balance', value: '12 Days', icon: Icons.event_available_outlined, iconColor: Colors.blue),
-        ),
+          const SizedBox(width: 20),
 
-        SizedBox(width: 20),
+          Expanded(
+            child: MetricCard(
+              title: 'Leave Balance',
+              value: '${dashboardController.leaveBalanceDays.value} Days',
+              icon: Icons.event_available_outlined,
+              iconColor: Colors.blue,
+            ),
+          ),
 
-        Expanded(
-          child: MetricCard(title: 'Overtime Hours', value: '14h', icon: Icons.schedule_outlined, iconColor: Colors.orange),
-        ),
-      ],
-    );
+          const SizedBox(width: 20),
+
+          Expanded(
+            child: MetricCard(
+              title: 'Overtime Hours',
+              value: '${dashboardController.overtimeHours.value.toStringAsFixed(1)}h',
+              icon: Icons.schedule_outlined,
+              iconColor: Colors.orange,
+            ),
+          ),
+        ],
+      );
+    });
   }
 }
 
@@ -33,7 +57,13 @@ class MetricCard extends StatelessWidget {
   final IconData icon;
   final Color iconColor;
 
-  const MetricCard({super.key, required this.title, required this.value, required this.icon, required this.iconColor});
+  const MetricCard({
+    super.key,
+    required this.title,
+    required this.value,
+    required this.icon,
+    required this.iconColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +79,10 @@ class MetricCard extends StatelessWidget {
           Container(
             width: 52,
             height: 52,
-            decoration: BoxDecoration(color: iconColor.withOpacity(0.12), borderRadius: BorderRadius.circular(14)),
+            decoration: BoxDecoration(
+              color: iconColor.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(14),
+            ),
             child: Icon(icon, color: iconColor),
           ),
 
@@ -61,7 +94,11 @@ class MetricCard extends StatelessWidget {
               children: [
                 Text(
                   value,
-                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF0F172A),
+                  ),
                 ),
 
                 const SizedBox(height: 4),

@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../auth/controller/performance_controller.dart';
+import '../../controller/attendance_controller.dart';
 
 class PerformanceMetricsCard extends StatelessWidget {
   const PerformanceMetricsCard({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final performanceController = Get.find<PerformanceController>();
+    final attendanceController = Get.find<AttendanceController>();
     final controller = Get.find<PerformanceController>();
 
     return Obx(() {
@@ -29,10 +32,12 @@ class PerformanceMetricsCard extends StatelessWidget {
 
             const SizedBox(height: 30),
 
-            PerformanceMetricTile(
-              title: 'Attendance Rate',
-              value: ((metrics?['attendance_rate'] ?? 0) as num).toDouble() / 100,
-              color: const Color(0xFF64748B),
+            Obx(
+              () => PerformanceMetricTile(
+                title: 'Attendance Rate',
+                value: attendanceController.attendancePercentage.value / 100,
+                color: const Color(0xFF64748B),
+              ),
             ),
 
             const SizedBox(height: 24),

@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+
+import '../../../../core/utils/date_formatter.dart';
+import '../../controller/dashboard_controller.dart';
 
 class UpcomingHolidaysCard extends StatelessWidget {
   const UpcomingHolidaysCard({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<DashboardController>();
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -15,22 +21,27 @@ class UpcomingHolidaysCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Upcoming Holidays',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: Color(0xFF0F172A)),
-          ),
+          Obx(() {
+            if (controller.holidays.isEmpty) {
+              return const Text('No upcoming holidays', style: TextStyle(color: Color(0xFF64748B)));
+            }
 
-          const SizedBox(height: 24),
+            return Column(
+              children: controller.holidays.map((holiday) {
+                final date = DateTime.parse(holiday['holiday_date']);
 
-          _holidayItem(date: 'Nov 01', title: 'Diwali', subtitle: 'Company Holiday'),
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
 
-          const SizedBox(height: 20),
-
-          _holidayItem(date: 'Dec 25', title: 'Christmas', subtitle: 'Public Holiday'),
-
-          const SizedBox(height: 20),
-
-          _holidayItem(date: 'Jan 01', title: 'New Year', subtitle: 'Public Holiday'),
+                  child: _holidayItem(
+                    date: DateFormatter.formatMonthDay(holiday['holiday_date']?.toString()),
+                    title: holiday['title'],
+                    subtitle: holiday['holiday_type'],
+                  ),
+                );
+              }).toList(),
+            );
+          }),
         ],
       ),
     );
@@ -42,7 +53,10 @@ class UpcomingHolidaysCard extends StatelessWidget {
         Container(
           width: 56,
           height: 56,
-          decoration: BoxDecoration(color: const Color(0xFFF8FAFC), borderRadius: BorderRadius.circular(14)),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF8FAFC),
+            borderRadius: BorderRadius.circular(14),
+          ),
           child: Center(
             child: Text(
               date,
@@ -68,5 +82,25 @@ class UpcomingHolidaysCard extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  String _month(int month) {
+    const months = [
+      '',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
+    return months[month];
   }
 }

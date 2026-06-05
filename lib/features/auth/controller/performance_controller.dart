@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 
 import '../../../core/controllers/auth_controller.dart';
 import '../../../core/services/performance_service.dart';
+import '../../employee/controller/attendance_controller.dart';
 
 class PerformanceController extends GetxController {
   final service = PerformanceService();
@@ -49,6 +50,8 @@ class PerformanceController extends GetxController {
 
       final leaves = await service.getLeaves(employeeId);
 
+      final attendanceController = Get.find<AttendanceController>();
+
       workingDays.value = attendance.length;
 
       leavesTaken.value = leaves.where((e) => e['status'] == 'Approved').length;
@@ -63,13 +66,11 @@ class PerformanceController extends GetxController {
         averageRating.value =
             reviews.map((e) => (e['rating'] as num).toDouble()).reduce((a, b) => a + b) /
             reviews.length;
+      } else {
+        averageRating.value = 0;
       }
 
-      final presentDays = attendance.where((e) => e['status'] == 'Present').length;
-
-      if (attendance.isNotEmpty) {
-        attendancePercent.value = (presentDays / attendance.length) * 100;
-      }
+      attendancePercent.value = attendanceController.attendancePercentage.value;
     } finally {
       isLoading.value = false;
     }

@@ -41,9 +41,17 @@ class DashboardView extends StatelessWidget {
                   ),
 
                   const SizedBox(width: 32),
-                  const Expanded(
+                  Expanded(
                     flex: 3,
-                    child: Column(children: [CompanyAnnouncementsCard(), SizedBox(height: 24), UpcomingHolidaysCard(), SizedBox(height: 24), RecentActivityCard()]),
+                    child: Column(
+                      children: [
+                        CompanyAnnouncementsCard(),
+                        const SizedBox(height: 24),
+                        const UpcomingHolidaysCard(),
+                        const SizedBox(height: 24),
+                        const RecentActivityCard(),
+                      ],
+                    ),
                   ),
                 ],
               ),

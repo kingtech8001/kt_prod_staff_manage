@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../../../core/utils/date_formatter.dart';
+import '../../controller/dashboard_controller.dart';
 
 class RecentActivityCard extends StatelessWidget {
   const RecentActivityCard({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<DashboardController>();
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -15,39 +20,46 @@ class RecentActivityCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Recent Activity',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: Color(0xFF0F172A)),
-          ),
+          Obx(() {
+            if (controller.recentActivities.isEmpty) {
+              return const Text('No recent activity', style: TextStyle(color: Color(0xFF64748B)));
+            }
 
-          const SizedBox(height: 24),
-
-          _activityItem(icon: Icons.login, color: Colors.green, title: 'Punch In Recorded', time: 'Today • 09:01 AM'),
-
-          const SizedBox(height: 20),
-
-          _activityItem(icon: Icons.coffee, color: Colors.orange, title: 'Break Started', time: 'Today • 01:00 PM'),
-
-          const SizedBox(height: 20),
-
-          _activityItem(icon: Icons.coffee_outlined, color: Colors.blue, title: 'Break Ended', time: 'Today • 01:30 PM'),
-
-          const SizedBox(height: 20),
-
-          _activityItem(icon: Icons.event_note_outlined, color: Colors.purple, title: 'Leave Request Submitted', time: 'Yesterday'),
+            return Column(
+              children: controller.recentActivities.map((activity) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: _activityItem(
+                    icon: Icons.history,
+                    color: Colors.blue,
+                    title: activity['title'] ?? '',
+                    time: DateFormatter.formatDateTime(activity['activity_time']?.toString()),
+                  ),
+                );
+              }).toList(),
+            );
+          }),
         ],
       ),
     );
   }
 
-  Widget _activityItem({required IconData icon, required Color color, required String title, required String time}) {
+  Widget _activityItem({
+    required IconData icon,
+    required Color color,
+    required String title,
+    required String time,
+  }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           width: 42,
           height: 42,
-          decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(12)),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: Icon(icon, color: color, size: 20),
         ),
 

@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../../../core/utils/date_formatter.dart';
+import '../../controller/dashboard_controller.dart';
 
 class AttendanceTable extends StatelessWidget {
   const AttendanceTable({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<DashboardController>();
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -26,15 +31,25 @@ class AttendanceTable extends StatelessWidget {
 
           const Divider(height: 32),
 
-          _tableRow(day: 'Mon, Oct 23', clockIn: '08:58 AM', clockOut: '06:05 PM', total: '9h 07m'),
-
-          const Divider(),
-
-          _tableRow(day: 'Tue, Oct 24', clockIn: '09:02 AM', clockOut: '06:10 PM', total: '9h 08m'),
-
-          const Divider(),
-
-          _tableRow(day: 'Wed, Oct 25', clockIn: '08:55 AM', clockOut: '06:00 PM', total: '9h 05m'),
+          Obx(() {
+            return Column(
+              children: controller.attendanceHistory.take(7).map((item) {
+                return Column(
+                  children: [
+                    _tableRow(
+                      day: DateTime.parse(
+                        item['attendance_date'],
+                      ).toLocal().toString().split(' ')[0],
+                      clockIn: formatTime(item['punch_in']),
+                      clockOut: formatTime(item['punch_out']),
+                      total: '${item['total_hours'] ?? 0}h',
+                    ),
+                    const Divider(),
+                  ],
+                );
+              }).toList(),
+            );
+          }),
 
           const SizedBox(height: 24),
 
@@ -47,7 +62,10 @@ class AttendanceTable extends StatelessWidget {
                 children: [
                   const Padding(
                     padding: EdgeInsets.only(left: 8),
-                    child: Text('My Upcoming Schedule', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+                    child: Text(
+                      'My Upcoming Schedule',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                    ),
                   ),
 
                   const SizedBox(height: 12),
@@ -100,7 +118,13 @@ class AttendanceTable extends StatelessWidget {
     );
   }
 
-  Widget _tableRow({required String day, required String clockIn, required String clockOut, required String total, bool showDivider = true}) {
+  Widget _tableRow({
+    required String day,
+    required String clockIn,
+    required String clockOut,
+    required String total,
+    bool showDivider = true,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 18),
       child: Row(
@@ -119,6 +143,20 @@ class AttendanceTable extends StatelessWidget {
       ),
     );
   }
+
+  String formatTime(String? dateTimeString) {
+    if (dateTimeString == null || dateTimeString.isEmpty) {
+      return '--';
+    }
+
+    try {
+      final dateTime = DateTime.parse(dateTimeString).toLocal();
+
+      return TimeOfDay.fromDateTime(dateTime).format(Get.context!);
+    } catch (e) {
+      return '--';
+    }
+  }
 }
 
 class UpcomingScheduleCard extends StatelessWidget {
@@ -126,6 +164,8 @@ class UpcomingScheduleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<DashboardController>();
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -133,20 +173,60 @@ class UpcomingScheduleCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: _scheduleItem(color: const Color(0xFF6366F1), title: 'Product Sync: Q4 Roadmap', subtitle: 'Today • 02:00 PM - 03:00 PM'),
-          ),
+      child: Obx(() {
+        if (controller.schedules.isEmpty) {
+          return const Center(
+            child: Text('No upcoming schedules', style: TextStyle(color: Color(0xFF64748B))),
+          );
+        }
 
-          const SizedBox(width: 24),
-
-          Expanded(
-            child: _scheduleItem(color: const Color(0xFF10B981), title: 'Approved Leave: Personal Day', subtitle: 'Friday, Oct 27 • All Day'),
-          ),
-        ],
-      ),
+        return Column(
+          children: controller.schedules.take(5).map((schedule) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: _scheduleItem(
+                color: _getColor(schedule['event_type']),
+                title: schedule['title'] ?? '',
+                subtitle:
+                    '${DateFormatter.formatDate(schedule['start_time']?.toString())} • ${DateFormatter.formatTime(schedule['start_time']?.toString())} - ${DateFormatter.formatTime(schedule['end_time']?.toString())}',
+              ),
+            );
+          }).toList(),
+        );
+      }),
     );
+  }
+
+  Color _getColor(String? type) {
+    switch (type) {
+      case 'Meeting':
+        return const Color(0xFF6366F1);
+
+      case 'Review':
+        return const Color(0xFF10B981);
+
+      case 'Training':
+        return Colors.orange;
+
+      default:
+        return Colors.blue;
+    }
+  }
+
+  String formatDate(String? value) {
+    if (value == null) return '';
+
+    final date = DateTime.parse(value).toLocal();
+
+    return '${date.day}/${date.month}/${date.year}';
+  }
+
+  String formatTime(String? value) {
+    if (value == null) return '';
+
+    final date = DateTime.parse(value).toLocal();
+
+    return TimeOfDay.fromDateTime(date).format(Get.context!);
   }
 
   Widget _scheduleItem({required Color color, required String title, required String subtitle}) {
@@ -161,15 +241,17 @@ class UpcomingScheduleCard extends StatelessWidget {
 
         const SizedBox(width: 12),
 
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
 
-            const SizedBox(height: 4),
+              const SizedBox(height: 4),
 
-            Text(subtitle, style: const TextStyle(color: Color(0xFF64748B))),
-          ],
+              Text(subtitle, style: const TextStyle(color: Color(0xFF64748B))),
+            ],
+          ),
         ),
       ],
     );
