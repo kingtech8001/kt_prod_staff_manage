@@ -24,11 +24,7 @@ class _SplashViewState extends State<SplashView> {
   }
 
   Future<void> checkLogin() async {
-    print('SPLASH START');
-
     final authService = AuthService();
-
-    print('IS LOGGED IN => ${authService.isLoggedIn}');
 
     if (!authService.isLoggedIn) {
       Get.offAllNamed(AppRoutes.login);
@@ -36,8 +32,6 @@ class _SplashViewState extends State<SplashView> {
     }
 
     final profile = await authService.getCurrentProfile();
-
-    print('PROFILE => $profile');
 
     if (profile == null) {
       Get.offAllNamed(AppRoutes.login);
@@ -47,8 +41,6 @@ class _SplashViewState extends State<SplashView> {
     final userModel = UserModel.fromJson(profile);
 
     Get.find<AuthController>().setUser(userModel);
-
-    print('USER STORED => ${userModel.fullName}');
 
     Get.offAllNamed(AppRoutes.employee);
   }

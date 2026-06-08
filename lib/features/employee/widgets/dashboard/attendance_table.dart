@@ -53,7 +53,7 @@ class AttendanceTable extends StatelessWidget {
 
           const SizedBox(height: 24),
 
-          Align(
+          /*Align(
             alignment: Alignment.centerLeft,
             child: SizedBox(
               width: 1000,
@@ -74,7 +74,7 @@ class AttendanceTable extends StatelessWidget {
                 ],
               ),
             ),
-          ),
+          ),*/
         ],
       ),
     );

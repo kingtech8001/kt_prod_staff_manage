@@ -41,8 +41,6 @@ class AttendanceService {
     }
 
     final now = DateTime.now();
-    print('LOCAL => $now');
-    print('UTC => ${now.toUtc()}');
 
     final shiftStart = DateTime(now.year, now.month, now.day, 9, 0);
 
@@ -97,8 +95,6 @@ class AttendanceService {
     final attendance = await supabase.from('attendance').select().eq('id', attendanceId).single();
 
     final now = DateTime.now();
-    print('LOCAL => $now');
-    print('UTC => ${now.toUtc()}');
 
     final punchIn = DateTime.parse(attendance['punch_in']);
 
@@ -141,6 +137,12 @@ class AttendanceService {
           'current_state': 'Completed',
         })
         .eq('id', attendanceId);
+    print('Punch In: $punchIn');
+    print('Now: $now');
+    print('Worked Minutes: $totalWorkedMinutes');
+    print('Break Minutes: $totalBreakMinutes');
+    print('Effective Minutes: $effectiveMinutes');
+    print('Total Hours: $totalHours');
   }
 
   Future<Map<String, dynamic>?> getActiveBreak(String attendanceId) async {

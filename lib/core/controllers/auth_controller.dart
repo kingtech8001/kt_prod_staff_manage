@@ -37,7 +37,6 @@ class AuthController extends GetxController {
 
       setUser(UserModel.fromJson(response));
     } catch (e) {
-      print('ERROR FETCHING PROFILE => $e');
       clearUser();
     }
   }

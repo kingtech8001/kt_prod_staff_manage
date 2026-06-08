@@ -59,9 +59,6 @@ class PerformanceController extends GetxController {
       final metrics = await service.getPerformanceMetrics(employeeId);
 
       performanceMetrics.value = metrics;
-
-      print('METRICS => $metrics');
-
       if (reviews.isNotEmpty) {
         averageRating.value =
             reviews.map((e) => (e['rating'] as num).toDouble()).reduce((a, b) => a + b) /

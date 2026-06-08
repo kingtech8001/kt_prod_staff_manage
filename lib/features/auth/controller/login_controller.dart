@@ -19,9 +19,6 @@ class LoginController extends GetxController {
 
     emailController.text = "admin@proworkforce.com";
     passwordController.text = "Admin@123";
-
-    print(emailController.text);
-    print(passwordController.text);
   }
 
   void changeRole(String role) {

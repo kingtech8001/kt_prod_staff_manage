@@ -13,7 +13,11 @@ class QuickStatsRow extends StatelessWidget {
 
           Text(
             value,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Color(0xFF0F172A)),
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF0F172A),
+            ),
           ),
         ],
       ),
@@ -34,8 +38,6 @@ class QuickStatsRow extends StatelessWidget {
           _buildItem(title: 'Expected Hours', value: '8h'),
 
           _buildItem(title: 'Break Allowance', value: '1h'),
-
-          _buildItem(title: 'Location', value: 'Head Office'),
         ],
       ),
     );

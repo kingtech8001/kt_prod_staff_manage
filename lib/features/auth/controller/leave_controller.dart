@@ -37,7 +37,6 @@ class LeaveController extends GetxController {
       final leaves = await service.getLeaves(employeeId);
 
       final balance = await service.getLeaveBalance(employeeId);
-      print('BALANCE => $balance');
 
       leaveList.value = leaves;
 

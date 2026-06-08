@@ -16,8 +16,6 @@ class AuthService {
   }
 
   bool get isLoggedIn {
-    print('CURRENT SESSION => ${supabase.auth.currentSession}');
-
     return supabase.auth.currentSession != null;
   }
 }

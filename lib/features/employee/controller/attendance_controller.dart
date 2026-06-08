@@ -8,6 +8,13 @@ class AttendanceController extends GetxController {
   final isLoading = false.obs;
   final attendancePercentage = 0.0.obs;
   final workingDays = 0.obs;
+  final lateDays = 0.obs;
+  final overtimeHours = 0.0.obs;
+  final attendanceMap = <String, Map<String, dynamic>>{}.obs;
+  final averageHours = 0.0.obs;
+  final averageArrivalTime = '00'.obs;
+  final longestDayHours = 0.0.obs;
+  final currentStreak = 0.obs;
 
   @override
   void onInit() {
@@ -39,8 +46,6 @@ class AttendanceController extends GetxController {
       attendanceList.value = data;
 
       _calculateAttendanceMetrics();
-
-      print('ATTENDANCE => ${attendancePercentage.value}%');
     } finally {
       isLoading.value = false;
     }
@@ -51,9 +56,6 @@ class AttendanceController extends GetxController {
 
     if (attendanceList.isEmpty) {
       attendancePercentage.value = 0;
-
-      print('NO ATTENDANCE RECORDS');
-
       return;
     }
 
@@ -61,8 +63,70 @@ class AttendanceController extends GetxController {
 
     attendancePercentage.value = (presentCount / attendanceList.length) * 100;
 
-    print(
-      'PRESENT=$presentCount TOTAL=${attendanceList.length} PERCENT=${attendancePercentage.value}',
+    lateDays.value = attendanceList.where((e) => e['is_late'] == true).length;
+
+    overtimeHours.value = attendanceList.fold<double>(
+      0,
+      (sum, item) => sum + ((item['overtime_hours'] ?? 0).toDouble()),
     );
+
+    averageHours.value =
+        attendanceList.fold<double>(
+          0,
+          (sum, item) => sum + ((item['total_hours'] ?? 0).toDouble()),
+        ) /
+        attendanceList.length;
+
+    longestDayHours.value = attendanceList
+        .map((e) => (e['total_hours'] ?? 0).toDouble())
+        .fold(0.0, (previous, current) => current > previous ? current : previous);
+
+    _calculateAverageArrival();
+    _calculateStreak();
+
+    attendanceMap.clear();
+
+    for (final item in attendanceList) {
+      attendanceMap[item['attendance_date']] = item;
+    }
+  }
+
+  void _calculateAverageArrival() {
+    final punchIns = attendanceList.where((e) => e['punch_in'] != null).toList();
+
+    if (punchIns.isEmpty) {
+      averageArrivalTime.value = '--';
+      return;
+    }
+
+    int totalMinutes = 0;
+
+    for (final item in punchIns) {
+      final date = DateTime.parse(item['punch_in']).toLocal();
+
+      totalMinutes += date.hour * 60 + date.minute;
+    }
+
+    final avgMinutes = (totalMinutes / punchIns.length).round();
+
+    final hours = avgMinutes ~/ 60;
+    final minutes = avgMinutes % 60;
+
+    averageArrivalTime.value =
+        '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
+  }
+
+  void _calculateStreak() {
+    int streak = 0;
+
+    for (final item in attendanceList) {
+      if (item['status'] == 'Present') {
+        streak++;
+      } else {
+        break;
+      }
+    }
+
+    currentStreak.value = streak;
   }
 }

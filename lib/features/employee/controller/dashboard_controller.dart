@@ -85,12 +85,6 @@ class DashboardController extends GetxController {
           (balance['sick_leave'] ?? 0) +
           (balance['casual_leave'] ?? 0);
     }
-
-    print('SCHEDULES => ${schedules.length}');
-    print('ANNOUNCEMENTS => ${announcements.length}');
-    print('HOLIDAYS => ${holidays.length}');
-    print('ACTIVITIES => ${recentActivities.length}');
-    print('ATTENDANCE HISTORY => ${attendanceHistory.length}');
   }
 
   Future<void> punchIn() async {

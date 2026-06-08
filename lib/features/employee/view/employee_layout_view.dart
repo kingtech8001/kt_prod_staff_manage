@@ -4,6 +4,7 @@ import 'package:staff_managememt_system/features/employee/view/performance_view.
 import 'package:staff_managememt_system/features/employee/view/policy_view.dart';
 import '../../../core/controllers/auth_controller.dart';
 import '../controller/employee_controller.dart';
+import '../widgets/dashboard/dashboard_header.dart';
 import '../widgets/employee_sidebar.dart';
 import 'attendance_view.dart';
 import 'dashboard_view.dart';
@@ -21,18 +22,27 @@ class EmployeeLayoutView extends StatelessWidget {
       body: Row(
         children: [
           EmployeeSidebar(),
+
           Expanded(
-            child: Obx(
-              () => IndexedStack(
-                index: controller.selectedIndex.value,
-                children: [
-                  const DashboardView(),
-                  AttendanceView(),
-                  LeaveView(),
-                  PerformanceView(),
-                  const PolicyView(),
-                ],
-              ),
+            child: Column(
+              children: [
+                const DashboardHeader(),
+
+                Expanded(
+                  child: Obx(
+                    () => IndexedStack(
+                      index: controller.selectedIndex.value,
+                      children: [
+                        const DashboardView(),
+                        AttendanceView(),
+                        LeaveView(),
+                        PerformanceView(),
+                        const PolicyView(),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

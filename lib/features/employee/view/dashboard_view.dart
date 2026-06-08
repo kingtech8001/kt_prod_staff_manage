@@ -17,8 +17,6 @@ class DashboardView extends StatelessWidget {
       color: const Color(0xFFF5F7FA),
       child: Column(
         children: [
-          const DashboardHeader(),
-
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(32),
