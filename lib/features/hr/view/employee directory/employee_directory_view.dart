@@ -3,13 +3,14 @@ import 'package:get/get.dart';
 import 'package:staff_managememt_system/features/hr/widgets/employee_directory/quick_actions_card.dart';
 import '../../controller/employee_directory_controller.dart';
 import '../../widgets/employee_directory/employee_filters.dart';
-import '../../widgets/employee_directory/employee_row.dart';
+import '../../widgets/employee_directory/employee_list_card.dart';
 import '../../widgets/employee_directory/employee_stats_row.dart';
-
-final controller = Get.put(EmployeeDirectoryController());
+import '../../widgets/employee_directory/live_activity_feed.dart';
 
 class EmployeeDirectoryView extends StatelessWidget {
-  const EmployeeDirectoryView({super.key});
+  final controller = Get.put(EmployeeDirectoryController());
+
+  EmployeeDirectoryView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,13 +19,9 @@ class EmployeeDirectoryView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Employee Directory', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),
+          const Text('Manage Employees', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),
 
-          const SizedBox(height: 6),
-
-          const Text('Manage and monitor all employees', style: TextStyle(color: Color(0xFF64748B))),
-
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
 
           const EmployeeStatsRow(),
 
@@ -33,11 +30,26 @@ class EmployeeDirectoryView extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Expanded(flex: 3, child: Column(children: [EmployeeFilters(), SizedBox(height: 24), EmployeeListCard()])),
+              Expanded(
+                flex: 3,
+                child: Column(
+                  children: [
+                    /*EmployeeFilters(),*/
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text('Employee List', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600)),
+                    ),
+
+                    const SizedBox(height: 24),
+                    const SizedBox(height: 24),
+                    const EmployeeListCard(),
+                  ],
+                ),
+              ),
 
               const SizedBox(width: 24),
 
-              const Expanded(flex: 1, child: QuickActionsCard()),
+              Expanded(flex: 1, child: Column(children: [const QuickActionsCard(), const SizedBox(height: 20), LiveActivityFeed()])),
             ],
           ),
         ],

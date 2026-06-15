@@ -1,23 +1,33 @@
 import 'package:get/get.dart';
+import '../repository/hr_repository.dart';
 
 class EmployeeDirectoryController extends GetxController {
-  /// Selected department filter
-  final selectedDepartment = 'All Staff'.obs;
+  final repository = HrRepository();
 
-  /// Search text
+  final employees = <Map<String, dynamic>>[].obs;
+
+  final isLoading = false.obs;
+
   final searchQuery = ''.obs;
 
-  /// Dummy employee list (later replace with Supabase)
-  final employees = [
-    {'name': 'Alex Rivera', 'role': 'Senior Product Designer', 'department': 'Design', 'status': 'Present'},
-    {'name': 'Bethany Chen', 'role': 'Software Engineer', 'department': 'Engineering', 'status': 'Late'},
-    {'name': 'Carlos Mendez', 'role': 'HR Manager', 'department': 'People', 'status': 'Present'},
-    {'name': 'Diana Prince', 'role': 'Marketing Lead', 'department': 'Marketing', 'status': 'Leave'},
-    {'name': 'Ethan Hunt', 'role': 'Security Analyst', 'department': 'Operations', 'status': 'Present'},
-  ].obs;
+  @override
+  void onInit() {
+    super.onInit();
+    loadEmployees();
+  }
 
-  void selectDepartment(String department) {
-    selectedDepartment.value = department;
+  Future<void> loadEmployees() async {
+    try {
+      isLoading.value = true;
+
+      final result = await repository.getEmployees();
+
+      employees.assignAll(result);
+    } catch (e) {
+      print('Error loading employees: $e');
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   void updateSearch(String value) {
@@ -25,14 +35,13 @@ class EmployeeDirectoryController extends GetxController {
   }
 
   List<Map<String, dynamic>> get filteredEmployees {
+    if (searchQuery.value.isEmpty) {
+      return employees;
+    }
+
     return employees.where((employee) {
-      final matchesDepartment = selectedDepartment.value == 'All Staff' || employee['department'] == selectedDepartment.value;
-
-      final matchesSearch =
-          employee['name'].toString().toLowerCase().contains(searchQuery.value.toLowerCase()) ||
-          employee['role'].toString().toLowerCase().contains(searchQuery.value.toLowerCase());
-
-      return matchesDepartment && matchesSearch;
+      return employee['full_name'].toString().toLowerCase().contains(searchQuery.value.toLowerCase()) ||
+          employee['designation'].toString().toLowerCase().contains(searchQuery.value.toLowerCase());
     }).toList();
   }
 }

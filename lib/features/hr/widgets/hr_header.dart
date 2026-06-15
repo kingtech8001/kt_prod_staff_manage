@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../controller/hr_controller.dart';
 
 class HrHeader extends StatelessWidget {
   const HrHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<HrController>();
     return Container(
       height: 90,
       padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -19,14 +23,21 @@ class HrHeader extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'HR Operations Center',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, color: Color(0xFF111827)),
+                Obx(
+                  () => Text(
+                    controller.pageTitle.value,
+                    style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w700, color: Color(0xFF111827)),
+                  ),
                 ),
 
                 const SizedBox(height: 4),
 
-                Text(_formattedDate(), style: const TextStyle(color: Color(0xFF64748B), fontSize: 13)),
+                Obx(
+                  () => Text(
+                    controller.pageSubtitle.value.isEmpty ? _formattedDate() : controller.pageSubtitle.value,
+                    style: const TextStyle(color: Color(0xFF64748B), fontSize: 13),
+                  ),
+                ),
               ],
             ),
           ),

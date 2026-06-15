@@ -14,8 +14,6 @@ class HrSidebar extends StatelessWidget {
     {'title': 'Operations Center', 'icon': Icons.dashboard_outlined},
     {'title': 'Employee Directory', 'icon': Icons.people_outline},
     {'title': 'Leave Approval', 'icon': Icons.event_note_outlined},
-    {'title': 'Performance', 'icon': Icons.bar_chart},
-    {'title': 'Reports', 'icon': Icons.assessment_outlined},
     {'title': 'Settings', 'icon': Icons.settings_outlined},
   ];
 
@@ -52,6 +50,7 @@ class HrSidebar extends StatelessWidget {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12),
                       onTap: () {
+                        controller.isProfileOpen.value = false;
                         controller.changeIndex(index);
                       },
                       child: Container(
