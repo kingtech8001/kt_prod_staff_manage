@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../../../core/utils/date_formatter.dart';
+import '../../controller/employee_directory_controller.dart';
 
 class LiveActivityFeed extends StatelessWidget {
   LiveActivityFeed({super.key});
 
-  final activities = [
-    {'name': 'Sarah Jenkins', 'action': 'Checked In (Remote)', 'time': '2m ago', 'icon': Icons.login},
-    {'name': 'Michael Chen', 'action': 'Started Break', 'time': '12m ago', 'icon': Icons.coffee},
-    {'name': 'Jessica Alba', 'action': 'Submitted Leave Request', 'time': '45m ago', 'icon': Icons.event_note_outlined},
-    {'name': 'David Miller', 'action': 'Punched Out (Office)', 'time': '1h ago', 'icon': Icons.logout},
-  ];
+  final controller = Get.find<EmployeeDirectoryController>();
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +26,20 @@ class LiveActivityFeed extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          ...activities.map((activity) => Padding(padding: const EdgeInsets.only(bottom: 18), child: _activityItem(activity))),
+          Obx(() {
+            if (controller.isLoadingActivities.value) {
+              return const Padding(
+                padding: EdgeInsets.all(30),
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
+
+            if (controller.liveActivities.isEmpty) {
+              return const Padding(padding: EdgeInsets.all(20), child: Text('No live activity yet'));
+            }
+
+            return Column(children: controller.liveActivities.map((activity) => _activityItem(activity)).toList());
+          }),
 
           const SizedBox(height: 10),
 
@@ -50,32 +62,75 @@ class LiveActivityFeed extends StatelessWidget {
   }
 
   Widget _activityItem(Map<String, dynamic> activity) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CircleAvatar(
-          radius: 18,
-          backgroundColor: Color(0xFF64748b),
-          child: Icon(activity['icon'], size: 18, color: Colors.white),
-        ),
+    final profile = activity['profiles'];
 
-        const SizedBox(width: 12),
+    final employeeName = profile?['full_name'] ?? 'Unknown Employee';
 
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(activity['name'], style: const TextStyle(fontWeight: FontWeight.w600)),
+    final activityType = activity['activity_type']?.toString() ?? '';
 
-              const SizedBox(height: 2),
+    IconData icon;
+    Color iconColor;
 
-              Text(activity['action'], style: const TextStyle(color: Color(0xFF64748B), fontSize: 13)),
-            ],
+    switch (activityType) {
+      case 'CHECK_IN':
+        icon = Icons.login;
+        iconColor = Colors.green;
+        break;
+
+      case 'CHECK_OUT':
+        icon = Icons.logout;
+        iconColor = Colors.red;
+        break;
+
+      case 'BREAK_START':
+        icon = Icons.coffee;
+        iconColor = Colors.orange;
+        break;
+
+      case 'BREAK_END':
+        icon = Icons.work_outline;
+        iconColor = Colors.blue;
+        break;
+
+      case 'LEAVE_REQUEST':
+        icon = Icons.event_note_outlined;
+        iconColor = Colors.purple;
+        break;
+
+      default:
+        icon = Icons.circle_notifications;
+        iconColor = Colors.grey;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 18),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CircleAvatar(
+            radius: 18,
+            backgroundColor: iconColor.withOpacity(.12),
+            child: Icon(icon, size: 18, color: iconColor),
           ),
-        ),
 
-        Text(activity['time'], style: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8))),
-      ],
+          const SizedBox(width: 12),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(employeeName, style: const TextStyle(fontWeight: FontWeight.w600)),
+
+                const SizedBox(height: 2),
+
+                Text(activity['title'] ?? '', style: const TextStyle(color: Color(0xFF64748B), fontSize: 13)),
+              ],
+            ),
+          ),
+
+          Text(DateFormatter.formatTime(activity['activity_time']?.toString()), style: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8))),
+        ],
+      ),
     );
   }
 }

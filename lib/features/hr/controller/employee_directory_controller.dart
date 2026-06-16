@@ -3,9 +3,9 @@ import '../repository/hr_repository.dart';
 
 class EmployeeDirectoryController extends GetxController {
   final repository = HrRepository();
-
+  final liveActivities = <Map<String, dynamic>>[].obs;
   final employees = <Map<String, dynamic>>[].obs;
-
+  final isLoadingActivities = false.obs;
   final isLoading = false.obs;
 
   final searchQuery = ''.obs;
@@ -14,6 +14,7 @@ class EmployeeDirectoryController extends GetxController {
   void onInit() {
     super.onInit();
     loadEmployees();
+    loadLiveActivities();
   }
 
   Future<void> loadEmployees() async {
@@ -43,5 +44,17 @@ class EmployeeDirectoryController extends GetxController {
       return employee['full_name'].toString().toLowerCase().contains(searchQuery.value.toLowerCase()) ||
           employee['designation'].toString().toLowerCase().contains(searchQuery.value.toLowerCase());
     }).toList();
+  }
+
+  Future<void> loadLiveActivities() async {
+    try {
+      isLoadingActivities.value = true;
+
+      liveActivities.value = await repository.getLiveActivities();
+    } catch (e) {
+      print('Error loading live activities: $e');
+    } finally {
+      isLoadingActivities.value = false;
+    }
   }
 }

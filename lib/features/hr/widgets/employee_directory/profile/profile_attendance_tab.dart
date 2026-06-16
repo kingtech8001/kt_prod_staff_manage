@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../../core/utils/date_formatter.dart';
 import '../../../controller/employee_profile_controller.dart';
 
 class ProfileAttendanceTab extends StatelessWidget {
@@ -90,15 +91,15 @@ class ProfileAttendanceTab extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
       child: Row(
         children: [
-          Expanded(flex: 2, child: Text(attendance['attendance_date']?.toString() ?? '-')),
+          Expanded(flex: 2, child: Text(DateFormatter.formatDate(attendance['attendance_date']?.toString()))),
 
-          Expanded(child: Text(attendance['check_in_time']?.toString() ?? '-')),
+          Expanded(child: Text(DateFormatter.formatTime(attendance['punch_in']?.toString()))),
 
-          Expanded(child: Text(attendance['check_out_time']?.toString() ?? '-')),
+          Expanded(child: Text(DateFormatter.formatTime(attendance['punch_out']?.toString()))),
 
-          Expanded(child: Text(attendance['work_hours']?.toString() ?? '-')),
+          Expanded(child: Text(((attendance['total_hours'] ?? 0) as num).toStringAsFixed(1))),
 
-          Expanded(child: Text(attendance['overtime_hours']?.toString() ?? '-')),
+          Expanded(child: Text(((attendance['overtime_hours'] ?? 0) as num).toStringAsFixed(1))),
 
           Expanded(
             child: Container(

@@ -58,7 +58,133 @@ class HrRepository {
   }
 
   Future<List<Map<String, dynamic>>> getRecentActivities() async {
-    final response = await _supabase.from('employee_activity_logs').select().order('activity_time', ascending: false).limit(20);
+    final response = await _supabase
+        .from('employee_activity_logs')
+        .select('''
+        *,
+        profiles!employee_activity_logs_employee_id_fkey(
+          full_name,
+          profile_image
+        )
+      ''')
+        .order('activity_time', ascending: false)
+        .limit(15);
+
+    return List<Map<String, dynamic>>.from(response);
+  }
+
+  Future<void> markAttendanceStatus({required String employeeId, required DateTime date, required String status}) async {
+    final dateString = date.toIso8601String().split('T').first;
+
+    final existing = await _supabase.from('attendance').select().eq('employee_id', employeeId).eq('attendance_date', dateString).maybeSingle();
+
+    if (existing != null) {
+      await _supabase.from('attendance').update({'status': status, 'current_state': status}).eq('id', existing['id']);
+    } else {
+      await _supabase.from('attendance').insert({'employee_id': employeeId, 'attendance_date': dateString, 'status': status, 'current_state': status});
+    }
+
+    await _supabase.from('employee_activity_logs').insert({
+      'employee_id': employeeId,
+      'title': 'Marked $status',
+      'activity_type': 'ATTENDANCE_UPDATE',
+      'activity_source': 'hr',
+      'activity_time': DateTime.now().toIso8601String(),
+    });
+  }
+
+  Future<void> markAbsent(String employeeId) async {
+    await _supabase.from('attendance').insert({
+      'employee_id': employeeId,
+      'attendance_date': DateTime.now().toIso8601String().split('T')[0],
+      'status': 'Absent',
+      'current_state': 'Absent',
+    });
+
+    await _supabase.from('employee_activity_logs').insert({
+      'employee_id': employeeId,
+      'title': 'Marked Absent',
+      'activity_type': 'ATTENDANCE_UPDATE',
+      'activity_source': 'hr',
+      'activity_time': DateTime.now().toIso8601String(),
+    });
+  }
+
+  Future<void> approveLatestLeave(String employeeId, String approverId) async {
+    final leave = await _supabase
+        .from('leave_requests')
+        .select()
+        .eq('employee_id', employeeId)
+        .eq('status', 'pending')
+        .order('applied_at', ascending: false)
+        .limit(1)
+        .maybeSingle();
+
+    if (leave == null) return;
+
+    await approveLeave(leave['id'], approverId);
+  }
+
+  Future<void> rejectLatestLeave(String employeeId, String approverId) async {
+    final leave = await _supabase
+        .from('leave_requests')
+        .select()
+        .eq('employee_id', employeeId)
+        .eq('status', 'pending')
+        .order('applied_at', ascending: false)
+        .limit(1)
+        .maybeSingle();
+
+    if (leave == null) return;
+
+    await rejectLeave(leave['id'], approverId);
+  }
+
+  Future<void> createEmployee({required String firstName, required String lastName, required String email, required String phone, required String designation}) async {
+    final fullName = '$firstName $lastName';
+
+    final employeeCode = 'EMP-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
+
+    final authUser = await _supabase.auth.signUp(email: email, password: 'Temp@123456');
+
+    final userId = authUser.user?.id;
+
+    if (userId == null) {
+      throw Exception('Failed to create employee account');
+    }
+
+    await _supabase.from('profiles').insert({
+      'id': userId,
+      'employee_code': employeeCode,
+      'full_name': fullName,
+      'email': email,
+      'phone': phone,
+      'designation': designation,
+      'role': 'employee',
+      'is_active': true,
+    });
+
+    await _supabase.from('employee_activity_logs').insert({
+      'employee_id': userId,
+      'title': 'Employee profile created',
+      'activity_type': 'PROFILE_CREATED',
+      'activity_source': 'hr',
+      'activity_time': DateTime.now().toIso8601String(),
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> getLiveActivities() async {
+    final response = await _supabase
+        .from('employee_activity_logs')
+        .select('''
+        *,
+        profiles!employee_activity_logs_employee_id_fkey(
+          full_name
+        )
+      ''')
+        .eq('activity_source', 'employee')
+        .order('activity_time', ascending: false)
+        .limit(15);
 
     return List<Map<String, dynamic>>.from(response);
   }

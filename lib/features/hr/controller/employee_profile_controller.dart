@@ -3,7 +3,7 @@ import '../repository/hr_repository.dart';
 
 class EmployeeProfileController extends GetxController {
   final selectedTab = 'Overview'.obs;
-
+  final employeeActivities = <Map<String, dynamic>>[].obs;
   final repository = HrRepository();
 
   final employee = Rxn<Map<String, dynamic>>();
@@ -63,5 +63,53 @@ class EmployeeProfileController extends GetxController {
     overtimeHours.value = totalOt;
 
     averageHours.value = totalHours / totalDays;
+  }
+
+  Future<void> markPresent(DateTime date) async {
+    if (employee.value == null) return;
+
+    await repository.markAttendanceStatus(employeeId: employee.value!['id'], date: date, status: 'Present');
+
+    await loadEmployee(employee.value!['id']);
+  }
+
+  Future<void> markAbsent(DateTime date) async {
+    if (employee.value == null) return;
+
+    await repository.markAttendanceStatus(employeeId: employee.value!['id'], date: date, status: 'Absent');
+
+    await loadEmployee(employee.value!['id']);
+  }
+
+  Future<void> markLeave(DateTime date) async {
+    if (employee.value == null) return;
+
+    await repository.markAttendanceStatus(employeeId: employee.value!['id'], date: date, status: 'Leave');
+
+    await loadEmployee(employee.value!['id']);
+  }
+
+  Future<void> approveLeave() async {
+    if (employee.value == null) return;
+
+    await repository.approveLatestLeave(employee.value!['id'], 'HR');
+
+    await loadEmployee(employee.value!['id']);
+  }
+
+  Future<void> rejectLeave() async {
+    if (employee.value == null) return;
+
+    await repository.rejectLatestLeave(employee.value!['id'], 'HR');
+
+    await loadEmployee(employee.value!['id']);
+  }
+
+  Future<void> loadEmployeeActivities(String employeeId) async {
+    try {
+      employeeActivities.value = await repository.getEmployeeActivities(employeeId);
+    } catch (e) {
+      print(e);
+    }
   }
 }

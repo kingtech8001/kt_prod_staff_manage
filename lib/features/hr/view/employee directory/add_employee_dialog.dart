@@ -44,16 +44,14 @@ class AddEmployeeDialog extends StatelessWidget {
                 children: [
                   Expanded(child: _textField(label: 'Phone Number')),
 
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 10),
 
-                  Expanded(
-                    child: _dropdownField(label: 'Department', hint: 'Select Department'),
-                  ),
+                  Expanded(child: _textField(label: 'Designation')),
                 ],
               ),
+              SizedBox(height: 32),
 
-              const SizedBox(height: 20),
-
+              /*
               Row(
                 children: [
                   Expanded(
@@ -65,13 +63,7 @@ class AddEmployeeDialog extends StatelessWidget {
                   Expanded(child: _textField(label: 'Employee ID')),
                 ],
               ),
-
-              const SizedBox(height: 20),
-
-              _textField(label: 'Designation'),
-
-              const SizedBox(height: 32),
-
+*/
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [

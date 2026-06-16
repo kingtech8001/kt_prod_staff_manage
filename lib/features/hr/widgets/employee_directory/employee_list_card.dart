@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controller/employee_directory_controller.dart';
+import '../../controller/employee_profile_controller.dart';
 import '../../controller/hr_controller.dart';
 import '../../view/employee directory/employee_profile_view.dart';
 
@@ -40,8 +41,13 @@ class _EmployeeTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(18),
-      onTap: () {
-        Get.find<HrController>().openEmployeeProfile(Map<String, dynamic>.from(employee));
+      onTap: () async {
+        final hrController = Get.find<HrController>();
+        final profileController = Get.find<EmployeeProfileController>();
+
+        hrController.openEmployeeProfile(Map<String, dynamic>.from(employee));
+
+        await profileController.loadEmployee(employee['id']);
       },
       child: Container(
         padding: const EdgeInsets.all(18),

@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../../controller/hr_controller.dart';
 
 class EmploymentInformationCard extends StatelessWidget {
   const EmploymentInformationCard({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final employee = Get.find<HrController>().selectedEmployee.value;
+
+    if (employee == null) {
+      return const SizedBox();
+    }
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -19,17 +28,19 @@ class EmploymentInformationCard extends StatelessWidget {
 
           const SizedBox(height: 24),
 
-          _infoRow('Employee ID', 'EMP-2026-001'),
+          _infoRow('Employee Code', employee['employee_code']?.toString() ?? '-'),
 
-          _infoRow('Employment Status', 'Active'),
+          _infoRow('Full Name', employee['full_name']?.toString() ?? '-'),
 
-          _infoRow('Employment Type', 'Full-Time'),
+          _infoRow('Email', employee['email']?.toString() ?? '-'),
 
-          _infoRow('Department', 'Engineering'),
+          _infoRow('Phone', employee['phone']?.toString() ?? '-'),
 
-          _infoRow('Manager', 'Sarah Wilson'),
+          _infoRow('Designation', employee['designation']?.toString() ?? '-'),
 
-          _infoRow('Office Location', 'London HQ'),
+          _infoRow('Role', employee['role']?.toString() ?? '-'),
+
+          _infoRow('Status', employee['is_active'] == true ? 'Active' : 'Inactive'),
         ],
       ),
     );
