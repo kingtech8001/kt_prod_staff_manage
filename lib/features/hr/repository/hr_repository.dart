@@ -188,4 +188,28 @@ class HrRepository {
 
     return List<Map<String, dynamic>>.from(response);
   }
+
+  Future<void> updateEmployee({
+    required String employeeId,
+    required String fullName,
+    required String email,
+    required String phone,
+    required String designation,
+    required bool isActive,
+  }) async {
+    await _supabase.from('profiles').update({'full_name': fullName, 'email': email, 'phone': phone, 'designation': designation, 'is_active': isActive}).eq('id', employeeId);
+
+    await _supabase.from('employee_activity_logs').insert({
+      'employee_id': employeeId,
+      'title': 'Employee profile updated by HR',
+      'activity_source': 'hr',
+      'activity_time': DateTime.now().toIso8601String(),
+    });
+
+    final result = await _supabase
+        .from('profiles')
+        .update({'full_name': fullName, 'email': email, 'phone': phone, 'designation': designation, 'is_active': isActive})
+        .eq('id', employeeId)
+        .select();
+  }
 }

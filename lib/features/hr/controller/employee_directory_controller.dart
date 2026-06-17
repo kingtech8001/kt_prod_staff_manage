@@ -18,12 +18,14 @@ class EmployeeDirectoryController extends GetxController {
   }
 
   Future<void> loadEmployees() async {
+    print('Reloading employee...');
     try {
       isLoading.value = true;
 
       final result = await repository.getEmployees();
 
       employees.assignAll(result);
+      print('Reloading employee...1111');
     } catch (e) {
       print('Error loading employees: $e');
     } finally {

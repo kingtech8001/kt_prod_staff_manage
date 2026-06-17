@@ -70,7 +70,7 @@ class _EmployeeTile extends StatelessWidget {
 
                   const SizedBox(height: 4),
 
-                  Text('${employee['designation']} • ${employee['department']}', style: const TextStyle(color: Color(0xFF64748B))),
+                  Text('${employee['designation']}', style: const TextStyle(color: Color(0xFF64748B))),
                 ],
               ),
             ),

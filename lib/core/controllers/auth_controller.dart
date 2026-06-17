@@ -29,11 +29,7 @@ class AuthController extends GetxController {
 
   Future<void> _fetchAndSetUser(String userId) async {
     try {
-      final response = await Supabase.instance.client
-          .from('profiles')
-          .select()
-          .eq('id', userId)
-          .single();
+      final response = await Supabase.instance.client.from('profiles').select().eq('id', userId).single();
 
       setUser(UserModel.fromJson(response));
     } catch (e) {
@@ -51,4 +47,12 @@ class AuthController extends GetxController {
 
   UserModel? get user => currentUser.value;
   bool get isLoggedIn => currentUser.value != null;
+
+  Future<void> refreshCurrentUser() async {
+    final userId = currentUser.value?.id;
+
+    if (userId == null) return;
+
+    await _fetchAndSetUser(userId);
+  }
 }

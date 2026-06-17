@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../core/utils/date_formatter.dart';
 import '../../controller/employee_profile_controller.dart';
 import '../../controller/hr_controller.dart';
+import '../../widgets/employee_directory/edit_employee_dialog.dart';
 import '../../widgets/employee_directory/profile/documents_overview_card.dart';
 import '../../widgets/employee_directory/profile/employment_information_card.dart';
 import '../../widgets/employee_directory/profile/hr_actions_card.dart';
@@ -117,10 +119,14 @@ class EmployeeProfileView extends StatelessWidget {
 
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(color: const Color(0xFFE8F5E9), borderRadius: BorderRadius.circular(20)),
-                      child: const Text(
-                        'Active',
-                        style: TextStyle(color: Colors.green, fontWeight: FontWeight.w600),
+                      decoration: employee['is_active'] == true
+                          ? BoxDecoration(color: Colors.green.shade100, borderRadius: BorderRadius.circular(20))
+                          : BoxDecoration(color: Colors.red.shade100, borderRadius: BorderRadius.circular(20)),
+                      child: Text(
+                        employee['is_active'] == true ? 'Active' : 'Inactive',
+                        style: employee['is_active'] == true
+                            ? const TextStyle(color: Colors.green, fontWeight: FontWeight.w600)
+                            : const TextStyle(color: Colors.red, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ],
@@ -129,27 +135,27 @@ class EmployeeProfileView extends StatelessWidget {
                 const SizedBox(height: 12),
 
                 Text(
-                  '${employee['designation'] ?? 'No Designation'} • ${employee['department'] ?? 'No Department'}',
+                  employee['designation']?.toString().isNotEmpty == true ? employee['designation'] : 'No Designation',
                   style: const TextStyle(fontSize: 18, color: Color(0xFF64748B)),
                 ),
 
                 const SizedBox(height: 16),
 
-                const Row(
+                Row(
                   children: [
-                    Icon(Icons.email_outlined, size: 18),
+                    const Icon(Icons.email_outlined, size: 18),
 
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
 
-                    Text('employee@proworkforce.com'),
+                    Text(employee['email']?.toString() ?? '-'),
 
-                    SizedBox(width: 30),
+                    const SizedBox(width: 30),
 
-                    Icon(Icons.phone_outlined, size: 18),
+                    const Icon(Icons.phone_outlined, size: 18),
 
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
 
-                    Text('+91 9876543210'),
+                    Text(employee['phone']?.toString().isNotEmpty == true ? employee['phone'] : 'No number added!'),
                   ],
                 ),
               ],
@@ -179,7 +185,47 @@ class EmployeeProfileView extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            ...controller.activities.take(5).map((activity) => Padding(padding: const EdgeInsets.only(bottom: 10), child: Text('• ${activity['title']}'))),
+            if (controller.activities.isEmpty)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  child: Text('No activity found', style: TextStyle(color: Color(0xFF64748B))),
+                ),
+              ),
+
+            ...controller.activities
+                .take(5)
+                .map(
+                  (activity) => Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(color: const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(10)),
+                          child: const Icon(Icons.history, size: 18, color: Color(0xFF475569)),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(activity['title'] ?? '', style: const TextStyle(fontWeight: FontWeight.w600)),
+
+                              const SizedBox(height: 4),
+
+                              Text(DateFormatter.formatDateTime(activity['activity_time']?.toString()), style: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8))),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
           ],
         ),
       ),
@@ -306,7 +352,12 @@ class EmployeeProfileHeader extends StatelessWidget {
           const SizedBox(width: 12),
 
           ElevatedButton.icon(
-            onPressed: () {},
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (_) => EditEmployeeDialog(employee: employee),
+              );
+            },
             icon: const Icon(Icons.edit, size: 18),
             label: const Text('Edit Profile'),
             style: ElevatedButton.styleFrom(
