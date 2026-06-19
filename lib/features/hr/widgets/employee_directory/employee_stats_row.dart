@@ -1,34 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../controller/employee_directory_controller.dart';
 
 class EmployeeStatsRow extends StatelessWidget {
   const EmployeeStatsRow({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
-      children: [
-        Expanded(
-          child: _StatCard(title: 'Total Workforce', value: '124'),
-        ),
+    final controller = Get.find<EmployeeDirectoryController>();
 
-        SizedBox(width: 16),
+    return Obx(
+      () => Row(
+        children: [
+          Expanded(
+            child: _StatCard(title: 'Total Workforce', value: controller.totalEmployees.value.toString()),
+          ),
 
-        Expanded(
-          child: _StatCard(title: 'Present Today', value: '118'),
-        ),
+          const SizedBox(width: 16),
 
-        SizedBox(width: 16),
+          Expanded(
+            child: _StatCard(title: 'Present Today', value: controller.presentToday.value.toString()),
+          ),
 
-        Expanded(
-          child: _StatCard(title: 'Late Arrivals', value: '8'),
-        ),
+          const SizedBox(width: 16),
 
-        SizedBox(width: 16),
+          Expanded(
+            child: _StatCard(title: 'Late Arrivals', value: controller.lateToday.value.toString()),
+          ),
 
-        Expanded(
-          child: _StatCard(title: 'On Leave', value: '5'),
-        ),
-      ],
+          const SizedBox(width: 16),
+
+          Expanded(
+            child: _StatCard(title: 'On Leave', value: controller.onLeaveToday.value.toString()),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:staff_managememt_system/features/hr/controller/hr_controller.dart';
 
 import '../../../core/controllers/auth_controller.dart';
+import '../../../core/widgets/common_helper.dart';
 
 class HrSidebar extends StatelessWidget {
   HrSidebar({super.key});
@@ -80,30 +81,7 @@ class HrSidebar extends StatelessWidget {
             }),
           ),
 
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: const Color(0xFFF5F7FA), borderRadius: BorderRadius.circular(18)),
-            child: Obx(() {
-              final user = authController.currentUser.value;
-
-              return Row(
-                children: [
-                  CircleAvatar(child: Text(user?.fullName.substring(0, 1) ?? 'U')),
-
-                  const SizedBox(width: 12),
-
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(user?.fullName ?? '', style: const TextStyle(fontWeight: FontWeight.w600)),
-
-                      Text(user?.role ?? ''),
-                    ],
-                  ),
-                ],
-              );
-            }),
-          ),
+          const LogoutTile(),
         ],
       ),
     );

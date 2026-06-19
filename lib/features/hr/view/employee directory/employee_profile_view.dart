@@ -370,9 +370,25 @@ class EmployeeProfileHeader extends StatelessWidget {
 
           const SizedBox(width: 12),
 
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.more_horiz, color: Color(0xFF0F172A)),
+          PopupMenuButton<String>(
+            onSelected: (value) async {
+              final profileController = Get.find<EmployeeProfileController>();
+
+              if (value == 'toggle') {
+                final employee = profileController.employee.value;
+
+                if (employee == null) return;
+
+                await profileController.updateEmployee(
+                  fullName: employee['full_name'] ?? '',
+                  email: employee['email'] ?? '',
+                  phone: employee['phone'] ?? '',
+                  designation: employee['designation'] ?? '',
+                  isActive: !(employee['is_active'] ?? true),
+                );
+              }
+            },
+            itemBuilder: (_) => [PopupMenuItem(value: 'toggle', child: Text(employee['is_active'] == true ? 'Deactivate Employee' : 'Activate Employee'))],
           ),
         ],
       ),

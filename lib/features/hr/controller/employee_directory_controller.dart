@@ -7,7 +7,10 @@ class EmployeeDirectoryController extends GetxController {
   final employees = <Map<String, dynamic>>[].obs;
   final isLoadingActivities = false.obs;
   final isLoading = false.obs;
-
+  final totalEmployees = 0.obs;
+  final presentToday = 0.obs;
+  final lateToday = 0.obs;
+  final onLeaveToday = 0.obs;
   final searchQuery = ''.obs;
 
   @override
@@ -15,6 +18,7 @@ class EmployeeDirectoryController extends GetxController {
     super.onInit();
     loadEmployees();
     loadLiveActivities();
+    loadDashboardStats();
   }
 
   Future<void> loadEmployees() async {
@@ -57,6 +61,19 @@ class EmployeeDirectoryController extends GetxController {
       print('Error loading live activities: $e');
     } finally {
       isLoadingActivities.value = false;
+    }
+  }
+
+  Future<void> loadDashboardStats() async {
+    try {
+      final stats = await repository.getDashboardStats();
+
+      totalEmployees.value = stats['totalEmployees']!;
+      presentToday.value = stats['presentToday']!;
+      lateToday.value = stats['lateToday']!;
+      onLeaveToday.value = stats['onLeaveToday']!;
+    } catch (e) {
+      print(e);
     }
   }
 }

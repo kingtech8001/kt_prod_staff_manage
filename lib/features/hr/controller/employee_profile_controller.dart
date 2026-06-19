@@ -74,6 +74,8 @@ class EmployeeProfileController extends GetxController {
     await repository.markAttendanceStatus(employeeId: employee.value!['id'], date: date, status: 'Present');
 
     await loadEmployee(employee.value!['id']);
+
+    await Get.find<EmployeeDirectoryController>().loadDashboardStats();
   }
 
   Future<void> markAbsent(DateTime date) async {
@@ -82,6 +84,7 @@ class EmployeeProfileController extends GetxController {
     await repository.markAttendanceStatus(employeeId: employee.value!['id'], date: date, status: 'Absent');
 
     await loadEmployee(employee.value!['id']);
+    await Get.find<EmployeeDirectoryController>().loadDashboardStats();
   }
 
   Future<void> markLeave(DateTime date) async {
@@ -90,6 +93,7 @@ class EmployeeProfileController extends GetxController {
     await repository.markAttendanceStatus(employeeId: employee.value!['id'], date: date, status: 'Leave');
 
     await loadEmployee(employee.value!['id']);
+    await Get.find<EmployeeDirectoryController>().loadDashboardStats();
   }
 
   Future<void> approveLeave() async {

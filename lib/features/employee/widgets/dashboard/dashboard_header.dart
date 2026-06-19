@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/controllers/auth_controller.dart';
 import '../../../../core/utils/app_confirmation_dialog.dart';
+import '../../../../core/widgets/common_helper.dart';
 import '../../../auth/controller/leave_controller.dart';
 
 class DashboardHeader extends StatelessWidget {
@@ -30,19 +31,12 @@ class DashboardHeader extends StatelessWidget {
                 children: [
                   Text(
                     '${getGreeting()}, ${user?.fullName ?? ''}',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF111827),
-                    ),
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Color(0xFF111827)),
                   ),
 
                   const SizedBox(height: 4),
 
-                  Text(
-                    user?.designation ?? 'Employee',
-                    style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
-                  ),
+                  Text(user?.designation ?? 'Employee', style: const TextStyle(fontSize: 13, color: Color(0xFF64748B))),
                 ],
               );
             }),
@@ -74,18 +68,11 @@ class DashboardHeader extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(
-                          Icons.notifications_active_outlined,
-                          size: 30,
-                          color: Color(0xFF0B1633),
-                        ),
+                        const Icon(Icons.notifications_active_outlined, size: 30, color: Color(0xFF0B1633)),
 
                         const SizedBox(height: 16),
 
-                        const Text(
-                          'Notifications',
-                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                        ),
+                        const Text('Notifications', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
 
                         const SizedBox(height: 10),
 
@@ -101,10 +88,7 @@ class DashboardHeader extends StatelessWidget {
                           width: double.infinity,
                           height: 48,
                           child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF0B1633),
-                              foregroundColor: Colors.white,
-                            ),
+                            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0B1633), foregroundColor: Colors.white),
                             onPressed: () => Get.back(),
                             child: const Text('Got It'),
                           ),
@@ -126,6 +110,12 @@ class DashboardHeader extends StatelessWidget {
               ),
               child: const Icon(Icons.notifications_none_rounded, color: Color(0xFF111827)),
             ),
+          ),
+          const SizedBox(width: 16),
+          UserAvatarButton(
+            onTap: () {
+              // TODO Open Profile
+            },
           ),
         ],
       ),
@@ -154,10 +144,7 @@ class DashboardHeader extends StatelessWidget {
               width: 550,
               padding: const EdgeInsets.all(28),
 
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-              ),
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
 
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -169,10 +156,7 @@ class DashboardHeader extends StatelessWidget {
                         width: 52,
                         height: 52,
 
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF0B1633),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
+                        decoration: BoxDecoration(color: const Color(0xFF0B1633), borderRadius: BorderRadius.circular(14)),
 
                         child: const Icon(Icons.event_note_outlined, color: Colors.white),
                       ),
@@ -183,17 +167,11 @@ class DashboardHeader extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
 
                         children: [
-                          Text(
-                            'Apply Leave',
-                            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                          ),
+                          Text('Apply Leave', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
 
                           SizedBox(height: 4),
 
-                          Text(
-                            'Submit a leave request',
-                            style: TextStyle(color: Color(0xFF64748B)),
-                          ),
+                          Text('Submit a leave request', style: TextStyle(color: Color(0xFF64748B))),
                         ],
                       ),
                     ],
@@ -265,11 +243,7 @@ class DashboardHeader extends StatelessWidget {
                             data: Theme.of(context).copyWith(
                               colorScheme: const ColorScheme.light(primary: Color(0xFF0B1633)),
 
-                              dialogTheme: DialogThemeData(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24),
-                                ),
-                              ),
+                              dialogTheme: DialogThemeData(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24))),
                             ),
 
                             child: child!,
@@ -298,11 +272,7 @@ class DashboardHeader extends StatelessWidget {
 
                           const SizedBox(width: 12),
 
-                          Text(
-                            startDate == null
-                                ? 'Select Start Date'
-                                : DateFormat('dd MMM yyyy').format(startDate!),
-                          ),
+                          Text(startDate == null ? 'Select Start Date' : DateFormat('dd MMM yyyy').format(startDate!)),
                         ],
                       ),
                     ),
@@ -325,11 +295,7 @@ class DashboardHeader extends StatelessWidget {
                             data: Theme.of(context).copyWith(
                               colorScheme: const ColorScheme.light(primary: Color(0xFF0B1633)),
 
-                              dialogTheme: DialogThemeData(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24),
-                                ),
-                              ),
+                              dialogTheme: DialogThemeData(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24))),
                             ),
 
                             child: child!,
@@ -358,11 +324,7 @@ class DashboardHeader extends StatelessWidget {
 
                           const SizedBox(width: 12),
 
-                          Text(
-                            endDate == null
-                                ? 'Select End Date'
-                                : DateFormat('dd MMM yyyy').format(endDate!),
-                          ),
+                          Text(endDate == null ? 'Select End Date' : DateFormat('dd MMM yyyy').format(endDate!)),
                         ],
                       ),
                     ),
@@ -411,20 +373,13 @@ class DashboardHeader extends StatelessWidget {
                           ),
 
                           onPressed: () async {
-                            if (startDate == null ||
-                                endDate == null ||
-                                reasonController.text.trim().isEmpty) {
+                            if (startDate == null || endDate == null || reasonController.text.trim().isEmpty) {
                               Get.snackbar('Error', 'Please fill all fields');
                               return;
                             }
 
                             try {
-                              await controller.applyLeave(
-                                leaveType: selectedLeaveType.value,
-                                startDate: startDate!,
-                                endDate: endDate!,
-                                reason: reasonController.text.trim(),
-                              );
+                              await controller.applyLeave(leaveType: selectedLeaveType.value, startDate: startDate!, endDate: endDate!, reason: reasonController.text.trim());
 
                               Navigator.pop(context);
 

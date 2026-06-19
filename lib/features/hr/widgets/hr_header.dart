@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../core/constants/app_colors.dart';
+import '../../../core/controllers/auth_controller.dart';
+import '../../../core/widgets/common_helper.dart';
+import '../controller/employee_directory_controller.dart';
 import '../controller/hr_controller.dart';
 
 class HrHeader extends StatelessWidget {
@@ -8,6 +12,7 @@ class HrHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authController = Get.find<AuthController>();
     final controller = Get.find<HrController>();
     return Container(
       height: 90,
@@ -45,6 +50,11 @@ class HrHeader extends StatelessWidget {
           SizedBox(
             width: 320,
             child: TextField(
+              onChanged: (value) {
+                if (Get.isRegistered<EmployeeDirectoryController>()) {
+                  Get.find<EmployeeDirectoryController>().updateSearch(value);
+                }
+              },
               decoration: InputDecoration(
                 hintText: 'Search employees...',
                 prefixIcon: const Icon(Icons.search),
@@ -70,6 +80,14 @@ class HrHeader extends StatelessWidget {
             height: 48,
             decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(14)),
             child: const Icon(Icons.notifications_none_rounded, color: Colors.white),
+          ),
+
+          const SizedBox(width: 16),
+
+          UserAvatarButton(
+            onTap: () {
+              // TODO Open Profile
+            },
           ),
         ],
       ),

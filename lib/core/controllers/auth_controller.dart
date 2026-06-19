@@ -55,4 +55,12 @@ class AuthController extends GetxController {
 
     await _fetchAndSetUser(userId);
   }
+
+  Future<void> logout() async {
+    await Supabase.instance.client.auth.signOut();
+
+    clearUser();
+
+    Get.offAllNamed('/');
+  }
 }

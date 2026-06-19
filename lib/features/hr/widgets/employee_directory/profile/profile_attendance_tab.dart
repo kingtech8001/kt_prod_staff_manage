@@ -85,7 +85,26 @@ class ProfileAttendanceTab extends StatelessWidget {
   Widget _row(Map<String, dynamic> attendance) {
     final status = attendance['status']?.toString() ?? '';
 
-    final isPresent = status.toLowerCase() == 'present';
+    final statusLower = status.toLowerCase();
+
+    Color bgColor;
+    Color textColor;
+
+    switch (statusLower) {
+      case 'present':
+        bgColor = const Color(0xFFE8F5E9);
+        textColor = Colors.green;
+        break;
+
+      case 'leave':
+        bgColor = const Color(0xFFF3E8FF);
+        textColor = Colors.purple;
+        break;
+
+      default:
+        bgColor = const Color(0xFFFFF1F2);
+        textColor = Colors.red;
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
@@ -104,11 +123,11 @@ class ProfileAttendanceTab extends StatelessWidget {
           Expanded(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(color: isPresent ? const Color(0xFFE8F5E9) : const Color(0xFFFFF1F2), borderRadius: BorderRadius.circular(20)),
+              decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(20)),
               child: Text(
                 status,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: isPresent ? Colors.green : Colors.red, fontWeight: FontWeight.w600),
+                style: TextStyle(color: textColor),
               ),
             ),
           ),

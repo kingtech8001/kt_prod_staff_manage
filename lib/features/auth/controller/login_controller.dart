@@ -29,10 +29,7 @@ class LoginController extends GetxController {
     try {
       isLoading.value = true;
 
-      final response = await Supabase.instance.client.auth.signInWithPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
+      final response = await Supabase.instance.client.auth.signInWithPassword(email: emailController.text.trim(), password: passwordController.text.trim());
 
       final user = response.user;
 
@@ -41,11 +38,7 @@ class LoginController extends GetxController {
         return;
       }
 
-      final profile = await Supabase.instance.client
-          .from('profiles')
-          .select()
-          .eq('id', user.id)
-          .single();
+      final profile = await Supabase.instance.client.from('profiles').select().eq('id', user.id).single();
 
       /*
       if (profile['role'] != selectedRole.value) {
@@ -63,7 +56,19 @@ class LoginController extends GetxController {
 
       Get.find<AuthController>().setUser(userModel);
 
-      Get.offAllNamed(AppRoutes.employee);
+      switch (selectedRole.value) {
+        case 'Employee':
+          Get.offAllNamed(AppRoutes.employee);
+          break;
+
+        case 'HR':
+          Get.offAllNamed(AppRoutes.hr);
+          break;
+
+        case 'Admin':
+          Get.offAllNamed(AppRoutes.admin);
+          break;
+      }
     } catch (e) {
       Get.snackbar('Error', e.toString());
     } finally {

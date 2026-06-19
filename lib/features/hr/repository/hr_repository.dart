@@ -212,4 +212,22 @@ class HrRepository {
         .eq('id', employeeId)
         .select();
   }
+
+  Future<Map<String, int>> getDashboardStats() async {
+    final today = DateTime.now().toIso8601String().split('T').first;
+
+    final employees = await _supabase.from('profiles').select('id').eq('is_active', true);
+
+    final attendance = await _supabase.from('attendance').select('status, is_late').eq('attendance_date', today);
+
+    final totalEmployees = employees.length;
+
+    final presentToday = attendance.where((e) => (e['status'] ?? '').toString().toLowerCase() == 'present').length;
+
+    final lateToday = attendance.where((e) => e['is_late'] == true).length;
+
+    final onLeaveToday = attendance.where((e) => (e['status'] ?? '').toString().toLowerCase() == 'leave').length;
+
+    return {'totalEmployees': totalEmployees, 'presentToday': presentToday, 'lateToday': lateToday, 'onLeaveToday': onLeaveToday};
+  }
 }
