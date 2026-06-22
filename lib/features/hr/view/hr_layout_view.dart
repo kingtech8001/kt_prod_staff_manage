@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:staff_managememt_system/features/hr/widgets/hr_header.dart';
+import '../../../core/controllers/auth_controller.dart';
+import '../../../core/routes/app_routes.dart';
 import '../controller/employee_profile_controller.dart';
 import '../controller/hr_controller.dart';
 import '../widgets/hr_sidebar.dart';
@@ -18,6 +20,17 @@ class HrLayoutView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = Get.find<AuthController>().currentUser.value;
+
+    if (user == null) {
+      Future.microtask(() => Get.offAllNamed(AppRoutes.login));
+      return const SizedBox();
+    }
+
+    if (user.role != 'HR') {
+      Future.microtask(() => Get.offAllNamed(AppRoutes.login));
+      return const SizedBox();
+    }
     return Scaffold(
       body: Row(
         children: [

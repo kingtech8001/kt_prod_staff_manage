@@ -6,6 +6,7 @@ import '../../../core/services/attendance_service.dart';
 import '../../../core/services/dashboard_service.dart';
 import '../../../core/services/leave_service.dart';
 import '../../../core/services/schedule_services.dart';
+import '../../../core/widgets/snackbar.dart';
 
 class DashboardController extends GetxController {
   final service = AttendanceService();
@@ -80,10 +81,7 @@ class DashboardController extends GetxController {
     final balance = await leaveService.getLeaveBalance(employeeId);
 
     if (balance != null) {
-      leaveBalanceDays.value =
-          (balance['annual_leave'] ?? 0) +
-          (balance['sick_leave'] ?? 0) +
-          (balance['casual_leave'] ?? 0);
+      leaveBalanceDays.value = (balance['annual_leave'] ?? 0) + (balance['sick_leave'] ?? 0) + (balance['casual_leave'] ?? 0);
     }
   }
 
@@ -99,9 +97,9 @@ class DashboardController extends GetxController {
 
       attendanceHistory.value = await service.getAttendance(user.id);
 
-      Get.snackbar('Success', 'Punched in successfully');
+      CommonSnackbar.success('Success', 'Punched in successfully');
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      CommonSnackbar.error('Error', e.toString());
     }
   }
 
@@ -115,9 +113,9 @@ class DashboardController extends GetxController {
 
       await loadTodayAttendance(authController.user!.id);
 
-      Get.snackbar('Success', 'Break started');
+      CommonSnackbar.success('Success', 'Break started');
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      CommonSnackbar.error('Error', e.toString());
     }
   }
 
@@ -131,9 +129,9 @@ class DashboardController extends GetxController {
 
       await loadTodayAttendance(authController.user!.id);
 
-      Get.snackbar('Success', 'Break ended');
+      CommonSnackbar.success('Success', 'Break ended');
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      CommonSnackbar.error('Error', e.toString());
     }
   }
 
@@ -147,9 +145,9 @@ class DashboardController extends GetxController {
 
       await loadDashboardData(authController.user!.id);
 
-      Get.snackbar('Success', 'Punched out successfully');
+      CommonSnackbar.success('Success', 'Punched out successfully');
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      CommonSnackbar.error('Error', e.toString());
     }
   }
 
@@ -177,13 +175,8 @@ class DashboardController extends GetxController {
     if (state == 'On Break') {
       final activeBreak = await service.getActiveBreak(attendance['id']);
 
-      print('ACTIVE BREAK => $activeBreak');
-
       if (activeBreak != null) {
         final breakStart = DateTime.parse(activeBreak['break_start']);
-
-        print('BREAK START => $breakStart');
-        print('NOW => ${DateTime.now().toUtc()}');
 
         breakDuration.value = DateTime.now().toUtc().difference(breakStart.toUtc());
       }

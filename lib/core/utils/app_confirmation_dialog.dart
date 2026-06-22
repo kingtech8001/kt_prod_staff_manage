@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../features/auth/controller/leave_controller.dart';
+import '../widgets/snackbar.dart';
 
 class AppConfirmationDialog extends StatelessWidget {
   final String title;
@@ -9,13 +10,7 @@ class AppConfirmationDialog extends StatelessWidget {
   final String confirmText;
   final Color confirmColor;
 
-  const AppConfirmationDialog({
-    super.key,
-    required this.title,
-    required this.message,
-    required this.confirmText,
-    required this.confirmColor,
-  });
+  const AppConfirmationDialog({super.key, required this.title, required this.message, required this.confirmText, required this.confirmColor});
 
   @override
   Widget build(BuildContext context) {
@@ -35,19 +30,12 @@ class AppConfirmationDialog extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF0F172A),
-              ),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
             ),
 
             const SizedBox(height: 12),
 
-            Text(
-              message,
-              style: const TextStyle(fontSize: 15, height: 1.5, color: Color(0xFF64748B)),
-            ),
+            Text(message, style: const TextStyle(fontSize: 15, height: 1.5, color: Color(0xFF64748B))),
 
             const SizedBox(height: 28),
 
@@ -114,19 +102,13 @@ class _LeaveRequestDialogState extends State<LeaveRequestDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'Request Leave',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
-            ),
+            const Text('Request Leave', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
 
             const SizedBox(height: 24),
 
             DropdownButtonFormField<String>(
               value: leaveType,
-              decoration: const InputDecoration(
-                labelText: 'Leave Type',
-                border: OutlineInputBorder(),
-              ),
+              decoration: const InputDecoration(labelText: 'Leave Type', border: OutlineInputBorder()),
               items: const [
                 DropdownMenuItem(value: 'Annual', child: Text('Annual Leave')),
                 DropdownMenuItem(value: 'Sick', child: Text('Sick Leave')),
@@ -152,12 +134,7 @@ class _LeaveRequestDialogState extends State<LeaveRequestDialog> {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () async {
-                      final picked = await showDatePicker(
-                        context: context,
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime(2030),
-                        initialDate: DateTime.now(),
-                      );
+                      final picked = await showDatePicker(context: context, firstDate: DateTime.now(), lastDate: DateTime(2030), initialDate: DateTime.now());
 
                       if (picked != null) {
                         setState(() {
@@ -165,11 +142,7 @@ class _LeaveRequestDialogState extends State<LeaveRequestDialog> {
                         });
                       }
                     },
-                    child: Text(
-                      startDate == null
-                          ? 'Start Date'
-                          : '${startDate!.day}/${startDate!.month}/${startDate!.year}',
-                    ),
+                    child: Text(startDate == null ? 'Start Date' : '${startDate!.day}/${startDate!.month}/${startDate!.year}'),
                   ),
                 ),
 
@@ -191,11 +164,7 @@ class _LeaveRequestDialogState extends State<LeaveRequestDialog> {
                         });
                       }
                     },
-                    child: Text(
-                      endDate == null
-                          ? 'End Date'
-                          : '${endDate!.day}/${endDate!.month}/${endDate!.year}',
-                    ),
+                    child: Text(endDate == null ? 'End Date' : '${endDate!.day}/${endDate!.month}/${endDate!.year}'),
                   ),
                 ),
               ],
@@ -211,22 +180,14 @@ class _LeaveRequestDialogState extends State<LeaveRequestDialog> {
                 const SizedBox(width: 12),
 
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0B1633),
-                    foregroundColor: Colors.white,
-                  ),
+                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0B1633), foregroundColor: Colors.white),
                   onPressed: () async {
                     if (startDate == null || endDate == null) {
-                      Get.snackbar('Error', 'Please select dates');
+                      CommonSnackbar.warning('Validation', 'Please select dates');
                       return;
                     }
 
-                    await controller.applyLeave(
-                      leaveType: leaveType,
-                      startDate: startDate!,
-                      endDate: endDate!,
-                      reason: reasonController.text.trim(),
-                    );
+                    await controller.applyLeave(leaveType: leaveType, startDate: startDate!, endDate: endDate!, reason: reasonController.text.trim());
 
                     Get.back();
                   },

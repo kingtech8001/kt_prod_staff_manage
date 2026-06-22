@@ -42,7 +42,22 @@ class _SplashViewState extends State<SplashView> {
 
     Get.find<AuthController>().setUser(userModel);
 
-    Get.offAllNamed(AppRoutes.employee);
+    switch (userModel.role) {
+      case 'Employee':
+        Get.offAllNamed(AppRoutes.employee);
+        break;
+
+      case 'HR':
+        Get.offAllNamed(AppRoutes.hr);
+        break;
+
+      case 'Admin':
+        Get.offAllNamed(AppRoutes.admin);
+        break;
+
+      default:
+        Get.offAllNamed(AppRoutes.login);
+    }
   }
 
   @override

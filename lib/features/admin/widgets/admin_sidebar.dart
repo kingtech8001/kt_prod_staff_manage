@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:staff_managememt_system/features/hr/controller/hr_controller.dart';
 
-import '../../../core/controllers/auth_controller.dart';
 import '../../../core/widgets/common_helper.dart';
+import '../controller/admin_controller.dart';
 
-class HrSidebar extends StatelessWidget {
-  HrSidebar({super.key});
+class AdminSidebar extends StatelessWidget {
+  AdminSidebar({super.key});
 
-  final controller = Get.find<HrController>();
-  final authController = Get.find<AuthController>();
+  final controller = Get.find<AdminController>();
 
   final List<Map<String, dynamic>> menuItems = [
-    {'title': 'Operations Center', 'icon': Icons.dashboard_outlined},
-    {'title': 'Employee Directory', 'icon': Icons.people_outline},
-    /*{'title': 'Leave Approval', 'icon': Icons.event_note_outlined},*/
+    {'title': 'Command Center', 'icon': Icons.dashboard_outlined},
+    {'title': 'Employee Management', 'icon': Icons.people_outline},
+    {'title': 'HR Management', 'icon': Icons.badge_outlined},
+    {'title': 'Access Control', 'icon': Icons.admin_panel_settings_outlined},
+    {'title': 'Audit Logs', 'icon': Icons.receipt_long_outlined},
     {'title': 'Settings', 'icon': Icons.settings_outlined},
   ];
 
@@ -29,7 +29,9 @@ class HrSidebar extends StatelessWidget {
           Row(
             children: const [
               Icon(Icons.work_rounded, size: 32, color: Color(0xFF0B1633)),
+
               SizedBox(width: 12),
+
               Text('ProWorkforce', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600)),
             ],
           ),
@@ -44,6 +46,7 @@ class HrSidebar extends StatelessWidget {
                 itemCount: menuItems.length,
                 itemBuilder: (context, index) {
                   final item = menuItems[index];
+
                   final isSelected = selectedIndex == index;
 
                   return Padding(
@@ -51,7 +54,6 @@ class HrSidebar extends StatelessWidget {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12),
                       onTap: () {
-                        controller.isProfileOpen.value = false;
                         controller.changeIndex(index);
                       },
                       child: Container(

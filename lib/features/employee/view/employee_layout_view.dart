@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:staff_managememt_system/features/employee/view/performance_view.dart';
 import 'package:staff_managememt_system/features/employee/view/policy_view.dart';
 import '../../../core/controllers/auth_controller.dart';
+import '../../../core/routes/app_routes.dart';
 import '../controller/employee_controller.dart';
 import '../widgets/dashboard/dashboard_header.dart';
 import '../widgets/employee_sidebar.dart';
@@ -18,6 +19,17 @@ class EmployeeLayoutView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = authController.currentUser.value;
+
+    if (user == null) {
+      Future.microtask(() => Get.offAllNamed(AppRoutes.login));
+      return const SizedBox();
+    }
+
+    if (user.role != 'Employee') {
+      Future.microtask(() => Get.offAllNamed(AppRoutes.login));
+      return const SizedBox();
+    }
     return Scaffold(
       body: Row(
         children: [
@@ -32,13 +44,7 @@ class EmployeeLayoutView extends StatelessWidget {
                   child: Obx(
                     () => IndexedStack(
                       index: controller.selectedIndex.value,
-                      children: [
-                        const DashboardView(),
-                        AttendanceView(),
-                        LeaveView(),
-                        PerformanceView(),
-                        const PolicyView(),
-                      ],
+                      children: [const DashboardView(), AttendanceView(), LeaveView(), PerformanceView(), const PolicyView()],
                     ),
                   ),
                 ),

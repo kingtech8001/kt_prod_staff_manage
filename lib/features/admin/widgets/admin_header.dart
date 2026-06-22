@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/constants/app_colors.dart';
-import '../../../core/controllers/auth_controller.dart';
 import '../../../core/widgets/common_helper.dart';
-import '../controller/employee_directory_controller.dart';
-import '../controller/hr_controller.dart';
+import '../controller/admin_controller.dart';
 
-class HrHeader extends StatelessWidget {
-  const HrHeader({super.key});
+class AdminHeader extends StatelessWidget {
+  const AdminHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final authController = Get.find<AuthController>();
-    final controller = Get.find<HrController>();
+    final controller = Get.find<AdminController>();
+
     return Container(
       height: 90,
       padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -37,26 +34,16 @@ class HrHeader extends StatelessWidget {
 
                 const SizedBox(height: 4),
 
-                Obx(
-                  () => Text(
-                    controller.pageSubtitle.value.isEmpty ? _formattedDate() : controller.pageSubtitle.value,
-                    style: const TextStyle(color: Color(0xFF64748B), fontSize: 13),
-                  ),
-                ),
+                Obx(() => Text(controller.pageSubtitle.value, style: const TextStyle(color: Color(0xFF64748B), fontSize: 13))),
               ],
             ),
           ),
 
           SizedBox(
-            width: 320,
+            width: 350,
             child: TextField(
-              onChanged: (value) {
-                if (Get.isRegistered<EmployeeDirectoryController>()) {
-                  Get.find<EmployeeDirectoryController>().updateSearch(value);
-                }
-              },
               decoration: InputDecoration(
-                hintText: 'Search employees...',
+                hintText: "Search HRs,Employees ",
                 prefixIcon: const Icon(Icons.search),
                 filled: true,
                 fillColor: Colors.white,
@@ -90,19 +77,11 @@ class HrHeader extends StatelessWidget {
 
           UserAvatarButton(
             onTap: () {
-              // TODO Open Profile
+              // TODO Admin Profile
             },
           ),
         ],
       ),
     );
-  }
-
-  static String _formattedDate() {
-    final now = DateTime.now();
-
-    const months = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
-    return '${months[now.month]} ${now.day}, ${now.year}';
   }
 }

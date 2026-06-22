@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 
 import '../../../core/controllers/auth_controller.dart';
 import '../../../core/services/leave_service.dart';
+import '../../../core/widgets/snackbar.dart';
 
 class LeaveController extends GetxController {
   final service = LeaveService();
@@ -46,30 +47,19 @@ class LeaveController extends GetxController {
     }
   }
 
-  Future<void> applyLeave({
-    required String leaveType,
-    required DateTime startDate,
-    required DateTime endDate,
-    required String reason,
-  }) async {
+  Future<void> applyLeave({required String leaveType, required DateTime startDate, required DateTime endDate, required String reason}) async {
     final user = Get.find<AuthController>().user;
 
     if (user == null) return;
 
     try {
-      await service.applyLeave(
-        employeeId: user.id,
-        leaveType: leaveType,
-        startDate: startDate,
-        endDate: endDate,
-        reason: reason,
-      );
+      await service.applyLeave(employeeId: user.id, leaveType: leaveType, startDate: startDate, endDate: endDate, reason: reason);
 
       await loadLeaves(user.id);
 
-      Get.snackbar('Success', 'Leave request submitted successfully');
+      CommonSnackbar.success('Success', 'Leave request submitted successfully');
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      CommonSnackbar.error('Error', e.toString());
     }
   }
 }

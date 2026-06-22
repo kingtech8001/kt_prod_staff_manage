@@ -34,11 +34,11 @@ class HrController extends GetxController {
         updateHeader(title: 'Employee Directory', subtitle: 'Manage and monitor all employees');
         break;
 
-      case 2:
+      /*case 2:
         updateHeader(title: 'Leave Approval', subtitle: 'Review employee leave requests');
-        break;
+        break;*/
 
-      case 3:
+      case 2:
         updateHeader(title: 'Settings', subtitle: 'System configuration');
         break;
     }

@@ -78,10 +78,30 @@ class HrRepository {
 
     final existing = await _supabase.from('attendance').select().eq('employee_id', employeeId).eq('attendance_date', dateString).maybeSingle();
 
-    if (existing != null) {
-      await _supabase.from('attendance').update({'status': status, 'current_state': status}).eq('id', existing['id']);
+    Map<String, dynamic> attendanceData = {};
+
+    if (status == 'Present') {
+      final punchIn = DateTime(date.year, date.month, date.day, 9, 0);
+
+      final punchOut = DateTime(date.year, date.month, date.day, 18, 0);
+
+      attendanceData = {
+        'status': 'Present',
+        'current_state': 'Completed',
+        'punch_in': punchIn.toUtc().toIso8601String(),
+        'punch_out': punchOut.toUtc().toIso8601String(),
+        'total_hours': 9.0,
+        'overtime_hours': 0.0,
+        'is_late': false,
+      };
     } else {
-      await _supabase.from('attendance').insert({'employee_id': employeeId, 'attendance_date': dateString, 'status': status, 'current_state': status});
+      attendanceData = {'status': status, 'current_state': 'Completed', 'punch_in': null, 'punch_out': null, 'total_hours': 0, 'overtime_hours': 0, 'is_late': false};
+    }
+
+    if (existing != null) {
+      await _supabase.from('attendance').update(attendanceData).eq('id', existing['id']);
+    } else {
+      await _supabase.from('attendance').insert({'employee_id': employeeId, 'attendance_date': dateString, ...attendanceData});
     }
 
     await _supabase.from('employee_activity_logs').insert({

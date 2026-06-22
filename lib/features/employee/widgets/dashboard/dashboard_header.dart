@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/controllers/auth_controller.dart';
 import '../../../../core/utils/app_confirmation_dialog.dart';
 import '../../../../core/widgets/common_helper.dart';
+import '../../../../core/widgets/snackbar.dart';
 import '../../../auth/controller/leave_controller.dart';
 
 class DashboardHeader extends StatelessWidget {
@@ -374,7 +375,7 @@ class DashboardHeader extends StatelessWidget {
 
                           onPressed: () async {
                             if (startDate == null || endDate == null || reasonController.text.trim().isEmpty) {
-                              Get.snackbar('Error', 'Please fill all fields');
+                              CommonSnackbar.warning('Validation', 'Please fill all fields');
                               return;
                             }
 
@@ -383,9 +384,9 @@ class DashboardHeader extends StatelessWidget {
 
                               Navigator.pop(context);
 
-                              Get.snackbar('Success', 'Leave request submitted');
+                              CommonSnackbar.success('Success', 'Leave request submitted');
                             } catch (e) {
-                              Get.snackbar('Error', e.toString());
+                              CommonSnackbar.error('Error', e.toString());
                             }
                           },
 

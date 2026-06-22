@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/controllers/auth_controller.dart';
 import '../../../core/models/user_model.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../../core/widgets/snackbar.dart';
 
 class LoginController extends GetxController {
   final selectedRole = 'Employee'.obs;
@@ -34,23 +35,19 @@ class LoginController extends GetxController {
       final user = response.user;
 
       if (user == null) {
-        Get.snackbar('Error', 'Login Failed');
+        CommonSnackbar.error('Login Failed', 'Invalid email or password');
         return;
       }
 
       final profile = await Supabase.instance.client.from('profiles').select().eq('id', user.id).single();
 
-      /*
       if (profile['role'] != selectedRole.value) {
-        Get.snackbar(
-          'Access Denied',
-          'Selected role does not match account role',
-        );
-
         await Supabase.instance.client.auth.signOut();
+
+        CommonSnackbar.error('Invalid Credentials', 'Selected role does not match account type');
+
         return;
       }
-*/
 
       final userModel = UserModel.fromJson(profile);
 
@@ -70,7 +67,7 @@ class LoginController extends GetxController {
           break;
       }
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      CommonSnackbar.error('Error', e.toString());
     } finally {
       isLoading.value = false;
     }
