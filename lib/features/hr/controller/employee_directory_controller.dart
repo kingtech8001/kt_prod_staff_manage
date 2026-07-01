@@ -22,16 +22,13 @@ class EmployeeDirectoryController extends GetxController {
   }
 
   Future<void> loadEmployees() async {
-    print('Reloading employee...');
     try {
       isLoading.value = true;
 
       final result = await repository.getEmployees();
 
       employees.assignAll(result);
-      print('Reloading employee...1111');
     } catch (e) {
-      print('Error loading employees: $e');
     } finally {
       isLoading.value = false;
     }
@@ -47,8 +44,12 @@ class EmployeeDirectoryController extends GetxController {
     }
 
     return employees.where((employee) {
-      return employee['full_name'].toString().toLowerCase().contains(searchQuery.value.toLowerCase()) ||
-          employee['designation'].toString().toLowerCase().contains(searchQuery.value.toLowerCase());
+      return employee['full_name'].toString().toLowerCase().contains(
+            searchQuery.value.toLowerCase(),
+          ) ||
+          employee['designation'].toString().toLowerCase().contains(
+            searchQuery.value.toLowerCase(),
+          );
     }).toList();
   }
 

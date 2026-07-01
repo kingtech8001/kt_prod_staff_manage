@@ -4,15 +4,18 @@ import 'package:staff_managememt_system/features/hr/controller/hr_controller.dar
 
 import '../../../core/controllers/auth_controller.dart';
 import '../../../core/widgets/common_helper.dart';
+import '../../../shared/employee_management_controller.dart';
 
 class HrSidebar extends StatelessWidget {
   HrSidebar({super.key});
 
-  final controller = Get.find<HrController>();
+  final hrController = Get.find<HrController>();
+  final controller = Get.find<EmployeeManagementController>();
   final authController = Get.find<AuthController>();
 
   final List<Map<String, dynamic>> menuItems = [
-    {'title': 'Operations Center', 'icon': Icons.dashboard_outlined},
+    {'title': 'Dashboard', 'icon': Icons.dashboard_outlined},
+    {'title': 'Operations Center', 'icon': Icons.business_center_outlined},
     {'title': 'Employee Directory', 'icon': Icons.people_outline},
     /*{'title': 'Leave Approval', 'icon': Icons.event_note_outlined},*/
     {'title': 'Settings', 'icon': Icons.settings_outlined},
@@ -30,7 +33,10 @@ class HrSidebar extends StatelessWidget {
             children: const [
               Icon(Icons.work_rounded, size: 32, color: Color(0xFF0B1633)),
               SizedBox(width: 12),
-              Text('ProWorkforce', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600)),
+              Text(
+                'ProWorkforce',
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
+              ),
             ],
           ),
 
@@ -38,7 +44,7 @@ class HrSidebar extends StatelessWidget {
 
           Expanded(
             child: Obx(() {
-              final selectedIndex = controller.selectedIndex.value;
+              final selectedIndex = hrController.selectedIndex.value;
 
               return ListView.builder(
                 itemCount: menuItems.length,
@@ -47,19 +53,34 @@ class HrSidebar extends StatelessWidget {
                   final isSelected = selectedIndex == index;
 
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 4,
+                    ),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12),
                       onTap: () {
                         controller.isProfileOpen.value = false;
-                        controller.changeIndex(index);
+                        hrController.changeIndex(index);
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                        decoration: BoxDecoration(color: isSelected ? const Color(0xFFE9EDF5) : Colors.transparent, borderRadius: BorderRadius.circular(12)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? const Color(0xFFE9EDF5)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         child: Row(
                           children: [
-                            Icon(item['icon'], size: 20, color: const Color(0xFF1E293B)),
+                            Icon(
+                              item['icon'],
+                              size: 20,
+                              color: const Color(0xFF1E293B),
+                            ),
 
                             const SizedBox(width: 12),
 
@@ -68,7 +89,13 @@ class HrSidebar extends StatelessWidget {
                                 item['title'],
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontSize: 15, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500, color: const Color(0xFF1E293B)),
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w600
+                                      : FontWeight.w500,
+                                  color: const Color(0xFF1E293B),
+                                ),
                               ),
                             ),
                           ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:staff_managememt_system/shared/attendance_controller.dart';
 
 import '../../../../core/utils/date_formatter.dart';
 import '../../controller/dashboard_controller.dart';
@@ -9,7 +10,7 @@ class AttendanceTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<DashboardController>();
+    final controller = Get.find<AttendanceController>();
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -22,7 +23,11 @@ class AttendanceTable extends StatelessWidget {
         children: [
           const Text(
             'Weekly Attendance Breakdown',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: Color(0xFF0F172A)),
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF0F172A),
+            ),
           ),
 
           const SizedBox(height: 24),
@@ -87,7 +92,10 @@ class AttendanceTable extends StatelessWidget {
           flex: 3,
           child: Text(
             'DAY',
-            style: TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.w600),
+            style: TextStyle(
+              color: Color(0xFF64748B),
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
 
@@ -95,7 +103,10 @@ class AttendanceTable extends StatelessWidget {
           flex: 2,
           child: Text(
             'CLOCK IN',
-            style: TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.w600),
+            style: TextStyle(
+              color: Color(0xFF64748B),
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
 
@@ -103,7 +114,10 @@ class AttendanceTable extends StatelessWidget {
           flex: 2,
           child: Text(
             'CLOCK OUT',
-            style: TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.w600),
+            style: TextStyle(
+              color: Color(0xFF64748B),
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
 
@@ -111,7 +125,10 @@ class AttendanceTable extends StatelessWidget {
           flex: 2,
           child: Text(
             'TOTAL',
-            style: TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.w600),
+            style: TextStyle(
+              color: Color(0xFF64748B),
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ],
@@ -137,7 +154,10 @@ class AttendanceTable extends StatelessWidget {
 
           Expanded(
             flex: 2,
-            child: Text(total, style: const TextStyle(fontWeight: FontWeight.w700)),
+            child: Text(
+              total,
+              style: const TextStyle(fontWeight: FontWeight.w700),
+            ),
           ),
         ],
       ),
@@ -164,7 +184,7 @@ class UpcomingScheduleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<DashboardController>();
+    final dashboardController = Get.find<DashboardController>();
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -174,14 +194,17 @@ class UpcomingScheduleCard extends StatelessWidget {
         border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: Obx(() {
-        if (controller.schedules.isEmpty) {
+        if (dashboardController.schedules.isEmpty) {
           return const Center(
-            child: Text('No upcoming schedules', style: TextStyle(color: Color(0xFF64748B))),
+            child: Text(
+              'No upcoming schedules',
+              style: TextStyle(color: Color(0xFF64748B)),
+            ),
           );
         }
 
         return Column(
-          children: controller.schedules.take(5).map((schedule) {
+          children: dashboardController.schedules.take(5).map((schedule) {
             return Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: _scheduleItem(
@@ -229,14 +252,21 @@ class UpcomingScheduleCard extends StatelessWidget {
     return TimeOfDay.fromDateTime(date).format(Get.context!);
   }
 
-  Widget _scheduleItem({required Color color, required String title, required String subtitle}) {
+  Widget _scheduleItem({
+    required Color color,
+    required String title,
+    required String subtitle,
+  }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           width: 4,
           height: 48,
-          decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(10)),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
 
         const SizedBox(width: 12),

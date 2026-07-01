@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
 import '../../../core/controllers/auth_controller.dart';
+import '../../../shared/employee_management_controller.dart';
 import '../repository/hr_repository.dart';
 import 'employee_directory_controller.dart';
-import 'hr_controller.dart';
 
 class EmployeeProfileController extends GetxController {
   final selectedTab = 'Overview'.obs;
@@ -31,7 +31,9 @@ class EmployeeProfileController extends GetxController {
 
       employee.value = await repository.getEmployeeById(employeeId);
 
-      attendanceHistory.value = await repository.getEmployeeAttendance(employeeId);
+      attendanceHistory.value = await repository.getEmployeeAttendance(
+        employeeId,
+      );
 
       activities.value = await repository.getEmployeeActivities(employeeId);
 
@@ -46,9 +48,13 @@ class EmployeeProfileController extends GetxController {
 
     final totalDays = attendanceHistory.length;
 
-    final presentDays = attendanceHistory.where((e) => e['status'] == 'Present').length;
+    final presentDays = attendanceHistory
+        .where((e) => e['status'] == 'Present')
+        .length;
 
-    final lateCount = attendanceHistory.where((e) => e['is_late'] == true).length;
+    final lateCount = attendanceHistory
+        .where((e) => e['is_late'] == true)
+        .length;
 
     double totalHours = 0;
     double totalOt = 0;
@@ -71,7 +77,11 @@ class EmployeeProfileController extends GetxController {
   Future<void> markPresent(DateTime date) async {
     if (employee.value == null) return;
 
-    await repository.markAttendanceStatus(employeeId: employee.value!['id'], date: date, status: 'Present');
+    await repository.markAttendanceStatus(
+      employeeId: employee.value!['id'],
+      date: date,
+      status: 'Present',
+    );
 
     await loadEmployee(employee.value!['id']);
 
@@ -81,7 +91,11 @@ class EmployeeProfileController extends GetxController {
   Future<void> markAbsent(DateTime date) async {
     if (employee.value == null) return;
 
-    await repository.markAttendanceStatus(employeeId: employee.value!['id'], date: date, status: 'Absent');
+    await repository.markAttendanceStatus(
+      employeeId: employee.value!['id'],
+      date: date,
+      status: 'Absent',
+    );
 
     await loadEmployee(employee.value!['id']);
     await Get.find<EmployeeDirectoryController>().loadDashboardStats();
@@ -90,7 +104,11 @@ class EmployeeProfileController extends GetxController {
   Future<void> markLeave(DateTime date) async {
     if (employee.value == null) return;
 
-    await repository.markAttendanceStatus(employeeId: employee.value!['id'], date: date, status: 'Leave');
+    await repository.markAttendanceStatus(
+      employeeId: employee.value!['id'],
+      date: date,
+      status: 'Leave',
+    );
 
     await loadEmployee(employee.value!['id']);
     await Get.find<EmployeeDirectoryController>().loadDashboardStats();
@@ -114,16 +132,31 @@ class EmployeeProfileController extends GetxController {
 
   Future<void> loadEmployeeActivities(String employeeId) async {
     try {
-      employeeActivities.value = await repository.getEmployeeActivities(employeeId);
+      employeeActivities.value = await repository.getEmployeeActivities(
+        employeeId,
+      );
     } catch (e) {
       print(e);
     }
   }
 
-  Future<void> updateEmployee({required String fullName, required String email, required String phone, required String designation, required bool isActive}) async {
+  Future<void> updateEmployee({
+    required String fullName,
+    required String email,
+    required String phone,
+    required String designation,
+    required bool isActive,
+  }) async {
     if (employee.value == null) return;
 
-    await repository.updateEmployee(employeeId: employee.value!['id'], fullName: fullName, email: email, phone: phone, designation: designation, isActive: isActive);
+    await repository.updateEmployee(
+      employeeId: employee.value!['id'],
+      fullName: fullName,
+      email: email,
+      phone: phone,
+      designation: designation,
+      isActive: isActive,
+    );
 
     await loadEmployee(employee.value!['id']);
 
@@ -135,8 +168,10 @@ class EmployeeProfileController extends GetxController {
       await authController.refreshCurrentUser();
     }
 
-    final hrController = Get.find<HrController>();
+    final controller = Get.find<EmployeeManagementController>();
 
-    hrController.selectedEmployee.value = Map<String, dynamic>.from(employee.value!);
+    controller.selectedEmployee.value = Map<String, dynamic>.from(
+      employee.value!,
+    );
   }
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../shared/attendance_controller.dart';
 import '../../../auth/controller/performance_controller.dart';
-import '../../controller/attendance_controller.dart';
 
 class PerformanceMetricsCard extends StatelessWidget {
   const PerformanceMetricsCard({super.key});
@@ -19,7 +19,10 @@ class PerformanceMetricsCard extends StatelessWidget {
       return Container(
         padding: const EdgeInsets.all(24),
 
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
 
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,7 +55,8 @@ class PerformanceMetricsCard extends StatelessWidget {
 
             PerformanceMetricTile(
               title: 'Task Completion',
-              value: ((metrics?['task_completion'] ?? 0) as num).toDouble() / 100,
+              value:
+                  ((metrics?['task_completion'] ?? 0) as num).toDouble() / 100,
               color: const Color(0xFF64748B),
             ),
 
@@ -60,7 +64,9 @@ class PerformanceMetricsCard extends StatelessWidget {
 
             PerformanceMetricTile(
               title: 'Team Collaboration',
-              value: ((metrics?['team_collaboration'] ?? 0) as num).toDouble() / 100,
+              value:
+                  ((metrics?['team_collaboration'] ?? 0) as num).toDouble() /
+                  100,
               color: const Color(0xFF64748B),
             ),
           ],
@@ -91,12 +97,18 @@ class PerformanceMetricTile extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(fontWeight: FontWeight.w500, color: Color(0xFF64748B)),
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF64748B),
+              ),
             ),
 
             const Spacer(),
 
-            Text('${(value * 100).toInt()}%', style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              '${(value * 100).toInt()}%',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
           ],
         ),
 

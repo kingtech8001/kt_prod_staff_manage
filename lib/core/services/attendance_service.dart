@@ -62,7 +62,10 @@ class AttendanceService {
       'break_start': DateTime.now().toUtc().toIso8601String(),
     });
 
-    await supabase.from('attendance').update({'current_state': 'On Break'}).eq('id', attendanceId);
+    await supabase
+        .from('attendance')
+        .update({'current_state': 'On Break'})
+        .eq('id', attendanceId);
   }
 
   Future<void> stopBreak(String attendanceId) async {
@@ -85,16 +88,26 @@ class AttendanceService {
 
     await supabase
         .from('attendance_breaks')
-        .update({'break_end': endTime.toIso8601String(), 'duration_minutes': duration})
+        .update({
+          'break_end': endTime.toIso8601String(),
+          'duration_minutes': duration,
+        })
         .eq('id', activeBreak['id']);
 
-    await supabase.from('attendance').update({'current_state': 'Present'}).eq('id', attendanceId);
+    await supabase
+        .from('attendance')
+        .update({'current_state': 'Present'})
+        .eq('id', attendanceId);
   }
 
   Future<void> punchOut(String attendanceId) async {
-    final attendance = await supabase.from('attendance').select().eq('id', attendanceId).single();
+    final attendance = await supabase
+        .from('attendance')
+        .select()
+        .eq('id', attendanceId)
+        .single();
 
-    final now = DateTime.now();
+    final now = DateTime.now().toUtc();
 
     final punchIn = DateTime.parse(attendance['punch_in']);
 
@@ -126,6 +139,7 @@ class AttendanceService {
     if (totalHours >= 10) {
       overtimeHours = totalHours - 8;
     }
+    print('Saving punch out: ${now.toIso8601String()}');
 
     await supabase
         .from('attendance')
@@ -143,6 +157,14 @@ class AttendanceService {
     print('Break Minutes: $totalBreakMinutes');
     print('Effective Minutes: $effectiveMinutes');
     print('Total Hours: $totalHours');
+
+    final saved = await supabase
+        .from('attendance')
+        .select('punch_out')
+        .eq('id', attendanceId)
+        .single();
+
+    print('Saved punch out: ${saved['punch_out']}');
   }
 
   Future<Map<String, dynamic>?> getActiveBreak(String attendanceId) async {

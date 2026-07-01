@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../controller/attendance_controller.dart';
+import '../../../../shared/attendance_controller.dart';
 import '../../controller/dashboard_controller.dart';
 
 class BottomMetricsRow extends StatelessWidget {
@@ -18,7 +18,8 @@ class BottomMetricsRow extends StatelessWidget {
           Expanded(
             child: MetricCard(
               title: 'Attendance Reliability',
-              value: '${attendanceController.attendancePercentage.value.toStringAsFixed(0)}%',
+              value:
+                  '${attendanceController.attendancePercentage.value.toStringAsFixed(0)}%',
               icon: Icons.verified_outlined,
               iconColor: Colors.green,
             ),
@@ -37,14 +38,15 @@ class BottomMetricsRow extends StatelessWidget {
 
           const SizedBox(width: 20),
 
-          Expanded(
+          /*Expanded(
             child: MetricCard(
               title: 'Overtime Hours',
-              value: '${dashboardController.overtimeHours.value.toStringAsFixed(1)}h',
+              value:
+                  '${dashboardController.overtimeHours.value.toStringAsFixed(1)}h',
               icon: Icons.schedule_outlined,
               iconColor: Colors.orange,
             ),
-          ),
+          ),*/
         ],
       );
     });
@@ -103,7 +105,13 @@ class MetricCard extends StatelessWidget {
 
                 const SizedBox(height: 4),
 
-                Text(title, style: const TextStyle(color: Color(0xFF64748B), fontSize: 14)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Color(0xFF64748B),
+                    fontSize: 14,
+                  ),
+                ),
               ],
             ),
           ),

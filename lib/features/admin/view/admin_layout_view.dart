@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:staff_managememt_system/features/admin/controller/admin_controller.dart';
-import 'package:staff_managememt_system/features/hr/widgets/hr_header.dart';
 import '../../../core/controllers/auth_controller.dart';
 import '../../../core/routes/app_routes.dart';
+import '../../../shared/employee_management_controller.dart';
+import '../../hr/view/employee directory/employee_directory_view.dart';
+import '../../hr/view/employee directory/employee_profile_view.dart';
 import '../widgets/admin_header.dart';
 import '../widgets/admin_sidebar.dart';
 import 'access_control_view.dart';
 import 'admin_settings_view.dart';
 import 'audit_log_view.dart';
 import 'command_center_view.dart';
-import 'employee_management_view.dart';
 import 'hr_management_view.dart';
 
 class AdminLayoutView extends StatelessWidget {
   AdminLayoutView({super.key});
 
   final controller = Get.put(AdminController());
+  final employeeManagementController = Get.put(EmployeeManagementController());
 
   @override
   Widget build(BuildContext context) {
@@ -37,20 +39,30 @@ class AdminLayoutView extends StatelessWidget {
           AdminSidebar(),
 
           Expanded(
-            child: Column(
-              children: [
-                const AdminHeader(),
+            child: Obx(() {
+              return Column(
+                children: [
+                  if (!employeeManagementController.isProfileOpen.value)
+                    const AdminHeader(),
 
-                Expanded(
-                  child: Obx(
-                    () => IndexedStack(
-                      index: controller.selectedIndex.value,
-                      children: const [CommandCenterView(), EmployeeManagementView(), HrManagementView(), AccessControlView(), AuditLogView(), AdminSettingsView()],
-                    ),
+                  Expanded(
+                    child: employeeManagementController.isProfileOpen.value
+                        ? const EmployeeProfileView()
+                        : IndexedStack(
+                            index: controller.selectedIndex.value,
+                            children: [
+                              const CommandCenterView(),
+                              EmployeeDirectoryView(),
+                              const HrManagementView(),
+                              const AccessControlView(),
+                              const AuditLogView(),
+                              const AdminSettingsView(),
+                            ],
+                          ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              );
+            }),
           ),
         ],
       ),

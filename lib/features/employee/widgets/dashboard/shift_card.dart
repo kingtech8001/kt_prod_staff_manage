@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/utils/app_confirmation_dialog.dart';
+import '../../../../shared/attendance_controller.dart';
 import '../../controller/dashboard_controller.dart';
 
 class ShiftCard extends StatelessWidget {
   ShiftCard({super.key});
 
-  final controller = Get.put(DashboardController());
+  final controller = Get.put(AttendanceController());
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,8 @@ class ShiftCard extends StatelessWidget {
 
         final punchOut = formatTime(attendance?['punch_out']?.toString());
 
-        final status = attendance?['current_state']?.toString() ?? 'Awaiting Check-In';
+        final status =
+            attendance?['current_state']?.toString() ?? 'Awaiting Check-In';
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,7 +64,10 @@ class ShiftCard extends StatelessWidget {
 
                 Text(
                   status.toUpperCase(),
-                  style: const TextStyle(fontSize: 13, color: Color(0xFF374151)),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFF374151),
+                  ),
                 ),
               ],
             ),
@@ -73,14 +78,17 @@ class ShiftCard extends StatelessWidget {
   }
 
   Widget _buildButton(Map<String, dynamic>? attendance) {
-    final state = attendance?['current_state']?.toString() ?? 'Awaiting Check-In';
+    final state =
+        attendance?['current_state']?.toString() ?? 'Awaiting Check-In';
 
     if (state == 'Awaiting Check-In') {
       return SizedBox(
         width: 180,
         height: 56,
         child: ElevatedButton.icon(
-          style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black)),
+          style: const ButtonStyle(
+            backgroundColor: WidgetStatePropertyAll(Colors.black),
+          ),
           onPressed: () async {
             await controller.punchIn();
           },
@@ -98,7 +106,9 @@ class ShiftCard extends StatelessWidget {
             width: 160,
             height: 56,
             child: OutlinedButton.icon(
-              style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black)),
+              style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll(Colors.black),
+              ),
               onPressed: () async {
                 final confirmed = await Get.dialog<bool>(
                   const AppConfirmationDialog(
@@ -114,7 +124,10 @@ class ShiftCard extends StatelessWidget {
                 }
               },
               icon: const Icon(Icons.coffee, color: Colors.white),
-              label: const Text('Start Break', style: TextStyle(color: Colors.white)),
+              label: const Text(
+                'Start Break',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ),
 
@@ -156,7 +169,9 @@ class ShiftCard extends StatelessWidget {
         width: 180,
         height: 56,
         child: ElevatedButton.icon(
-          style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black)),
+          style: const ButtonStyle(
+            backgroundColor: WidgetStatePropertyAll(Colors.black),
+          ),
           onPressed: () async {
             final confirmed = await Get.dialog<bool>(
               const AppConfirmationDialog(
@@ -172,13 +187,18 @@ class ShiftCard extends StatelessWidget {
             }
           },
           icon: const Icon(Icons.play_arrow, color: Colors.white),
-          label: const Text('STOP BREAK', style: TextStyle(color: Colors.white)),
+          label: const Text(
+            'STOP BREAK',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
       );
     }
 
     return ElevatedButton.icon(
-      style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black)),
+      style: const ButtonStyle(
+        backgroundColor: WidgetStatePropertyAll(Colors.black),
+      ),
       onPressed: null,
       icon: const Icon(Icons.check, color: Colors.white),
       label: const Text('COMPLETED', style: TextStyle(color: Colors.white)),
@@ -198,7 +218,11 @@ class ShiftCard extends StatelessWidget {
         children: [
           const Text(
             'LIVE WORK TIMER',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF64748B)),
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF64748B),
+            ),
           ),
 
           const SizedBox(height: 6),
@@ -223,7 +247,11 @@ class ShiftCard extends StatelessWidget {
         children: [
           const Text(
             'BREAK TIMER',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF64748B)),
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF64748B),
+            ),
           ),
 
           const SizedBox(height: 6),
@@ -244,7 +272,11 @@ class ShiftCard extends StatelessWidget {
 
     return Text(
       '$punchIn - $punchOut',
-      style: const TextStyle(fontSize: 52, fontWeight: FontWeight.w700, color: Color(0xFF0B1633)),
+      style: const TextStyle(
+        fontSize: 52,
+        fontWeight: FontWeight.w700,
+        color: Color(0xFF0B1633),
+      ),
     );
   }
 

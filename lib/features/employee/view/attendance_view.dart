@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controller/attendance_controller.dart';
+import '../../../shared/attendance_controller.dart';
 import '../widgets/attendance/attendance_insights.dart';
 import '../widgets/attendance/attendance_sidebar.dart';
 
@@ -36,7 +36,8 @@ class AttendanceView extends StatelessWidget {
                     child: Obx(
                       () => _summaryCard(
                         title: 'Attendance %',
-                        value: '${controller.attendancePercentage.value.toStringAsFixed(0)}%',
+                        value:
+                            '${controller.attendancePercentage.value.toStringAsFixed(0)}%',
                       ),
                     ),
                   ),
@@ -70,7 +71,8 @@ class AttendanceView extends StatelessWidget {
                     child: Obx(
                       () => _summaryCard(
                         title: 'Overtime',
-                        value: '${controller.overtimeHours.value.toStringAsFixed(1)} h',
+                        value:
+                            '${controller.overtimeHours.value.toStringAsFixed(1)} h',
                       ),
                     ),
                   ),
@@ -99,14 +101,22 @@ class AttendanceView extends StatelessWidget {
                               alignment: Alignment.centerLeft,
                               child: Text(
                                 'Attendance Records',
-                                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 18,
+                            ),
                             decoration: const BoxDecoration(
-                              border: Border(bottom: BorderSide(color: Color(0xFFE5E7EB))),
+                              border: Border(
+                                bottom: BorderSide(color: Color(0xFFE5E7EB)),
+                              ),
                             ),
                             child: const Row(
                               children: [
@@ -114,34 +124,49 @@ class AttendanceView extends StatelessWidget {
                                   flex: 1,
                                   child: Text(
                                     'Date',
-                                    style: TextStyle(fontWeight: FontWeight.w600),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                                 Expanded(
                                   child: Text(
                                     'Punch In',
-                                    style: TextStyle(fontWeight: FontWeight.w600),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                                 Expanded(
                                   child: Text(
                                     'Punch Out',
-                                    style: TextStyle(fontWeight: FontWeight.w600),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                                 Expanded(
                                   child: Text(
                                     'Hours',
-                                    style: TextStyle(fontWeight: FontWeight.w600),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                                 const Expanded(
-                                  child: Text('OT', style: TextStyle(fontWeight: FontWeight.w600)),
+                                  child: Text(
+                                    'OT',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
                                 ),
                                 Expanded(
                                   child: Text(
                                     'Status',
-                                    style: TextStyle(fontWeight: FontWeight.w600),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -150,20 +175,31 @@ class AttendanceView extends StatelessWidget {
 
                           ...controller.attendanceList.map((item) {
                             return Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 20,
+                              ),
                               decoration: const BoxDecoration(
-                                border: Border(bottom: BorderSide(color: Color(0xFFF1F5F9))),
+                                border: Border(
+                                  bottom: BorderSide(color: Color(0xFFF1F5F9)),
+                                ),
                               ),
                               child: Row(
                                 children: [
                                   Expanded(
                                     flex: 1,
-                                    child: Text(item['attendance_date'].toString()),
+                                    child: Text(
+                                      item['attendance_date'].toString(),
+                                    ),
                                   ),
 
-                                  Expanded(child: Text(_formatTime(item['punch_in']))),
+                                  Expanded(
+                                    child: Text(_formatTime(item['punch_in'])),
+                                  ),
 
-                                  Expanded(child: Text(_formatTime(item['punch_out']))),
+                                  Expanded(
+                                    child: Text(_formatTime(item['punch_out'])),
+                                  ),
 
                                   Expanded(
                                     child: Text(
@@ -188,7 +224,9 @@ class AttendanceView extends StatelessWidget {
                                           ),
                                           decoration: BoxDecoration(
                                             color: const Color(0xFFE8F5E9),
-                                            borderRadius: BorderRadius.circular(20),
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
                                           ),
                                           child: Text(
                                             item['status'],
@@ -202,14 +240,17 @@ class AttendanceView extends StatelessWidget {
                                         SizedBox(width: 8),
                                         if (item['is_late'] == true)
                                           Container(
-                                            margin: const EdgeInsets.only(bottom: 6),
+                                            margin: const EdgeInsets.only(
+                                              bottom: 6,
+                                            ),
                                             padding: const EdgeInsets.symmetric(
                                               horizontal: 10,
                                               vertical: 4,
                                             ),
                                             decoration: BoxDecoration(
                                               color: Colors.orange.shade100,
-                                              borderRadius: BorderRadius.circular(20),
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
                                             ),
                                             child: const Text(
                                               'Late',
@@ -267,7 +308,10 @@ class AttendanceView extends StatelessWidget {
 
           const SizedBox(height: 10),
 
-          Text(value, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          ),
         ],
       ),
     );

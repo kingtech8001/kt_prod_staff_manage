@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 
 import '../../../core/controllers/auth_controller.dart';
 import '../../../core/services/performance_service.dart';
-import '../../employee/controller/attendance_controller.dart';
+import '../../../shared/attendance_controller.dart';
 
 class PerformanceController extends GetxController {
   final service = PerformanceService();
@@ -59,7 +59,11 @@ class PerformanceController extends GetxController {
       performanceMetrics.value = metrics;
 
       if (reviews.isNotEmpty) {
-        averageRating.value = reviews.map((e) => (e['rating'] as num).toDouble()).reduce((a, b) => a + b) / reviews.length;
+        averageRating.value =
+            reviews
+                .map((e) => (e['rating'] as num).toDouble())
+                .reduce((a, b) => a + b) /
+            reviews.length;
       } else {
         averageRating.value = 0;
       }
@@ -67,7 +71,8 @@ class PerformanceController extends GetxController {
       if (Get.isRegistered<AttendanceController>()) {
         final attendanceController = Get.find<AttendanceController>();
 
-        attendancePercent.value = attendanceController.attendancePercentage.value;
+        attendancePercent.value =
+            attendanceController.attendancePercentage.value;
       } else {
         attendancePercent.value = 0;
       }

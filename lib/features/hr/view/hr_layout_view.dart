@@ -3,20 +3,19 @@ import 'package:get/get.dart';
 import 'package:staff_managememt_system/features/hr/widgets/hr_header.dart';
 import '../../../core/controllers/auth_controller.dart';
 import '../../../core/routes/app_routes.dart';
-import '../controller/employee_profile_controller.dart';
+import '../../../shared/employee_management_controller.dart';
 import '../controller/hr_controller.dart';
 import '../widgets/hr_sidebar.dart';
 import 'employee directory/employee_profile_view.dart';
+import 'hr_dashboard_view.dart';
 import 'operational center/operations_center_view.dart';
 import 'employee directory/employee_directory_view.dart';
-import 'leave/leave_approval_view.dart';
 import 'settings/settings_view.dart';
 
 class HrLayoutView extends StatelessWidget {
   HrLayoutView({super.key});
-
-  final controller = Get.put(HrController());
-  final profileController = Get.put(EmployeeProfileController());
+  final employeeManagementController = Get.put(EmployeeManagementController());
+  final hrController = Get.put(HrController());
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +47,13 @@ class HrLayoutView extends StatelessWidget {
                       }
 
                       return IndexedStack(
-                        index: controller.selectedIndex.value,
-                        children: [OperationsCenterView(), EmployeeDirectoryView(), /*LeaveApprovalView()*/ SettingsView()],
+                        index: hrController.selectedIndex.value,
+                        children: [
+                          HrDashboardView(),
+                          OperationsCenterView(),
+                          EmployeeDirectoryView(),
+                          /*LeaveApprovalView()*/ SettingsView(),
+                        ],
                       );
                     }),
                   ),

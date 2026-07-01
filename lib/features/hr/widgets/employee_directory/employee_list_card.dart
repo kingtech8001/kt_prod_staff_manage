@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../shared/employee_management_controller.dart';
 import '../../controller/employee_directory_controller.dart';
 import '../../controller/employee_profile_controller.dart';
 import '../../controller/hr_controller.dart';
@@ -22,10 +23,20 @@ class EmployeeListCard extends StatelessWidget {
         ),
         child: controller.isLoading.value
             ? const Center(
-                child: Padding(padding: EdgeInsets.all(40), child: CircularProgressIndicator()),
+                child: Padding(
+                  padding: EdgeInsets.all(40),
+                  child: CircularProgressIndicator(),
+                ),
               )
             : Column(
-                children: controller.filteredEmployees.map((employee) => Padding(padding: const EdgeInsets.only(bottom: 16), child: _EmployeeTile(employee))).toList(),
+                children: controller.filteredEmployees
+                    .map(
+                      (employee) => Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: _EmployeeTile(employee),
+                      ),
+                    )
+                    .toList(),
               ),
       ),
     );
@@ -42,12 +53,12 @@ class _EmployeeTile extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(18),
       onTap: () async {
-        final hrController = Get.find<HrController>();
-        final profileController = Get.find<EmployeeProfileController>();
-
-        hrController.openEmployeeProfile(Map<String, dynamic>.from(employee));
-
-        await profileController.loadEmployee(employee['id']);
+        print("Tile tapped");
+        final controller = Get.find<EmployeeManagementController>();
+        print("Opening profile...");
+        await controller.openEmployeeProfile(
+          Map<String, dynamic>.from(employee),
+        );
       },
       child: Container(
         padding: const EdgeInsets.all(18),
@@ -58,7 +69,18 @@ class _EmployeeTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            CircleAvatar(radius: 24, backgroundColor: const Color(0xFFE2E8F0), child: Text(employee['full_name'].toString().split(' ').map((e) => e[0]).take(2).join())),
+            CircleAvatar(
+              radius: 24,
+              backgroundColor: const Color(0xFFE2E8F0),
+              child: Text(
+                employee['full_name']
+                    .toString()
+                    .split(' ')
+                    .map((e) => e[0])
+                    .take(2)
+                    .join(),
+              ),
+            ),
 
             const SizedBox(width: 16),
 
@@ -66,11 +88,20 @@ class _EmployeeTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(employee['full_name'], style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
+                  Text(
+                    employee['full_name'],
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
 
                   const SizedBox(height: 4),
 
-                  Text('${employee['designation']}', style: const TextStyle(color: Color(0xFF64748B))),
+                  Text(
+                    '${employee['designation']}',
+                    style: const TextStyle(color: Color(0xFF64748B)),
+                  ),
                 ],
               ),
             ),
@@ -87,10 +118,16 @@ class _EmployeeTile extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-      decoration: BoxDecoration(color: active ? const Color(0xFFE8F5E9) : const Color(0xFFFFF1F2), borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(
+        color: active ? const Color(0xFFE8F5E9) : const Color(0xFFFFF1F2),
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Text(
         status,
-        style: TextStyle(color: active ? Colors.green : Colors.red, fontWeight: FontWeight.w600),
+        style: TextStyle(
+          color: active ? Colors.green : Colors.red,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }

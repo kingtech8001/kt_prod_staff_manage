@@ -12,6 +12,7 @@ class UpcomingHolidaysCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<DashboardController>();
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -23,7 +24,10 @@ class UpcomingHolidaysCard extends StatelessWidget {
         children: [
           Obx(() {
             if (controller.holidays.isEmpty) {
-              return const Text('No upcoming holidays', style: TextStyle(color: Color(0xFF64748B)));
+              return const Text(
+                'No upcoming holidays',
+                style: TextStyle(color: Color(0xFF64748B)),
+              );
             }
 
             return Column(
@@ -34,7 +38,9 @@ class UpcomingHolidaysCard extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 20),
 
                   child: _holidayItem(
-                    date: DateFormatter.formatMonthDay(holiday['holiday_date']?.toString()),
+                    date: DateFormatter.formatMonthDay(
+                      holiday['holiday_date']?.toString(),
+                    ),
                     title: holiday['title'],
                     subtitle: holiday['holiday_type'],
                   ),
@@ -47,7 +53,11 @@ class UpcomingHolidaysCard extends StatelessWidget {
     );
   }
 
-  Widget _holidayItem({required String date, required String title, required String subtitle}) {
+  Widget _holidayItem({
+    required String date,
+    required String title,
+    required String subtitle,
+  }) {
     return Row(
       children: [
         Container(
@@ -72,7 +82,13 @@ class UpcomingHolidaysCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
 
               const SizedBox(height: 4),
 

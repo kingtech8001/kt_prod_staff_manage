@@ -11,6 +11,7 @@ class RecentActivityCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<DashboardController>();
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -22,7 +23,10 @@ class RecentActivityCard extends StatelessWidget {
         children: [
           Obx(() {
             if (controller.recentActivities.isEmpty) {
-              return const Text('No recent activity', style: TextStyle(color: Color(0xFF64748B)));
+              return const Text(
+                'No recent activity',
+                style: TextStyle(color: Color(0xFF64748B)),
+              );
             }
 
             return Column(
@@ -33,7 +37,9 @@ class RecentActivityCard extends StatelessWidget {
                     icon: Icons.history,
                     color: Colors.blue,
                     title: activity['title'] ?? '',
-                    time: DateFormatter.formatDateTime(activity['activity_time']?.toString()),
+                    time: DateFormatter.formatDateTime(
+                      activity['activity_time']?.toString(),
+                    ),
                   ),
                 );
               }).toList(),
@@ -69,11 +75,20 @@ class RecentActivityCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
 
               const SizedBox(height: 4),
 
-              Text(time, style: const TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+              Text(
+                time,
+                style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+              ),
             ],
           ),
         ),

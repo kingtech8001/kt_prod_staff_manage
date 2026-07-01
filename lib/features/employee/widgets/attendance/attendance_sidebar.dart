@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../controller/attendance_controller.dart';
+
+import '../../../../shared/attendance_controller.dart';
 
 class AttendanceSidebar extends StatelessWidget {
   const AttendanceSidebar({super.key});
@@ -28,28 +29,46 @@ class AttendanceSidebar extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            _row('Attendance Rate', '${controller.attendancePercentage.value.toStringAsFixed(0)}%'),
+            _row(
+              'Attendance Rate',
+              '${controller.attendancePercentage.value.toStringAsFixed(0)}%',
+            ),
 
             _row(
               'Present Days',
-              controller.attendanceList.where((e) => e['status'] == 'Present').length.toString(),
+              controller.attendanceList
+                  .where((e) => e['status'] == 'Present')
+                  .length
+                  .toString(),
             ),
 
             _row('Late Days', controller.lateDays.value.toString()),
 
             _row('Working Days', controller.workingDays.value.toString()),
 
-            const Padding(padding: EdgeInsets.symmetric(vertical: 12), child: Divider()),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 12),
+              child: Divider(),
+            ),
 
             _row('Average Arrival', controller.averageArrivalTime.value),
 
-            _row('Average Hours', '${controller.averageHours.value.toStringAsFixed(1)} h'),
+            _row(
+              'Average Hours',
+              '${controller.averageHours.value.toStringAsFixed(1)} h',
+            ),
 
             _row('Current Streak', '${controller.currentStreak.value} Days'),
 
-            _row('Longest Day', '${controller.longestDayHours.value.toStringAsFixed(1)} h'),
+            _row(
+              'Longest Day',
+              '${controller.longestDayHours.value.toStringAsFixed(1)} h',
+            ),
 
-            _row('Overtime', '${controller.overtimeHours.value.toStringAsFixed(1)} h'),
+            _row(
+              'Overtime',
+              '${controller.overtimeHours.value.toStringAsFixed(1)} h',
+            ),
           ],
         ),
       ),

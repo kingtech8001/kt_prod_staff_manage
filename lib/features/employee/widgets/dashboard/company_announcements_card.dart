@@ -6,11 +6,12 @@ import '../../controller/dashboard_controller.dart';
 class CompanyAnnouncementsCard extends StatelessWidget {
   CompanyAnnouncementsCard({super.key});
 
-  final controller = Get.find<DashboardController>();
+  final controller = Get.put(DashboardController());
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: .infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -22,7 +23,11 @@ class CompanyAnnouncementsCard extends StatelessWidget {
         children: [
           const Text(
             'Company Announcements',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: Color(0xFF0F172A)),
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF0F172A),
+            ),
           ),
 
           const SizedBox(height: 24),
@@ -80,11 +85,20 @@ class CompanyAnnouncementsCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
 
               const SizedBox(height: 8),
 
-              Text(description, style: const TextStyle(color: Color(0xFF64748B))),
+              Text(
+                description,
+                style: const TextStyle(color: Color(0xFF64748B)),
+              ),
             ],
           ),
         ),
