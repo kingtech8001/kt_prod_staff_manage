@@ -22,6 +22,15 @@ class UpcomingHolidaysCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const Text(
+            'Upcoming Holidays',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF0F172A),
+            ),
+          ),
+          const SizedBox(height: 24),
           Obx(() {
             if (controller.holidays.isEmpty) {
               return const Text(

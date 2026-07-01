@@ -31,9 +31,13 @@ class LeaveView extends StatelessWidget {
 
           final pending = leaves.where((e) => e['status'] == 'Pending').length;
 
-          final approved = leaves.where((e) => e['status'] == 'Approved').length;
+          final approved = leaves
+              .where((e) => e['status'] == 'Approved')
+              .length;
 
-          final rejected = leaves.where((e) => e['status'] == 'Rejected').length;
+          final rejected = leaves
+              .where((e) => e['status'] == 'Rejected')
+              .length;
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,19 +52,43 @@ class LeaveView extends StatelessWidget {
 
               Row(
                 children: [
-                  Expanded(child: _buildStatCard('Pending', pending.toString(), Colors.orange)),
+                  Expanded(
+                    child: _buildStatCard(
+                      'Pending',
+                      pending.toString(),
+                      Colors.orange,
+                    ),
+                  ),
 
                   const SizedBox(width: 16),
 
-                  Expanded(child: _buildStatCard('Approved', approved.toString(), Colors.green)),
+                  Expanded(
+                    child: _buildStatCard(
+                      'Approved',
+                      approved.toString(),
+                      Colors.green,
+                    ),
+                  ),
 
                   const SizedBox(width: 16),
 
-                  Expanded(child: _buildStatCard('Rejected', rejected.toString(), Colors.red)),
+                  Expanded(
+                    child: _buildStatCard(
+                      'Rejected',
+                      rejected.toString(),
+                      Colors.red,
+                    ),
+                  ),
 
                   const SizedBox(width: 16),
 
-                  Expanded(child: _buildStatCard('Total', leaves.length.toString(), Colors.blue)),
+                  Expanded(
+                    child: _buildStatCard(
+                      'Total',
+                      leaves.length.toString(),
+                      Colors.blue,
+                    ),
+                  ),
                 ],
               ),
 
@@ -77,50 +105,104 @@ class LeaveView extends StatelessWidget {
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: SingleChildScrollView(
-                          child: DataTable(
-                            columns: const [
-                              DataColumn(label: Text('Leave Type')),
-                              DataColumn(label: Text('Start Date')),
-                              DataColumn(label: Text('End Date')),
-                              DataColumn(label: Text('Days')),
-                              DataColumn(label: Text('Status')),
-                            ],
-                            rows: leaves.map((leave) {
-                              final startDate = DateTime.parse(leave['start_date']);
-                              final endDate = DateTime.parse(leave['end_date']);
-                              final days = endDate.difference(startDate).inDays + 1;
 
-                              return DataRow(
-                                cells: [
-                                  DataCell(Text(leave['leave_type'] ?? '')),
-                                  DataCell(Text(DateFormat('dd MMM yyyy').format(startDate))),
-                                  DataCell(Text(DateFormat('dd MMM yyyy').format(endDate))),
-                                  DataCell(Text('$days Day${days > 1 ? 's' : ''}')),
-                                  DataCell(
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                        vertical: 6,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: _statusColor(leave['status']).withOpacity(.12),
-                                        borderRadius: BorderRadius.circular(30),
-                                      ),
-                                      child: Text(
-                                        leave['status'] ?? '',
-                                        style: TextStyle(
-                                          color: _statusColor(leave['status']),
-                                          fontWeight: FontWeight.w600,
-                                        ),
+                        child: leaves.isEmpty
+                            ? const Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.event_busy_outlined,
+                                      size: 64,
+                                      color: Color(0xFF94A3B8),
+                                    ),
+
+                                    SizedBox(height: 16),
+
+                                    Text(
+                                      "No leave records found",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF64748B),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              );
-                            }).toList(),
-                          ),
-                        ),
+                                  ],
+                                ),
+                              )
+                            : SingleChildScrollView(
+                                child: DataTable(
+                                  columns: const [
+                                    DataColumn(label: Text('Leave Type')),
+                                    DataColumn(label: Text('Start Date')),
+                                    DataColumn(label: Text('End Date')),
+                                    DataColumn(label: Text('Days')),
+                                    DataColumn(label: Text('Status')),
+                                  ],
+                                  rows: leaves.map((leave) {
+                                    final startDate = DateTime.parse(
+                                      leave['start_date'],
+                                    );
+                                    final endDate = DateTime.parse(
+                                      leave['end_date'],
+                                    );
+                                    final days =
+                                        endDate.difference(startDate).inDays +
+                                        1;
+
+                                    return DataRow(
+                                      cells: [
+                                        DataCell(
+                                          Text(leave['leave_type'] ?? ''),
+                                        ),
+                                        DataCell(
+                                          Text(
+                                            DateFormat(
+                                              'dd MMM yyyy',
+                                            ).format(startDate),
+                                          ),
+                                        ),
+                                        DataCell(
+                                          Text(
+                                            DateFormat(
+                                              'dd MMM yyyy',
+                                            ).format(endDate),
+                                          ),
+                                        ),
+                                        DataCell(
+                                          Text(
+                                            '$days Day${days > 1 ? 's' : ''}',
+                                          ),
+                                        ),
+                                        DataCell(
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                              vertical: 6,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: _statusColor(
+                                                leave['status'],
+                                              ).withOpacity(.12),
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                            ),
+                                            child: Text(
+                                              leave['status'] ?? '',
+                                              style: TextStyle(
+                                                color: _statusColor(
+                                                  leave['status'],
+                                                ),
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
                       ),
                     ),
 
@@ -143,7 +225,10 @@ class LeaveView extends StatelessWidget {
 
       padding: const EdgeInsets.all(20),
 
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
 
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -157,7 +242,11 @@ class LeaveView extends StatelessWidget {
 
           Text(
             value,
-            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: color),
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
           ),
         ],
       ),

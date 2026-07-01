@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../core/widgets/view_all_button.dart';
 import '../../controller/dashboard_controller.dart';
 
 class CompanyAnnouncementsCard extends StatelessWidget {
@@ -19,14 +20,16 @@ class CompanyAnnouncementsCard extends StatelessWidget {
         border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Company Announcements',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF0F172A),
+          Align(
+            alignment: .centerLeft,
+            child: const Text(
+              'Company Announcements',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF0F172A),
+              ),
             ),
           ),
 
@@ -63,6 +66,16 @@ class CompanyAnnouncementsCard extends StatelessWidget {
               }),
             );
           }),
+          const SizedBox(height: 24),
+
+          Align(
+            alignment: Alignment.centerRight,
+            child: ViewAllButton(
+              onPressed: () {
+                // TODO
+              },
+            ),
+          ),
         ],
       ),
     );

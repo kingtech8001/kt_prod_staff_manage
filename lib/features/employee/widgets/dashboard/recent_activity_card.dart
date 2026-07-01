@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/utils/date_formatter.dart';
+import '../../../../core/widgets/view_all_button.dart';
 import '../../controller/dashboard_controller.dart';
 
 class RecentActivityCard extends StatelessWidget {
@@ -21,6 +22,17 @@ class RecentActivityCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const Text(
+            'Recent Activity',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF0F172A),
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
           Obx(() {
             if (controller.recentActivities.isEmpty) {
               return const Text(
@@ -45,6 +57,15 @@ class RecentActivityCard extends StatelessWidget {
               }).toList(),
             );
           }),
+
+          Align(
+            alignment: Alignment.centerRight,
+            child: ViewAllButton(
+              onPressed: () {
+                // TODO
+              },
+            ),
+          ),
         ],
       ),
     );
