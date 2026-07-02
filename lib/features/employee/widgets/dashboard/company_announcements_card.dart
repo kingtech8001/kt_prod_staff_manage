@@ -3,11 +3,14 @@ import 'package:get/get.dart';
 
 import '../../../../core/widgets/view_all_button.dart';
 import '../../controller/dashboard_controller.dart';
+import '../../controller/employee_controller.dart';
+import '../../view/dashboard_screens/announcements_view.dart';
 
 class CompanyAnnouncementsCard extends StatelessWidget {
   CompanyAnnouncementsCard({super.key});
 
   final controller = Get.put(DashboardController());
+  final employeeController = Get.find<EmployeeController>();
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +36,7 @@ class CompanyAnnouncementsCard extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 12),
 
           Obx(() {
             if (controller.announcements.isEmpty) {
@@ -42,10 +45,11 @@ class CompanyAnnouncementsCard extends StatelessWidget {
                 style: TextStyle(color: Color(0xFF64748B)),
               );
             }
+            final announcements = controller.announcements.take(2).toList();
 
             return Column(
-              children: List.generate(controller.announcements.length, (index) {
-                final item = controller.announcements[index];
+              children: List.generate(announcements.length, (index) {
+                final item = announcements[index];
 
                 return Column(
                   children: [
@@ -66,13 +70,16 @@ class CompanyAnnouncementsCard extends StatelessWidget {
               }),
             );
           }),
-          const SizedBox(height: 24),
+          const SizedBox(height: 8),
 
           Align(
             alignment: Alignment.centerRight,
             child: ViewAllButton(
-              onPressed: () {
-                // TODO
+              onPressed: () async {
+                employeeController.changeIndex(
+                  EmployeeController.announcements,
+                );
+                await controller.resetAnnouncements();
               },
             ),
           ),

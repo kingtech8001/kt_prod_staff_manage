@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import '../widgets/dashboard/attendance_table.dart';
-import '../widgets/dashboard/company_announcements_card.dart';
-import '../widgets/dashboard/dashboard_header.dart';
-import '../widgets/dashboard/metric_card.dart';
-import '../widgets/dashboard/quick_status_row.dart';
-import '../widgets/dashboard/recent_activity_card.dart';
-import '../widgets/dashboard/shift_card.dart';
-import '../widgets/dashboard/upcoming_holidays_card.dart';
+import '../../widgets/dashboard/attendance_table.dart';
+import '../../widgets/dashboard/company_announcements_card.dart';
+import '../../widgets/dashboard/dashboard_header.dart';
+import '../../widgets/dashboard/metric_card.dart';
+import '../../widgets/dashboard/quick_status_row.dart';
+import '../../widgets/dashboard/recent_activity_card.dart';
+import '../../widgets/dashboard/shift_card.dart';
+import '../../widgets/dashboard/upcoming_holidays_card.dart';
 
 class DashboardView extends StatelessWidget {
   const DashboardView({super.key});

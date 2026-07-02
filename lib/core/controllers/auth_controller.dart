@@ -4,6 +4,7 @@ import '../models/user_model.dart';
 
 class AuthController extends GetxController {
   final Rxn<UserModel> currentUser = Rxn<UserModel>();
+  final isInitialized = false.obs;
 
   @override
   void onInit() {
@@ -20,16 +21,25 @@ class AuthController extends GetxController {
     });
   }
 
-  void _restoreSession() async {
-    final session = Supabase.instance.client.auth.currentSession;
-    if (session != null) {
-      await _fetchAndSetUser(session.user.id);
+  Future<void> _restoreSession() async {
+    try {
+      final session = Supabase.instance.client.auth.currentSession;
+
+      if (session != null) {
+        await _fetchAndSetUser(session.user.id);
+      }
+    } finally {
+      isInitialized.value = true;
     }
   }
 
   Future<void> _fetchAndSetUser(String userId) async {
     try {
-      final response = await Supabase.instance.client.from('profiles').select().eq('id', userId).single();
+      final response = await Supabase.instance.client
+          .from('profiles')
+          .select()
+          .eq('id', userId)
+          .single();
 
       setUser(UserModel.fromJson(response));
     } catch (e) {

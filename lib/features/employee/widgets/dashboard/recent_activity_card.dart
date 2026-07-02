@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../../../core/widgets/view_all_button.dart';
 import '../../controller/dashboard_controller.dart';
+import '../../controller/employee_controller.dart';
 
 class RecentActivityCard extends StatelessWidget {
   const RecentActivityCard({super.key});
@@ -11,6 +12,7 @@ class RecentActivityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<DashboardController>();
+    final employeeController = Get.find<EmployeeController>();
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -41,8 +43,10 @@ class RecentActivityCard extends StatelessWidget {
               );
             }
 
+            final activities = controller.recentActivities.take(2).toList();
+
             return Column(
-              children: controller.recentActivities.map((activity) {
+              children: activities.map((activity) {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 20),
                   child: _activityItem(
@@ -61,8 +65,10 @@ class RecentActivityCard extends StatelessWidget {
           Align(
             alignment: Alignment.centerRight,
             child: ViewAllButton(
-              onPressed: () {
-                // TODO
+              onPressed: () async {
+                employeeController.changeIndex(EmployeeController.activities);
+
+                await controller.resetActivities();
               },
             ),
           ),

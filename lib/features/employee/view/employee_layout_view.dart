@@ -8,7 +8,9 @@ import '../controller/employee_controller.dart';
 import '../widgets/dashboard/dashboard_header.dart';
 import '../widgets/employee_sidebar.dart';
 import 'attendance_view.dart';
-import 'dashboard_view.dart';
+import 'dashboard_screens/activities_view.dart';
+import 'dashboard_screens/announcements_view.dart';
+import 'dashboard_screens/dashboard_view.dart';
 import 'leave_view.dart';
 
 class EmployeeLayoutView extends StatelessWidget {
@@ -19,17 +21,6 @@ class EmployeeLayoutView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = authController.currentUser.value;
-
-    if (user == null) {
-      Future.microtask(() => Get.offAllNamed(AppRoutes.login));
-      return const SizedBox();
-    }
-
-    if (user.role != 'Employee') {
-      Future.microtask(() => Get.offAllNamed(AppRoutes.login));
-      return const SizedBox();
-    }
     return Scaffold(
       body: Row(
         children: [
@@ -50,6 +41,8 @@ class EmployeeLayoutView extends StatelessWidget {
                         LeaveView(),
                         PerformanceView(),
                         const PolicyView(),
+                        const AnnouncementsView(),
+                        const ActivitiesView(),
                       ],
                     ),
                   ),

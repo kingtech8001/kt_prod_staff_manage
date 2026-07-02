@@ -19,17 +19,6 @@ class HrLayoutView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = Get.find<AuthController>().currentUser.value;
-
-    if (user == null) {
-      Future.microtask(() => Get.offAllNamed(AppRoutes.login));
-      return const SizedBox();
-    }
-
-    if (user.role != 'HR') {
-      Future.microtask(() => Get.offAllNamed(AppRoutes.login));
-      return const SizedBox();
-    }
     return Scaffold(
       body: Row(
         children: [
