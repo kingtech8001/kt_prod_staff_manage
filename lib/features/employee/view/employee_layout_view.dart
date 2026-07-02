@@ -41,8 +41,20 @@ class EmployeeLayoutView extends StatelessWidget {
                         LeaveView(),
                         PerformanceView(),
                         const PolicyView(),
-                        const AnnouncementsView(),
-                        const ActivitiesView(),
+                        AnnouncementsView(
+                          onBack: () {
+                            controller.changeIndex(
+                              EmployeeController.dashboard,
+                            );
+                          },
+                        ),
+                        ActivitiesView(
+                          onBack: () {
+                            controller.changeIndex(
+                              EmployeeController.dashboard,
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ),

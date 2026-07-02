@@ -10,6 +10,9 @@ class LeaveController extends GetxController {
   final leaveList = <Map<String, dynamic>>[].obs;
   final isLoading = false.obs;
   final leaveBalance = Rxn<Map<String, dynamic>>();
+
+  final recentLeaveActivities = <Map<String, dynamic>>[].obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -39,21 +42,36 @@ class LeaveController extends GetxController {
 
       final balance = await service.getLeaveBalance(employeeId);
 
+      final activities = await service.getRecentLeaveActivities(employeeId);
+
       leaveList.value = leaves;
 
       leaveBalance.value = balance;
+
+      recentLeaveActivities.value = activities;
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<void> applyLeave({required String leaveType, required DateTime startDate, required DateTime endDate, required String reason}) async {
+  Future<void> applyLeave({
+    required String leaveType,
+    required DateTime startDate,
+    required DateTime endDate,
+    required String reason,
+  }) async {
     final user = Get.find<AuthController>().user;
 
     if (user == null) return;
 
     try {
-      await service.applyLeave(employeeId: user.id, leaveType: leaveType, startDate: startDate, endDate: endDate, reason: reason);
+      await service.applyLeave(
+        employeeId: user.id,
+        leaveType: leaveType,
+        startDate: startDate,
+        endDate: endDate,
+        reason: reason,
+      );
 
       await loadLeaves(user.id);
 

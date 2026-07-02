@@ -83,7 +83,6 @@ class DashboardController extends GetxController {
       );
 
       announcements.addAll(data);
-
       if (data.length < announcementPageSize) {
         hasMoreAnnouncements.value = false;
       } else {

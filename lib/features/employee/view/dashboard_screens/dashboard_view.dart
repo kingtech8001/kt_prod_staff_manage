@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../controller/employee_controller.dart';
 import '../../widgets/dashboard/attendance_table.dart';
 import '../../widgets/dashboard/company_announcements_card.dart';
 import '../../widgets/dashboard/dashboard_header.dart';
@@ -13,6 +15,7 @@ class DashboardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final employeeController = Get.put(EmployeeController());
     return Container(
       color: const Color(0xFFF5F7FA),
       child: Column(
@@ -43,11 +46,23 @@ class DashboardView extends StatelessWidget {
                     flex: 3,
                     child: Column(
                       children: [
-                        CompanyAnnouncementsCard(),
+                        CompanyAnnouncementsCard(
+                          onViewAll: () {
+                            employeeController.changeIndex(
+                              EmployeeController.announcements,
+                            );
+                          },
+                        ),
                         const SizedBox(height: 24),
                         const UpcomingHolidaysCard(),
                         const SizedBox(height: 24),
-                        const RecentActivityCard(),
+                        RecentActivityCard(
+                          onViewAll: () {
+                            employeeController.changeIndex(
+                              EmployeeController.activities,
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ),

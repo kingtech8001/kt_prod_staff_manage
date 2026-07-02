@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LeaveService {
@@ -38,5 +39,30 @@ class LeaveService {
         .maybeSingle();
 
     return response;
+  }
+
+  Future<List<Map<String, dynamic>>> getRecentLeaveActivities(
+    String employeeId,
+  ) async {
+    final response = await supabase
+        .from('leave_requests')
+        .select()
+        .eq('employee_id', employeeId)
+        .order('applied_at', ascending: false)
+        .limit(2);
+
+    return response.map<Map<String, dynamic>>((leave) {
+      final status = leave['status'] as String;
+
+      return {
+        'title': status == 'Pending'
+            ? 'Leave Request Submitted'
+            : 'Leave Request $status',
+        'status': status,
+        'time': DateFormat(
+          'dd MMM yyyy',
+        ).format(DateTime.parse(leave['applied_at'])),
+      };
+    }).toList();
   }
 }

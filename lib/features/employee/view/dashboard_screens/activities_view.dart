@@ -6,8 +6,8 @@ import '../../controller/dashboard_controller.dart';
 import '../../controller/employee_controller.dart';
 
 class ActivitiesView extends StatefulWidget {
-  const ActivitiesView({super.key});
-
+  const ActivitiesView({super.key, required this.onBack});
+  final VoidCallback onBack;
   @override
   State<ActivitiesView> createState() => _ActivitiesViewState();
 }
@@ -26,8 +26,6 @@ class _ActivitiesViewState extends State<ActivitiesView> {
 
   @override
   Widget build(BuildContext context) {
-    final employeeController = Get.find<EmployeeController>();
-
     return Container(
       color: const Color(0xFFF5F7FA),
 
@@ -48,11 +46,7 @@ class _ActivitiesViewState extends State<ActivitiesView> {
               Row(
                 children: [
                   IconButton(
-                    onPressed: () {
-                      employeeController.changeIndex(
-                        EmployeeController.dashboard,
-                      );
-                    },
+                    onPressed: widget.onBack,
                     icon: const Icon(Icons.arrow_back),
                   ),
 

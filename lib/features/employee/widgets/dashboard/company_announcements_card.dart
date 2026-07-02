@@ -7,10 +7,11 @@ import '../../controller/employee_controller.dart';
 import '../../view/dashboard_screens/announcements_view.dart';
 
 class CompanyAnnouncementsCard extends StatelessWidget {
-  CompanyAnnouncementsCard({super.key});
+  CompanyAnnouncementsCard({super.key, required this.onViewAll});
+
+  final VoidCallback onViewAll;
 
   final controller = Get.put(DashboardController());
-  final employeeController = Get.find<EmployeeController>();
 
   @override
   Widget build(BuildContext context) {
@@ -76,10 +77,8 @@ class CompanyAnnouncementsCard extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: ViewAllButton(
               onPressed: () async {
-                employeeController.changeIndex(
-                  EmployeeController.announcements,
-                );
                 await controller.resetAnnouncements();
+                onViewAll();
               },
             ),
           ),

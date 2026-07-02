@@ -7,12 +7,13 @@ import '../../controller/dashboard_controller.dart';
 import '../../controller/employee_controller.dart';
 
 class RecentActivityCard extends StatelessWidget {
-  const RecentActivityCard({super.key});
+  const RecentActivityCard({super.key, required this.onViewAll});
+
+  final VoidCallback onViewAll;
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<DashboardController>();
-    final employeeController = Get.find<EmployeeController>();
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -66,9 +67,8 @@ class RecentActivityCard extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: ViewAllButton(
               onPressed: () async {
-                employeeController.changeIndex(EmployeeController.activities);
-
                 await controller.resetActivities();
+                onViewAll();
               },
             ),
           ),

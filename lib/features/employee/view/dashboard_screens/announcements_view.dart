@@ -5,12 +5,13 @@ import '../../controller/dashboard_controller.dart';
 import '../../controller/employee_controller.dart';
 
 class AnnouncementsView extends StatelessWidget {
-  const AnnouncementsView({super.key});
+  const AnnouncementsView({super.key, required this.onBack});
+
+  final VoidCallback onBack;
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<DashboardController>();
-    final employeeController = Get.find<EmployeeController>();
 
     return Container(
       color: const Color(0xFFF5F7FA),
@@ -32,11 +33,7 @@ class AnnouncementsView extends StatelessWidget {
               Row(
                 children: [
                   IconButton(
-                    onPressed: () {
-                      employeeController.changeIndex(
-                        EmployeeController.dashboard,
-                      );
-                    },
+                    onPressed: onBack,
                     icon: const Icon(Icons.arrow_back),
                   ),
 

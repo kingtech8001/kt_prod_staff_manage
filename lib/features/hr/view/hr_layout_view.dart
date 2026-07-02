@@ -4,6 +4,8 @@ import 'package:staff_managememt_system/features/hr/widgets/hr_header.dart';
 import '../../../core/controllers/auth_controller.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../../shared/employee_management_controller.dart';
+import '../../employee/view/dashboard_screens/activities_view.dart';
+import '../../employee/view/dashboard_screens/announcements_view.dart';
 import '../controller/hr_controller.dart';
 import '../widgets/hr_sidebar.dart';
 import 'employee directory/employee_profile_view.dart';
@@ -41,7 +43,18 @@ class HrLayoutView extends StatelessWidget {
                           HrDashboardView(),
                           OperationsCenterView(),
                           EmployeeDirectoryView(),
-                          /*LeaveApprovalView()*/ SettingsView(),
+                          SettingsView(),
+                          AnnouncementsView(
+                            onBack: () {
+                              hrController.changeIndex(0);
+                            },
+                          ),
+                          ActivitiesView(
+                            onBack: () {
+                              hrController.changeIndex(HrController.dashboard);
+                            },
+                          ),
+                          /*LeaveApprovalView()*/
                         ],
                       );
                     }),

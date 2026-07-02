@@ -8,6 +8,12 @@ class HrController extends GetxController {
   final pageTitle = 'HR Operations Center'.obs;
   final pageSubtitle = ''.obs;
   final employeeManagement = Get.put(EmployeeManagementController());
+  static const dashboard = 0;
+  static const operations = 1;
+  static const employeeDirectory = 2;
+  static const settings = 3;
+  static const announcements = 4;
+  static const activities = 5;
 
   @override
   void onInit() {
@@ -48,6 +54,13 @@ class HrController extends GetxController {
 
       case 3:
         updateHeader(title: 'Settings', subtitle: 'System configuration');
+        break;
+
+      case 4:
+        updateHeader(
+          title: 'Company Announcements',
+          subtitle: 'Latest company updates',
+        );
         break;
     }
   }
