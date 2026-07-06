@@ -1,10 +1,18 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../repository/hr_repository.dart';
+import 'dart:async';
 
 class EmployeeDirectoryController extends GetxController {
   final repository = HrRepository();
   final liveActivities = <Map<String, dynamic>>[].obs;
   final employees = <Map<String, dynamic>>[].obs;
+  static const employeePageSize = 10;
+
+  final employeePage = 0.obs;
+  final hasMoreEmployees = true.obs;
+  final isLoadingEmployees = false.obs;
+
   final isLoadingActivities = false.obs;
   final isLoading = false.obs;
   final totalEmployees = 0.obs;
@@ -12,45 +20,74 @@ class EmployeeDirectoryController extends GetxController {
   final lateToday = 0.obs;
   final onLeaveToday = 0.obs;
   final searchQuery = ''.obs;
+  Timer? _searchDebounce;
+
+  final searchResults = <Map<String, dynamic>>[].obs;
+  final isSearching = false.obs;
 
   @override
   void onInit() {
     super.onInit();
-    loadEmployees();
+
+    loadEmployees(refresh: true);
+
     loadLiveActivities();
+
     loadDashboardStats();
   }
 
-  Future<void> loadEmployees() async {
+  Future<void> loadEmployees({bool refresh = false}) async {
+    print("Search Query = ${searchQuery.value}");
+    if (isLoadingEmployees.value) return;
+
+    isLoadingEmployees.value = true;
+
     try {
-      isLoading.value = true;
+      if (refresh) {
+        employeePage.value = 0;
+        hasMoreEmployees.value = true;
+        employees.clear();
+      }
 
-      final result = await repository.getEmployees();
+      if (!hasMoreEmployees.value) return;
 
-      employees.assignAll(result);
-    } catch (e) {
+      final result = await repository.getEmployees(
+        search: searchQuery.value,
+        page: employeePage.value,
+        limit: employeePageSize,
+      );
+
+      employees.addAll(result);
+      print("Employees in controller = ${employees.length}");
+
+      if (result.length < employeePageSize) {
+        hasMoreEmployees.value = false;
+      } else {
+        employeePage.value++;
+      }
     } finally {
-      isLoading.value = false;
+      isLoadingEmployees.value = false;
     }
   }
 
-  void updateSearch(String value) {
+  Future<void> updateSearch(String value) async {
     searchQuery.value = value;
-  }
 
-  List<Map<String, dynamic>> get filteredEmployees {
-    if (searchQuery.value.isEmpty) {
-      return employees;
-    }
+    _searchDebounce?.cancel();
 
-    return employees.where((employee) {
-      return employee['full_name'].toString().toLowerCase().contains(
-            searchQuery.value.toLowerCase(),
-          ) ||
-          employee['designation'].toString().toLowerCase().contains(
-            searchQuery.value.toLowerCase(),
-          );
-    }).toList();
+    _searchDebounce = Timer(const Duration(milliseconds: 350), () async {
+      if (value.trim().isEmpty) {
+        searchResults.clear();
+        isSearching.value = false;
+        return;
+      }
+
+      isSearching.value = true;
+
+      searchResults.value = await repository.searchEmployees(value);
+
+      isSearching.value = false;
+    });
   }
 
   Future<void> loadLiveActivities() async {
@@ -76,5 +113,13 @@ class EmployeeDirectoryController extends GetxController {
     } catch (e) {
       print(e);
     }
+  }
+
+  Future<void> loadMoreEmployees() async {
+    await loadEmployees();
+  }
+
+  Future<void> resetEmployees() async {
+    await loadEmployees(refresh: true);
   }
 }

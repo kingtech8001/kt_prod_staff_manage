@@ -14,6 +14,9 @@ class HrController extends GetxController {
   static const settings = 3;
   static const announcements = 4;
   static const activities = 5;
+  static const pendingRequests = 6;
+  static const liveActivities = 7;
+  static const employeeActivities = 8;
 
   @override
   void onInit() {
@@ -60,6 +63,34 @@ class HrController extends GetxController {
         updateHeader(
           title: 'Company Announcements',
           subtitle: 'Latest company updates',
+        );
+        break;
+
+      case activities:
+        updateHeader(
+          title: 'Recent Activities',
+          subtitle: 'Latest employee activities',
+        );
+        break;
+
+      case pendingRequests:
+        updateHeader(
+          title: 'Pending Leave Requests',
+          subtitle: 'Review employee leave requests',
+        );
+        break;
+
+      case liveActivities:
+        updateHeader(
+          title: 'Live Activity Feed',
+          subtitle: 'Monitor employee activities',
+        );
+        break;
+
+      case employeeActivities:
+        updateHeader(
+          title: 'Employee Activities',
+          subtitle: 'Activity history',
         );
         break;
     }

@@ -13,15 +13,15 @@ class EmployeeListCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<EmployeeDirectoryController>();
 
-    return Obx(
-      () => Container(
+    return Obx(() {
+      return Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: const Color(0xFFE5E7EB)),
         ),
-        child: controller.isLoading.value
+        child: controller.isLoadingEmployees.value
             ? const Center(
                 child: Padding(
                   padding: EdgeInsets.all(40),
@@ -29,17 +29,40 @@ class EmployeeListCard extends StatelessWidget {
                 ),
               )
             : Column(
-                children: controller.filteredEmployees
-                    .map(
-                      (employee) => Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: _EmployeeTile(employee),
+                children: [
+                  ...controller.employees.map(
+                    (employee) => Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: _EmployeeTile(employee),
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  Obx(() {
+                    if (controller.isLoadingEmployees.value) {
+                      return const Padding(
+                        padding: EdgeInsets.all(12),
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+
+                    if (!controller.hasMoreEmployees.value) {
+                      return const SizedBox();
+                    }
+
+                    return SizedBox(
+                      width: 180,
+                      child: ElevatedButton(
+                        onPressed: controller.loadMoreEmployees,
+                        child: const Text("Load More"),
                       ),
-                    )
-                    .toList(),
+                    );
+                  }),
+                ],
               ),
-      ),
-    );
+      );
+    });
   }
 }
 
@@ -53,9 +76,7 @@ class _EmployeeTile extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(18),
       onTap: () async {
-        print("Tile tapped");
         final controller = Get.find<EmployeeManagementController>();
-        print("Opening profile...");
         await controller.openEmployeeProfile(
           Map<String, dynamic>.from(employee),
         );

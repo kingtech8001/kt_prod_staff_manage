@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../../../core/widgets/view_all_button.dart';
+import '../../controller/hr_controller.dart';
+import '../../controller/operations_controller.dart';
 
 class PendingLeaveCard extends StatelessWidget {
   const PendingLeaveCard({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final hrController = Get.find<HrController>();
+    final controller = Get.put(OperationsController());
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -15,45 +22,58 @@ class PendingLeaveCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Pending Leave Requests', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600)),
+          const Text(
+            'Pending Leave Requests',
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+          ),
 
           const SizedBox(height: 20),
 
           Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  _leaveItem(name: 'John Smith', type: 'Annual Leave', days: '3 Days'),
+            child: Obx(() {
+              if (controller.pendingLeaves.isEmpty) {
+                return const Center(
+                  child: Text(
+                    'No pending leave requests',
+                    style: TextStyle(color: Color(0xFF64748B)),
+                  ),
+                );
+              }
 
-                  const Divider(),
+              return ListView.separated(
+                itemCount: controller.pendingLeaves.length,
 
-                  _leaveItem(name: 'Sarah Wilson', type: 'Sick Leave', days: '1 Day'),
+                separatorBuilder: (_, __) => const Divider(),
 
-                  const Divider(),
+                itemBuilder: (context, index) {
+                  final leave = controller.pendingLeaves[index];
+                  final profile = leave['profiles'];
+                  final start = DateTime.parse(leave['start_date']);
+                  final end = DateTime.parse(leave['end_date']);
+                  final days = end.difference(start).inDays + 1;
 
-                  _leaveItem(name: 'David Brown', type: 'Personal Leave', days: '2 Days'),
-
-                  const Divider(),
-
-                  _leaveItem(name: 'Michael Scott', type: 'Emergency Leave', days: '5 Days'),
-
-                  const Divider(),
-
-                  _leaveItem(name: 'Emily Davis', type: 'Annual Leave', days: '4 Days'),
-                ],
-              ),
-            ),
+                  return _leaveItem(
+                    name: profile?['full_name'] ?? 'Employee',
+                    type: leave['leave_type'] ?? '',
+                    days: '$days Day${days > 1 ? 's' : ''}',
+                  );
+                },
+              );
+            }),
           ),
 
           const SizedBox(height: 16),
 
           SizedBox(
+            height: 40,
             width: double.infinity,
-            height: 46,
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Color(0xFF64748b)), foregroundColor: WidgetStatePropertyAll(Colors.white)),
-              child: const Text('Review All Requests'),
+            child: ViewAllButton(
+              bgColor: false,
+              text: 'Review All Requests',
+              onPressed: () async {
+                hrController.changeIndex(HrController.pendingRequests);
+                await controller.resetPendingLeaves();
+              },
             ),
           ),
         ],
@@ -61,12 +81,21 @@ class PendingLeaveCard extends StatelessWidget {
     );
   }
 
-  Widget _leaveItem({required String name, required String type, required String days}) {
+  Widget _leaveItem({
+    required String name,
+    required String type,
+    required String days,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         children: [
-          CircleAvatar(radius: 18, backgroundColor: Color(0xFF64748b), foregroundColor: Colors.white, child: Text(name[0])),
+          CircleAvatar(
+            radius: 18,
+            backgroundColor: Color(0xFF64748b),
+            foregroundColor: Colors.white,
+            child: Text(name[0]),
+          ),
 
           const SizedBox(width: 12),
 
@@ -76,7 +105,13 @@ class PendingLeaveCard extends StatelessWidget {
               children: [
                 Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
 
-                Text(type, style: const TextStyle(color: Color(0xFF64748B), fontSize: 12)),
+                Text(
+                  type,
+                  style: const TextStyle(
+                    color: Color(0xFF64748B),
+                    fontSize: 12,
+                  ),
+                ),
               ],
             ),
           ),

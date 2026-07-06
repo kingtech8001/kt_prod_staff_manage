@@ -62,13 +62,7 @@ class EmployeeDirectoryView extends StatelessWidget {
 
               Expanded(
                 flex: 1,
-                child: Column(
-                  children: [
-                    const QuickActionsCard(),
-                    const SizedBox(height: 20),
-                    LiveActivityFeed(),
-                  ],
-                ),
+                child: Column(children: [const QuickActionsCard()]),
               ),
             ],
           ),

@@ -21,6 +21,11 @@ class EmployeeProfileController extends GetxController {
   final overtimeHours = 0.0.obs;
   final averageHours = 0.0.obs;
 
+  static const activityPageSize = 10;
+  final activityPage = 0.obs;
+  final hasMoreActivities = true.obs;
+  final isLoadingActivities = false.obs;
+
   void changeTab(String tab) {
     selectedTab.value = tab;
   }
@@ -35,7 +40,7 @@ class EmployeeProfileController extends GetxController {
         employeeId,
       );
 
-      activities.value = await repository.getEmployeeActivities(employeeId);
+      await resetActivities(employeeId);
 
       _calculateStats();
     } finally {
@@ -129,7 +134,7 @@ class EmployeeProfileController extends GetxController {
 
     await loadEmployee(employee.value!['id']);
   }
-
+  /*
   Future<void> loadEmployeeActivities(String employeeId) async {
     try {
       employeeActivities.value = await repository.getEmployeeActivities(
@@ -138,7 +143,7 @@ class EmployeeProfileController extends GetxController {
     } catch (e) {
       print(e);
     }
-  }
+  }*/
 
   Future<void> updateEmployee({
     required String fullName,
@@ -173,5 +178,47 @@ class EmployeeProfileController extends GetxController {
     controller.selectedEmployee.value = Map<String, dynamic>.from(
       employee.value!,
     );
+  }
+
+  Future<void> loadActivities(String employeeId, {bool refresh = false}) async {
+    if (isLoadingActivities.value) return;
+
+    isLoadingActivities.value = true;
+
+    try {
+      if (refresh) {
+        activityPage.value = 0;
+        hasMoreActivities.value = true;
+        activities.clear();
+      }
+
+      if (!hasMoreActivities.value) return;
+
+      final data = await repository.getEmployeeActivities(
+        employeeId,
+        page: activityPage.value,
+        limit: activityPageSize,
+      );
+
+      activities.addAll(data);
+
+      if (data.length < activityPageSize) {
+        hasMoreActivities.value = false;
+      } else {
+        activityPage.value++;
+      }
+    } finally {
+      isLoadingActivities.value = false;
+    }
+  }
+
+  Future<void> loadMoreActivities() async {
+    if (employee.value == null) return;
+
+    await loadActivities(employee.value!['id']);
+  }
+
+  Future<void> resetActivities(String employeeId) async {
+    await loadActivities(employeeId, refresh: true);
   }
 }

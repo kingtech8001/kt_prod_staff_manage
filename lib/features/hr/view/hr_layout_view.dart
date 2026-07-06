@@ -7,17 +7,22 @@ import '../../../shared/employee_management_controller.dart';
 import '../../employee/view/dashboard_screens/activities_view.dart';
 import '../../employee/view/dashboard_screens/announcements_view.dart';
 import '../controller/hr_controller.dart';
+import '../controller/operations_controller.dart';
 import '../widgets/hr_sidebar.dart';
+import '../widgets/operation center/live_activity_card.dart';
+import 'employee directory/employee_activities_view.dart';
 import 'employee directory/employee_profile_view.dart';
 import 'hr_dashboard_view.dart';
 import 'operational center/operations_center_view.dart';
 import 'employee directory/employee_directory_view.dart';
+import 'operational center/pending_requests_view.dart';
 import 'settings/settings_view.dart';
 
 class HrLayoutView extends StatelessWidget {
   HrLayoutView({super.key});
   final employeeManagementController = Get.put(EmployeeManagementController());
   final hrController = Get.put(HrController());
+  final operationsController = Get.put(OperationsController());
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +35,7 @@ class HrLayoutView extends StatelessWidget {
             child: Obx(
               () => Column(
                 children: [
-                  if (!controller.isProfileOpen.value) const HrHeader(),
+                  if (!controller.isProfileOpen.value) HrHeader(),
                   Expanded(
                     child: Obx(() {
                       if (controller.isProfileOpen.value) {
@@ -52,6 +57,28 @@ class HrLayoutView extends StatelessWidget {
                           ActivitiesView(
                             onBack: () {
                               hrController.changeIndex(HrController.dashboard);
+                            },
+                          ),
+                          PendingRequestsView(
+                            onBack: () {
+                              hrController.changeIndex(HrController.operations);
+                            },
+                          ),
+                          LiveActivitiesView(
+                            onBack: () {
+                              hrController.changeIndex(HrController.operations);
+                            },
+                          ),
+                          EmployeeActivitiesView(
+                            onBack: () {
+                              hrController.changeIndex(
+                                HrController.employeeDirectory,
+                              );
+
+                              Get.find<EmployeeManagementController>()
+                                      .isProfileOpen
+                                      .value =
+                                  true;
                             },
                           ),
                           /*LeaveApprovalView()*/

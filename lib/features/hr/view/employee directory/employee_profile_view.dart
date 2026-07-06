@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/utils/date_formatter.dart';
+import '../../../../core/widgets/view_all_button.dart';
 import '../../../../shared/employee_management_controller.dart';
 import '../../controller/employee_profile_controller.dart';
 import '../../controller/hr_controller.dart';
@@ -322,6 +323,25 @@ class EmployeeProfileView extends StatelessWidget {
                     ),
                   ),
                 ),
+
+            const SizedBox(height: 10),
+
+            Align(
+              alignment: Alignment.centerRight,
+              child: ViewAllButton(
+                onPressed: () async {
+                  final hrController = Get.find<HrController>();
+
+                  hrController.changeIndex(HrController.employeeActivities);
+
+                  Get.find<EmployeeManagementController>().isProfileOpen.value =
+                      false;
+                  await controller.resetActivities(
+                    controller.employee.value!['id'],
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),
