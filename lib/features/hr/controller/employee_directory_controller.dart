@@ -75,18 +75,24 @@ class EmployeeDirectoryController extends GetxController {
 
     _searchDebounce?.cancel();
 
-    _searchDebounce = Timer(const Duration(milliseconds: 350), () async {
-      if (value.trim().isEmpty) {
-        searchResults.clear();
-        isSearching.value = false;
-        return;
-      }
-
-      isSearching.value = true;
-
-      searchResults.value = await repository.searchEmployees(value);
-
+    if (value.trim().isEmpty) {
+      searchResults.clear();
       isSearching.value = false;
+      return;
+    }
+
+    isSearching.value = true;
+
+    _searchDebounce = Timer(const Duration(milliseconds: 350), () async {
+      try {
+        final result = await repository.searchEmployees(value);
+
+        searchResults.assignAll(result);
+      } catch (e) {
+        searchResults.clear();
+      } finally {
+        isSearching.value = false;
+      }
     });
   }
 

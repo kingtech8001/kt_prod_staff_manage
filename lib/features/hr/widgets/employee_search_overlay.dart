@@ -36,10 +36,12 @@ class EmployeeSearchOverlay {
                 showWhenUnlinked: false,
                 offset: const Offset(0, 58),
                 child: Material(
-                  elevation: 12,
-                  borderRadius: BorderRadius.circular(14),
-                  clipBehavior: Clip.antiAlias,
-                  child: SizedBox(width: width, child: child),
+                  elevation: 14,
+                  color: Colors.transparent,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: width),
+                    child: child,
+                  ),
                 ),
               ),
             ],

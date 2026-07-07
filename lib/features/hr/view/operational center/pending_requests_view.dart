@@ -102,18 +102,53 @@ class _PendingRequestsViewState extends State<PendingRequestsView> {
                               onPressed: () {
                                 // Reject
                               },
-
-                              child: const Text("Reject"),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: const Color(0xFFDC2626),
+                                side: const BorderSide(
+                                  color: Color(0xFFFCA5A5),
+                                  width: 1.2,
+                                ),
+                                backgroundColor: const Color(0xFFFFFBFB),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 22,
+                                  vertical: 14,
+                                ),
+                              ),
+                              child: const Text(
+                                "Reject",
+                                style: TextStyle(fontWeight: FontWeight.w600),
+                              ),
                             ),
-
                             const SizedBox(width: 8),
 
                             ElevatedButton(
                               onPressed: () {
                                 // Approve
                               },
-
-                              child: const Text("Approve"),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(
+                                  0xFFDCFCE7,
+                                ), // Light green
+                                foregroundColor: const Color(
+                                  0xFF16A34A,
+                                ), // Green text
+                                elevation: 0,
+                                shadowColor: Colors.transparent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 22,
+                                  vertical: 14,
+                                ),
+                              ),
+                              child: const Text(
+                                "Approve",
+                                style: TextStyle(fontWeight: FontWeight.w600),
+                              ),
                             ),
                           ],
                         ),

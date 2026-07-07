@@ -64,77 +64,250 @@ class HrHeader extends StatelessWidget {
             child: Builder(
               builder: (context) {
                 final directory = Get.find<EmployeeDirectoryController>();
+                final searchController = TextEditingController();
 
                 return CompositedTransformTarget(
                   link: searchOverlay.layerLink,
                   child: TextField(
+                    controller: searchController,
                     onChanged: (value) async {
                       directory.updateSearch(value);
-
-                      await Future.delayed(const Duration(milliseconds: 450));
 
                       if (value.trim().isEmpty) {
                         searchOverlay.hide();
                         return;
                       }
 
-                      if (directory.employees.isEmpty) {
-                        searchOverlay.show(
-                          context: context,
-                          child: const Padding(
-                            padding: EdgeInsets.all(18),
-                            child: Center(
-                              child: Text(
-                                "No employee found",
-                                style: TextStyle(color: Color(0xFF64748B)),
-                              ),
-                            ),
-                          ),
-                        );
-
-                        return;
-                      }
-
                       searchOverlay.show(
                         context: context,
-                        child: ListView.separated(
-                          padding: EdgeInsets.zero,
-                          shrinkWrap: true,
-                          itemCount: directory.employees.length,
-                          separatorBuilder: (_, __) => const Divider(height: 1),
-                          itemBuilder: (context, index) {
-                            final employee = directory.employees[index];
-
-                            return ListTile(
-                              leading: CircleAvatar(
-                                child: Text(
-                                  employee['full_name']
-                                      .toString()
-                                      .split(' ')
-                                      .map((e) => e[0])
-                                      .take(2)
-                                      .join(),
+                        child: Obx(() {
+                          if (directory.isSearching.value) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                                vertical: 18,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(18),
+                                border: Border.all(
+                                  color: const Color(0xFFE2E8F0),
                                 ),
                               ),
-                              title: Text(employee['full_name']),
-                              subtitle: Text(employee['designation'] ?? ''),
-                              onTap: () async {
-                                searchOverlay.hide();
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 42,
+                                    height: 42,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFF8FAFC),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(10),
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.3,
+                                      ),
+                                    ),
+                                  ),
 
-                                FocusScope.of(context).unfocus();
+                                  const SizedBox(width: 16),
 
-                                directory.updateSearch('');
+                                  const Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          "Searching employees",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 15,
+                                            color: Color(0xFF111827),
+                                          ),
+                                        ),
 
-                                final management =
-                                    Get.find<EmployeeManagementController>();
+                                        SizedBox(height: 4),
 
-                                await management.openEmployeeProfile(
-                                  Map<String, dynamic>.from(employee),
+                                        Text(
+                                          "Looking for matching employees...",
+                                          style: TextStyle(
+                                            color: Color(0xFF64748B),
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+
+                          if (directory.searchResults.isEmpty) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                                vertical: 18,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(18),
+                                border: Border.all(
+                                  color: const Color(0xFFE2E8F0),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 42,
+                                    height: 42,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFFFF7ED),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: const Icon(
+                                      Icons.person_search_rounded,
+                                      color: Color(0xFFF59E0B),
+                                    ),
+                                  ),
+
+                                  const SizedBox(width: 16),
+
+                                  const Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          "No employees found",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 15,
+                                            color: Color(0xFF111827),
+                                          ),
+                                        ),
+
+                                        SizedBox(height: 4),
+
+                                        Text(
+                                          "Try another name, employee ID or designation.",
+                                          style: TextStyle(
+                                            color: Color(0xFF64748B),
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+
+                          return Container(
+                            constraints: const BoxConstraints(maxHeight: 340),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(18),
+                              border: Border.all(
+                                color: const Color(0xFFE5E7EB),
+                              ),
+                            ),
+                            child: ListView.builder(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              shrinkWrap: true,
+                              itemCount: directory.searchResults.length,
+                              itemBuilder: (context, index) {
+                                final employee = directory.searchResults[index];
+
+                                return InkWell(
+                                  borderRadius: BorderRadius.circular(14),
+                                  onTap: () async {
+                                    searchOverlay.hide();
+
+                                    FocusScope.of(context).unfocus();
+
+                                    searchController.clear();
+
+                                    directory.updateSearch('');
+
+                                    final management =
+                                        Get.find<
+                                          EmployeeManagementController
+                                        >();
+
+                                    await management.openEmployeeProfile(
+                                      Map<String, dynamic>.from(employee),
+                                    );
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    padding: const EdgeInsets.all(12),
+                                    child: Row(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 22,
+                                          backgroundColor: const Color(
+                                            0xFFE2E8F0,
+                                          ),
+                                          foregroundColor: const Color(
+                                            0xFF334155,
+                                          ),
+                                          child: Text(
+                                            employee['full_name']
+                                                .toString()
+                                                .split(' ')
+                                                .map((e) => e[0])
+                                                .take(2)
+                                                .join(),
+                                          ),
+                                        ),
+
+                                        const SizedBox(width: 14),
+
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                employee['full_name'],
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+
+                                              const SizedBox(height: 4),
+
+                                              Text(
+                                                employee['designation'] ?? '',
+                                                style: const TextStyle(
+                                                  color: Color(0xFF64748B),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+
+                                        const Icon(
+                                          Icons.arrow_forward_ios_rounded,
+                                          size: 15,
+                                          color: Color(0xFF94A3B8),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 );
                               },
-                            );
-                          },
-                        ),
+                            ),
+                          );
+                        }),
                       );
                     },
                     decoration: InputDecoration(
@@ -159,17 +332,78 @@ class HrHeader extends StatelessWidget {
           ),
           const SizedBox(width: 20),
 
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: Colors.grey),
-            ),
-            child: const Icon(
-              Icons.notifications_none_rounded,
-              color: Colors.black,
+          InkWell(
+            borderRadius: BorderRadius.circular(14),
+            onTap: () {
+              Get.dialog(
+                Dialog(
+                  backgroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: Container(
+                    width: 400,
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.notifications_active_outlined,
+                          size: 30,
+                          color: Color(0xFF0B1633),
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        const Text(
+                          'Notifications',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        const Text(
+                          'Notification system is coming soon.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Color(0xFF64748B)),
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF0B1633),
+                              foregroundColor: Colors.white,
+                            ),
+                            onPressed: () => Get.back(),
+                            child: const Text('Got It'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+
+            child: Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: const Color(0xFFE5E7EB)),
+              ),
+              child: const Icon(
+                Icons.notifications_none_rounded,
+                color: Color(0xFF111827),
+              ),
             ),
           ),
 
