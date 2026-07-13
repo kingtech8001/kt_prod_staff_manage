@@ -6,6 +6,7 @@ import '../../../core/routes/app_routes.dart';
 import '../../../shared/employee_management_controller.dart';
 import '../../hr/view/employee directory/employee_directory_view.dart';
 import '../../hr/view/employee directory/employee_profile_view.dart';
+import '../controller/hr_directory_controller.dart';
 import '../widgets/admin_header.dart';
 import '../widgets/admin_sidebar.dart';
 import 'access_control_view.dart';
@@ -19,6 +20,7 @@ class AdminLayoutView extends StatelessWidget {
 
   final controller = Get.put(AdminController());
   final employeeManagementController = Get.put(EmployeeManagementController());
+  final hrDirectoryController = Get.put(HrDirectoryController());
 
   @override
   Widget build(BuildContext context) {

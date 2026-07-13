@@ -46,12 +46,27 @@ class HrRepository {
   }
 
   Future<List<Map<String, dynamic>>> getEmployeeAttendance(
-    String employeeId,
-  ) async {
+    String employeeId, {
+    int? month,
+    int? year,
+  }) async {
+    final now = DateTime.now();
+
+    final selectedMonth = month ?? now.month;
+    final selectedYear = year ?? now.year;
+
+    final startDate = DateTime(selectedYear, selectedMonth, 1);
+
+    final endDate = selectedMonth == 12
+        ? DateTime(selectedYear + 1, 1, 1)
+        : DateTime(selectedYear, selectedMonth + 1, 1);
+
     final response = await _supabase
         .from('attendance')
         .select()
         .eq('employee_id', employeeId)
+        .gte('attendance_date', startDate.toIso8601String().split('T').first)
+        .lt('attendance_date', endDate.toIso8601String().split('T').first)
         .order('attendance_date', ascending: false);
 
     return List<Map<String, dynamic>>.from(response);

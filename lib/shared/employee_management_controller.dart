@@ -11,10 +11,16 @@ class EmployeeManagementController extends GetxController {
 
   final isProfileOpen = false.obs;
 
-  Future<void> openEmployeeProfile(Map<String, dynamic> employee) async {
+  Future<void> openEmployeeProfile(
+    Map<String, dynamic> employee, {
+    String role = 'Employee',
+  }) async {
     selectedEmployee.value = employee;
 
+    profileController.setProfileRole(role);
+
     isProfileOpen.value = true;
+
     await profileController.loadEmployee(employee['id']);
   }
 
@@ -24,5 +30,6 @@ class EmployeeManagementController extends GetxController {
 
   void backToDirectory() {
     isProfileOpen.value = false;
+    selectedEmployee.value = null;
   }
 }

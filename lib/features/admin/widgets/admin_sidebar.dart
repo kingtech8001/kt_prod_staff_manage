@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/widgets/common_helper.dart';
+import '../../../shared/employee_management_controller.dart';
 import '../controller/admin_controller.dart';
 
 class AdminSidebar extends StatelessWidget {
@@ -32,7 +33,10 @@ class AdminSidebar extends StatelessWidget {
 
               SizedBox(width: 12),
 
-              Text('ProWorkforce', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600)),
+              Text(
+                'ProWorkforce',
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
+              ),
             ],
           ),
 
@@ -50,18 +54,36 @@ class AdminSidebar extends StatelessWidget {
                   final isSelected = selectedIndex == index;
 
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 4,
+                    ),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12),
                       onTap: () {
+                        Get.find<EmployeeManagementController>()
+                            .backToDirectory();
+
                         controller.changeIndex(index);
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                        decoration: BoxDecoration(color: isSelected ? const Color(0xFFE9EDF5) : Colors.transparent, borderRadius: BorderRadius.circular(12)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? const Color(0xFFE9EDF5)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         child: Row(
                           children: [
-                            Icon(item['icon'], size: 20, color: const Color(0xFF1E293B)),
+                            Icon(
+                              item['icon'],
+                              size: 20,
+                              color: const Color(0xFF1E293B),
+                            ),
 
                             const SizedBox(width: 12),
 
@@ -70,7 +92,13 @@ class AdminSidebar extends StatelessWidget {
                                 item['title'],
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontSize: 15, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500, color: const Color(0xFF1E293B)),
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w600
+                                      : FontWeight.w500,
+                                  color: const Color(0xFF1E293B),
+                                ),
                               ),
                             ),
                           ],

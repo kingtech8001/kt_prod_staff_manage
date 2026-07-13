@@ -7,6 +7,8 @@ import '../../../../shared/employee_management_controller.dart';
 import '../../controller/employee_profile_controller.dart';
 import '../../controller/hr_controller.dart';
 import '../../widgets/employee_directory/edit_employee_dialog.dart';
+import '../../widgets/employee_directory/edit_hr_dialog.dart';
+import '../../widgets/employee_directory/profile/admin_hr_actions_card.dart';
 import '../../widgets/employee_directory/profile/documents_overview_card.dart';
 import '../../widgets/employee_directory/profile/employment_information_card.dart';
 import '../../widgets/employee_directory/profile/hr_actions_card.dart';
@@ -105,7 +107,14 @@ class EmployeeProfileView extends StatelessWidget {
                             children: [
                               _recentActivityCard(),
                               const SizedBox(height: 20),
-                              const HrActionsCard(),
+                              Obx(() {
+                                final role =
+                                    profileController.profileRole.value;
+
+                                return role == "Employee"
+                                    ? const HrActionsCard()
+                                    : const AdminHrActionsCard();
+                              }),
                               SizedBox(height: 20),
                               DocumentsOverviewCard(),
                             ],
@@ -436,6 +445,8 @@ class EmployeeProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<EmployeeManagementController>();
+    final profileController = Get.find<EmployeeProfileController>();
+    final role = profileController.profileRole.value.toUpperCase();
 
     return Container(
       height: 70,
@@ -465,7 +476,7 @@ class EmployeeProfileHeader extends StatelessWidget {
           const SizedBox(width: 12),
 
           Text(
-            'Employee Profile / ${employee['full_name'] ?? ''}',
+            '$role Profile / ${employee['full_name'] ?? ''}',
             style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w600,
@@ -495,7 +506,16 @@ class EmployeeProfileHeader extends StatelessWidget {
             onPressed: () {
               showDialog(
                 context: context,
-                builder: (_) => EditEmployeeDialog(employee: employee),
+                builder: (_) {
+                  final role =
+                      Get.find<EmployeeProfileController>().profileRole.value;
+
+                  if (role == "HR") {
+                    return EditHrDialog(employee: employee);
+                  }
+
+                  return EditEmployeeDialog(employee: employee);
+                },
               );
             },
             icon: const Icon(Icons.edit, size: 18),

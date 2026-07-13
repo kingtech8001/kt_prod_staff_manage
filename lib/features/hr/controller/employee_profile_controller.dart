@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../../../core/controllers/auth_controller.dart';
 import '../../../shared/employee_management_controller.dart';
 import '../repository/hr_repository.dart';
@@ -10,6 +11,13 @@ class EmployeeProfileController extends GetxController {
   final repository = HrRepository();
 
   final employee = Rxn<Map<String, dynamic>>();
+
+  final profileRole = RxString('Employee');
+
+  final selectedMonth = DateTime.now().obs;
+
+  String get selectedMonthText =>
+      DateFormat('MMMM yyyy').format(selectedMonth.value);
 
   final attendanceHistory = <Map<String, dynamic>>[].obs;
   final activities = <Map<String, dynamic>>[].obs;
@@ -30,6 +38,24 @@ class EmployeeProfileController extends GetxController {
     selectedTab.value = tab;
   }
 
+  Future<void> changeAttendanceMonth(DateTime month) async {
+    selectedMonth.value = month;
+
+    if (employee.value == null) return;
+
+    attendanceHistory.value = await repository.getEmployeeAttendance(
+      employee.value!['id'],
+      month: month.month,
+      year: month.year,
+    );
+
+    _calculateStats();
+  }
+
+  void setProfileRole(String role) {
+    profileRole.value = role;
+  }
+
   Future<void> loadEmployee(String employeeId) async {
     try {
       isLoading.value = true;
@@ -38,6 +64,8 @@ class EmployeeProfileController extends GetxController {
 
       attendanceHistory.value = await repository.getEmployeeAttendance(
         employeeId,
+        month: selectedMonth.value.month,
+        year: selectedMonth.value.year,
       );
 
       await resetActivities(employeeId);
