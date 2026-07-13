@@ -37,7 +37,6 @@ class EmployeeDirectoryController extends GetxController {
   }
 
   Future<void> loadEmployees({bool refresh = false}) async {
-    print("Search Query = ${searchQuery.value}");
     if (isLoadingEmployees.value) return;
 
     isLoadingEmployees.value = true;
@@ -58,7 +57,6 @@ class EmployeeDirectoryController extends GetxController {
       );
 
       employees.addAll(result);
-      print("Employees in controller = ${employees.length}");
 
       if (result.length < employeePageSize) {
         hasMoreEmployees.value = false;

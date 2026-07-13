@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../widgets/operation center/hr_management_card.dart';
 import '../../widgets/operation center/live_activity_card.dart';
 import '../../widgets/operation center/attention_card.dart';
-import '../../widgets/operation center/department_attendance_table.dart';
 import '../../widgets/operation center/hr_stat_card.dart';
 import '../../widgets/operation center/pending_leave_card.dart';
 
@@ -18,29 +18,56 @@ class OperationsCenterView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Operations Center', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+            const Text(
+              'Operations Center',
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            ),
 
             const SizedBox(height: 24),
 
             Row(
               children: [
                 Expanded(
-                  child: HrStatCard(title: 'Employees Present', value: '124', subtitle: "Today's attendance", icon: Icons.people, color: Colors.green),
+                  child: HrStatCard(
+                    title: 'Employees Present',
+                    value: '124',
+                    subtitle: "Today's attendance",
+                    icon: Icons.people,
+                    color: Colors.green,
+                  ),
                 ),
                 const SizedBox(width: 16),
 
                 Expanded(
-                  child: HrStatCard(title: 'Late Arrivals', value: '8', subtitle: 'Today', icon: Icons.access_time, color: Colors.orange),
+                  child: HrStatCard(
+                    title: 'Late Arrivals',
+                    value: '8',
+                    subtitle: 'Today',
+                    icon: Icons.access_time,
+                    color: Colors.orange,
+                  ),
                 ),
                 const SizedBox(width: 16),
 
                 Expanded(
-                  child: HrStatCard(title: 'On Leave', value: '5', subtitle: 'Approved', icon: Icons.event_busy, color: Colors.red),
+                  child: HrStatCard(
+                    title: 'On Leave',
+                    value: '5',
+                    subtitle: 'Approved',
+                    icon: Icons.event_busy,
+                    color: Colors.red,
+                  ),
                 ),
                 const SizedBox(width: 16),
 
                 Expanded(
-                  child: HrStatCard(title: 'Attendance', value: '92%', subtitle: 'attendance status', icon: Icons.people, color: Colors.blue),
+                  child: HrStatCard(
+                    title: 'Attendance',
+                    value: '92%',
+                    subtitle: 'attendance status',
+                    icon: Icons.people,
+                    color: Colors.blue,
+                  ),
                 ),
               ],
             ),
@@ -65,7 +92,13 @@ class OperationsCenterView extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Immediate Attention Required', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600)),
+                            const Text(
+                              'Immediate Attention Required',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
 
                             const SizedBox(height: 24),
 
@@ -76,7 +109,8 @@ class OperationsCenterView extends StatelessWidget {
                                     height: 220,
                                     child: AttentionCard(
                                       title: 'Missing Punch Out',
-                                      description: '3 employees forgot to punch out yesterday.',
+                                      description:
+                                          '3 employees forgot to punch out yesterday.',
                                       actionText: 'Review',
                                       icon: Icons.logout,
                                       color: Colors.orange,
@@ -91,7 +125,8 @@ class OperationsCenterView extends StatelessWidget {
                                     height: 220,
                                     child: AttentionCard(
                                       title: 'Excessive Overtime',
-                                      description: '2 employees exceeded overtime limits.',
+                                      description:
+                                          '2 employees exceeded overtime limits.',
                                       actionText: 'Investigate',
                                       icon: Icons.schedule,
                                       color: Colors.red,
@@ -106,7 +141,8 @@ class OperationsCenterView extends StatelessWidget {
                                     height: 220,
                                     child: AttentionCard(
                                       title: 'Attendance Violation',
-                                      description: 'Repeated late arrivals detected.',
+                                      description:
+                                          'Repeated late arrivals detected.',
                                       actionText: 'View',
                                       icon: Icons.warning_amber,
                                       color: Colors.amber,
@@ -121,7 +157,8 @@ class OperationsCenterView extends StatelessWidget {
                                     height: 220,
                                     child: AttentionCard(
                                       title: 'Consecutive Absences',
-                                      description: 'Employees absent for multiple days.',
+                                      description:
+                                          'Employees absent for multiple days.',
                                       actionText: 'Review',
                                       icon: Icons.person_off,
                                       color: Colors.deepOrange,
@@ -135,8 +172,7 @@ class OperationsCenterView extends StatelessWidget {
                       ),
 
                       const SizedBox(height: 24),
-
-                      const SizedBox(height: 420, child: DepartmentAttendanceTable()),
+                      SizedBox(height: 420, child: LiveActivityCard()),
                     ],
                   ),
                 ),
@@ -152,7 +188,7 @@ class OperationsCenterView extends StatelessWidget {
 
                       const SizedBox(height: 24),
 
-                      const SizedBox(height: 390, child: LiveActivityCard()),
+                      const SizedBox(height: 400, child: HrManagementCard()),
                     ],
                   ),
                 ),
@@ -160,35 +196,6 @@ class OperationsCenterView extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _statPlaceholder(String title) {
-    return Container(
-      height: 120,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
-      ),
-      child: Center(
-        child: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-      ),
-    );
-  }
-
-  Widget _sectionPlaceholder({required String title, required double height}) {
-    return Container(
-      height: height,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
-      ),
-      child: Center(
-        child: Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
       ),
     );
   }

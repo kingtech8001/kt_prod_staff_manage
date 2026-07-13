@@ -12,12 +12,9 @@ class EmployeeManagementController extends GetxController {
   final isProfileOpen = false.obs;
 
   Future<void> openEmployeeProfile(Map<String, dynamic> employee) async {
-    print("Inside openEmployeeProfile");
-    print(employee['full_name']);
     selectedEmployee.value = employee;
 
     isProfileOpen.value = true;
-    print("is profile open value => ${isProfileOpen.value}");
     await profileController.loadEmployee(employee['id']);
   }
 
