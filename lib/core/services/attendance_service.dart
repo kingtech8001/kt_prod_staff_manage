@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../features/hr/repository/hr_repository.dart';
+
 class AttendanceService {
   final supabase = Supabase.instance.client;
 
@@ -16,17 +18,26 @@ class AttendanceService {
     return response;
   }
 
-  Future<List<Map<String, dynamic>>> getAttendance(String employeeId) async {
+  Future<List<Map<String, dynamic>>> getAttendance(
+    String employeeId, {
+    required int page,
+    required int limit,
+  }) async {
+    final from = page * limit;
+    final to = from + limit - 1;
+
     final response = await supabase
         .from('attendance')
         .select()
         .eq('employee_id', employeeId)
-        .order('attendance_date', ascending: false);
+        .order('attendance_date', ascending: false)
+        .range(from, to);
 
     return List<Map<String, dynamic>>.from(response);
   }
 
   Future<void> punchIn(String employeeId) async {
+    ///TODO why today variable,  double click safety, check 9,0 in shiftstart variable
     final today = DateTime.now().toIso8601String().split('T').first;
 
     final existing = await supabase
@@ -54,6 +65,12 @@ class AttendanceService {
       'current_state': 'Present',
       'is_late': isLate,
     });
+
+    await _logActivity(
+      employeeId: employeeId,
+      title: 'Punched In',
+      activityType: 'PUNCH_IN',
+    );
   }
 
   Future<void> startBreak(String attendanceId) async {
@@ -66,6 +83,18 @@ class AttendanceService {
         .from('attendance')
         .update({'current_state': 'On Break'})
         .eq('id', attendanceId);
+
+    final attendance = await supabase
+        .from('attendance')
+        .select('employee_id')
+        .eq('id', attendanceId)
+        .single();
+
+    await _logActivity(
+      employeeId: attendance['employee_id'],
+      title: 'Started Break',
+      activityType: 'BREAK_START',
+    );
   }
 
   Future<void> stopBreak(String attendanceId) async {
@@ -98,6 +127,18 @@ class AttendanceService {
         .from('attendance')
         .update({'current_state': 'Present'})
         .eq('id', attendanceId);
+
+    final attendance = await supabase
+        .from('attendance')
+        .select('employee_id')
+        .eq('id', attendanceId)
+        .single();
+
+    await _logActivity(
+      employeeId: attendance['employee_id'],
+      title: 'Ended Break',
+      activityType: 'BREAK_END',
+    );
   }
 
   Future<void> punchOut(String attendanceId) async {
@@ -151,12 +192,11 @@ class AttendanceService {
           'current_state': 'Completed',
         })
         .eq('id', attendanceId);
-    print('Punch In: $punchIn');
-    print('Now: $now');
-    print('Worked Minutes: $totalWorkedMinutes');
-    print('Break Minutes: $totalBreakMinutes');
-    print('Effective Minutes: $effectiveMinutes');
-    print('Total Hours: $totalHours');
+    await _logActivity(
+      employeeId: attendance['employee_id'],
+      title: 'Punched Out',
+      activityType: 'PUNCH_OUT',
+    );
 
     final saved = await supabase
         .from('attendance')
@@ -174,5 +214,19 @@ class AttendanceService {
         .eq('attendance_id', attendanceId)
         .isFilter('break_end', null)
         .maybeSingle();
+  }
+
+  Future<void> _logActivity({
+    required String employeeId,
+    required String title,
+    required String activityType,
+  }) async {
+    await supabase.from('employee_activity_logs').insert({
+      'employee_id': employeeId,
+      'title': title,
+      'activity_type': activityType,
+      'activity_source': 'employee',
+      'activity_time': DateTime.now().toUtc().toIso8601String(),
+    });
   }
 }

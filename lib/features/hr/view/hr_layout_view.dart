@@ -42,6 +42,12 @@ class HrLayoutView extends StatelessWidget {
                         return const EmployeeProfileView();
                       }
 
+                      if (controller.isActivityOpen.value) {
+                        return EmployeeActivitiesView(
+                          onBack: () => controller.backToProfile(),
+                        );
+                      }
+
                       return IndexedStack(
                         index: hrController.selectedIndex.value,
                         children: [
@@ -71,14 +77,14 @@ class HrLayoutView extends StatelessWidget {
                           ),
                           EmployeeActivitiesView(
                             onBack: () {
+                              final management =
+                                  Get.find<EmployeeManagementController>();
+
                               hrController.changeIndex(
-                                HrController.employeeDirectory,
+                                management.previousIndex.value,
                               );
 
-                              Get.find<EmployeeManagementController>()
-                                      .isProfileOpen
-                                      .value =
-                                  true;
+                              management.isProfileOpen.value = true;
                             },
                           ),
                           /*LeaveApprovalView()*/

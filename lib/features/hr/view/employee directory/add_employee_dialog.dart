@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../controller/add_employee_controller.dart';
 
 class AddEmployeeDialog extends StatelessWidget {
-  const AddEmployeeDialog({super.key});
+  final String role;
+
+  const AddEmployeeDialog({super.key, this.role = "Employee"});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(AddEmployeeController());
+
     return Dialog(
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
@@ -16,39 +23,77 @@ class AddEmployeeDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Add Employee', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+              Text(
+                role == "HR" ? "Add HR Staff" : "Add Employee",
+                style: const TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
 
               const SizedBox(height: 8),
 
-              const Text('Create a new employee profile.', style: TextStyle(color: Color(0xFF64748B))),
+              Text(
+                role == "HR"
+                    ? "Create a new HR profile."
+                    : "Create a new employee profile.",
+                style: TextStyle(color: Color(0xFF64748B)),
+              ),
 
               const SizedBox(height: 28),
 
-              Row(
-                children: [
-                  Expanded(child: _textField(label: 'First Name')),
-
-                  const SizedBox(width: 16),
-
-                  Expanded(child: _textField(label: 'Last Name')),
-                ],
+              _textField(
+                label: 'Full Name',
+                controller: controller.fullNameController,
               ),
 
               const SizedBox(height: 20),
 
-              _textField(label: 'Email Address'),
+              _textField(
+                label: 'Email',
+                controller: controller.emailController,
+              ),
 
               const SizedBox(height: 20),
 
               Row(
                 children: [
-                  Expanded(child: _textField(label: 'Phone Number')),
+                  Expanded(
+                    child: Obx(
+                      () => _textField(
+                        label: 'Password',
+                        controller: controller.passwordController,
+                        obscureText: controller.obscurePassword.value,
+                        suffixIcon: IconButton(
+                          onPressed: controller.togglePasswordVisibility,
+                          icon: Icon(
+                            controller.obscurePassword.value
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
 
                   const SizedBox(width: 10),
 
-                  Expanded(child: _textField(label: 'Designation')),
+                  Expanded(
+                    child: _textField(
+                      label: 'Phone Number',
+                      controller: controller.phoneController,
+                    ),
+                  ),
                 ],
               ),
+
+              const SizedBox(height: 20),
+
+              _textField(
+                label: 'Designation',
+                controller: controller.designationController,
+              ),
+
               SizedBox(height: 32),
 
               /*
@@ -76,11 +121,33 @@ class AddEmployeeDialog extends StatelessWidget {
 
                   const SizedBox(width: 12),
 
-                  ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.person_add_alt_1),
-                    label: const Text('Create Employee'),
-                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0B1633), foregroundColor: Colors.white),
+                  Obx(
+                    () => ElevatedButton.icon(
+                      onPressed: controller.isLoading.value
+                          ? null
+                          : () => controller.createEmployee(role),
+                      icon: controller.isLoading.value
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Icon(Icons.person_add_alt_1),
+                      label: Text(
+                        controller.isLoading.value
+                            ? 'Creating...'
+                            : role == "HR"
+                            ? "Create HR"
+                            : "Create Employee",
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF0B1633),
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -91,7 +158,12 @@ class AddEmployeeDialog extends StatelessWidget {
     );
   }
 
-  Widget _textField({required String label}) {
+  Widget _textField({
+    required String label,
+    required TextEditingController controller,
+    bool obscureText = false,
+    Widget? suffixIcon,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -100,7 +172,12 @@ class AddEmployeeDialog extends StatelessWidget {
         const SizedBox(height: 8),
 
         TextField(
-          decoration: InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.circular(14))),
+          controller: controller,
+          obscureText: obscureText,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+            suffixIcon: suffixIcon,
+          ),
         ),
       ],
     );
@@ -115,7 +192,9 @@ class AddEmployeeDialog extends StatelessWidget {
         const SizedBox(height: 8),
 
         DropdownButtonFormField<String>(
-          decoration: InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.circular(14))),
+          decoration: InputDecoration(
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+          ),
           items: const [],
           onChanged: (_) {},
           hint: Text(hint),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../core/controllers/auth_controller.dart';
@@ -34,8 +36,26 @@ class EmployeeProfileController extends GetxController {
   final hasMoreActivities = true.obs;
   final isLoadingActivities = false.obs;
 
+  static const attendancePageSize = 10;
+  final attendancePage = 0.obs;
+  final hasMoreAttendance = true.obs;
+  final isLoadingAttendance = false.obs;
+
+  final todayAttendance = Rxn<Map<String, dynamic>>();
+  final workDuration = Duration.zero.obs;
+  final breakDuration = Duration.zero.obs;
+  Timer? _timer;
+  Timer? _refreshTimer;
+
   void changeTab(String tab) {
     selectedTab.value = tab;
+  }
+
+  @override
+  void onClose() {
+    _timer?.cancel();
+    _refreshTimer?.cancel();
+    super.onClose();
   }
 
   Future<void> changeAttendanceMonth(DateTime month) async {
@@ -43,11 +63,7 @@ class EmployeeProfileController extends GetxController {
 
     if (employee.value == null) return;
 
-    attendanceHistory.value = await repository.getEmployeeAttendance(
-      employee.value!['id'],
-      month: month.month,
-      year: month.year,
-    );
+    await resetAttendance(employee.value!['id']);
 
     _calculateStats();
   }
@@ -62,17 +78,58 @@ class EmployeeProfileController extends GetxController {
 
       employee.value = await repository.getEmployeeById(employeeId);
 
-      attendanceHistory.value = await repository.getEmployeeAttendance(
-        employeeId,
-        month: selectedMonth.value.month,
-        year: selectedMonth.value.year,
-      );
+      todayAttendance.value = await repository.getTodayAttendance(employeeId);
+
+      _startTimer();
+
+      await resetAttendance(employeeId);
 
       await resetActivities(employeeId);
 
       _calculateStats();
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  void _startTimer() {
+    _timer?.cancel();
+
+    _updateTimer();
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) => _updateTimer());
+
+    _refreshTimer?.cancel();
+
+    _refreshTimer = Timer.periodic(
+      const Duration(seconds: 2),
+      (_) => refreshTodayAttendance(),
+    );
+  }
+
+  Future<void> _updateTimer() async {
+    final attendance = todayAttendance.value;
+
+    if (attendance == null) return;
+
+    final state = attendance['current_state'];
+
+    if (state == 'Present') {
+      final punchIn = DateTime.parse(attendance['punch_in']).toLocal();
+
+      workDuration.value = DateTime.now().difference(punchIn);
+
+      breakDuration.value = Duration.zero;
+    }
+
+    if (state == 'On Break') {
+      final activeBreak = await repository.getActiveBreak(attendance['id']);
+
+      if (activeBreak != null) {
+        final breakStart = DateTime.parse(activeBreak['break_start']).toLocal();
+
+        breakDuration.value = DateTime.now().difference(breakStart);
+      }
     }
   }
 
@@ -162,6 +219,55 @@ class EmployeeProfileController extends GetxController {
 
     await loadEmployee(employee.value!['id']);
   }
+
+  Future<void> loadAttendance({
+    required String employeeId,
+    bool refresh = false,
+  }) async {
+    if (isLoadingAttendance.value) return;
+
+    isLoadingAttendance.value = true;
+
+    try {
+      if (refresh) {
+        attendancePage.value = 0;
+        hasMoreAttendance.value = true;
+        attendanceHistory.clear();
+      }
+
+      if (!hasMoreAttendance.value) return;
+
+      final data = await repository.getEmployeeAttendance(
+        employeeId,
+        month: selectedMonth.value.month,
+        year: selectedMonth.value.year,
+        page: attendancePage.value,
+        limit: attendancePageSize,
+      );
+
+      attendanceHistory.addAll(data);
+
+      if (data.length < attendancePageSize) {
+        hasMoreAttendance.value = false;
+      } else {
+        attendancePage.value++;
+      }
+
+      _calculateStats();
+    } finally {
+      isLoadingAttendance.value = false;
+    }
+  }
+
+  Future<void> loadMoreAttendance() async {
+    if (employee.value == null) return;
+
+    await loadAttendance(employeeId: employee.value!['id']);
+  }
+
+  Future<void> resetAttendance(String employeeId) async {
+    await loadAttendance(employeeId: employeeId, refresh: true);
+  }
   /*
   Future<void> loadEmployeeActivities(String employeeId) async {
     try {
@@ -213,6 +319,12 @@ class EmployeeProfileController extends GetxController {
 
     isLoadingActivities.value = true;
 
+    final data = await repository.getEmployeeActivities(
+      employeeId,
+      page: activityPage.value,
+      limit: activityPageSize,
+    );
+
     try {
       if (refresh) {
         activityPage.value = 0;
@@ -248,5 +360,21 @@ class EmployeeProfileController extends GetxController {
 
   Future<void> resetActivities(String employeeId) async {
     await loadActivities(employeeId, refresh: true);
+  }
+
+  String formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+
+    return '${twoDigits(duration.inHours)}:'
+        '${twoDigits(duration.inMinutes.remainder(60))}:'
+        '${twoDigits(duration.inSeconds.remainder(60))}';
+  }
+
+  Future<void> refreshTodayAttendance() async {
+    if (employee.value == null) return;
+
+    todayAttendance.value = await repository.getTodayAttendance(
+      employee.value!['id'],
+    );
   }
 }

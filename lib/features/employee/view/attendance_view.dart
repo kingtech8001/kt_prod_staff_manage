@@ -147,7 +147,7 @@ class AttendanceView extends StatelessWidget {
                                 ),
                                 Expanded(
                                   child: Text(
-                                    'Hours',
+                                    'Duration',
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -203,13 +203,19 @@ class AttendanceView extends StatelessWidget {
 
                                   Expanded(
                                     child: Text(
-                                      '${((item['total_hours'] ?? 0) as num).toDouble().toStringAsFixed(1)} h',
+                                      _formatDuration(
+                                        ((item['total_hours'] ?? 0) as num)
+                                            .toDouble(),
+                                      ),
                                     ),
                                   ),
 
                                   Expanded(
                                     child: Text(
-                                      '${((item['overtime_hours'] ?? 0) as num).toDouble().toStringAsFixed(1)} h',
+                                      _formatDuration(
+                                        ((item['overtime_hours'] ?? 0) as num)
+                                            .toDouble(),
+                                      ),
                                     ),
                                   ),
 
@@ -316,4 +322,17 @@ class AttendanceView extends StatelessWidget {
       ),
     );
   }
+}
+
+String _formatDuration(double hours) {
+  if (hours <= 0) {
+    return "0 min";
+  }
+
+  if (hours < 1) {
+    final minutes = (hours * 60).round();
+    return "$minutes min";
+  }
+
+  return "${hours.toStringAsFixed(1)} hrs";
 }

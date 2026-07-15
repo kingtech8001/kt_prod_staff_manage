@@ -33,6 +33,11 @@ class AttendanceController extends GetxController {
   final workDuration = Duration.zero.obs;
   final breakDuration = Duration.zero.obs;
 
+  static const attendancePageSize = 10;
+  final attendancePage = 0.obs;
+  final hasMoreAttendance = true.obs;
+  final isLoadingMore = false.obs;
+
   Timer? _timer;
 
   @override
@@ -58,12 +63,61 @@ class AttendanceController extends GetxController {
 
       await loadTodayAttendance(employeeId);
 
-      attendanceHistory.value = await service.getAttendance(employeeId);
+      await resetAttendance(employeeId);
 
       _calculateAttendanceMetrics();
     } finally {
       isLoading.value = false;
     }
+  }
+
+  Future<void> loadAttendanceHistory(
+    String employeeId, {
+    bool refresh = false,
+  }) async {
+    if (isLoadingMore.value) return;
+
+    isLoadingMore.value = true;
+
+    try {
+      if (refresh) {
+        attendancePage.value = 0;
+        hasMoreAttendance.value = true;
+        attendanceHistory.clear();
+      }
+
+      if (!hasMoreAttendance.value) return;
+
+      final data = await service.getAttendance(
+        employeeId,
+        page: attendancePage.value,
+        limit: attendancePageSize,
+      );
+
+      attendanceHistory.addAll(data);
+
+      if (data.length < attendancePageSize) {
+        hasMoreAttendance.value = false;
+      } else {
+        attendancePage.value++;
+      }
+
+      _calculateAttendanceMetrics();
+    } finally {
+      isLoadingMore.value = false;
+    }
+  }
+
+  Future<void> loadMoreAttendance() async {
+    final user = authController.user;
+
+    if (user == null) return;
+
+    await loadAttendanceHistory(user.id);
+  }
+
+  Future<void> resetAttendance(String employeeId) async {
+    await loadAttendanceHistory(employeeId, refresh: true);
   }
 
   Future<void> loadTodayAttendance(String employeeId) async {

@@ -4,6 +4,7 @@ import 'package:staff_managememt_system/features/admin/controller/admin_controll
 import '../../../core/controllers/auth_controller.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../../shared/employee_management_controller.dart';
+import '../../hr/view/employee directory/employee_activities_view.dart';
 import '../../hr/view/employee directory/employee_directory_view.dart';
 import '../../hr/view/employee directory/employee_profile_view.dart';
 import '../controller/hr_directory_controller.dart';
@@ -39,6 +40,11 @@ class AdminLayoutView extends StatelessWidget {
                   Expanded(
                     child: employeeManagementController.isProfileOpen.value
                         ? const EmployeeProfileView()
+                        : employeeManagementController.isActivityOpen.value
+                        ? EmployeeActivitiesView(
+                            onBack: () =>
+                                employeeManagementController.backToProfile(),
+                          )
                         : IndexedStack(
                             index: controller.selectedIndex.value,
                             children: [

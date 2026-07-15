@@ -17,20 +17,22 @@ class LoginController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-
-    emailController.text = "admin@proworkforce.com";
-    passwordController.text = "Admin@123";
+    _fillCredentials(selectedRole.value);
   }
 
   void changeRole(String role) {
     selectedRole.value = role;
+    _fillCredentials(role);
   }
 
   Future<void> login() async {
     try {
       isLoading.value = true;
 
-      final response = await Supabase.instance.client.auth.signInWithPassword(email: emailController.text.trim(), password: passwordController.text.trim());
+      final response = await Supabase.instance.client.auth.signInWithPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
 
       final user = response.user;
 
@@ -39,12 +41,19 @@ class LoginController extends GetxController {
         return;
       }
 
-      final profile = await Supabase.instance.client.from('profiles').select().eq('id', user.id).single();
+      final profile = await Supabase.instance.client
+          .from('profiles')
+          .select()
+          .eq('id', user.id)
+          .single();
 
       if (profile['role'] != selectedRole.value) {
         await Supabase.instance.client.auth.signOut();
 
-        CommonSnackbar.error('Invalid Credentials', 'Selected role does not match account type');
+        CommonSnackbar.error(
+          'Invalid Credentials',
+          'Selected role does not match account type',
+        );
 
         return;
       }
@@ -70,6 +79,25 @@ class LoginController extends GetxController {
       CommonSnackbar.error('Error', e.toString());
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  void _fillCredentials(String role) {
+    switch (role) {
+      case 'Employee':
+        emailController.text = 'employee@proworkforce.com';
+        passwordController.text = 'Emp@123';
+        break;
+
+      case 'HR':
+        emailController.text = 'hr@proworkforce.com';
+        passwordController.text = 'HR@123';
+        break;
+
+      case 'Admin':
+        emailController.text = 'admin@proworkforce.com';
+        passwordController.text = 'Admin@123';
+        break;
     }
   }
 }

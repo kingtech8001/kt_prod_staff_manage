@@ -146,6 +146,7 @@ class EmployeeProfileView extends StatelessWidget {
           CircleAvatar(
             radius: 55,
             child: Text(
+              style: TextStyle(fontSize: 30),
               employee['full_name']
                   .toString()
                   .split(' ')
@@ -241,6 +242,12 @@ class EmployeeProfileView extends StatelessWidget {
               ],
             ),
           ),
+
+          const Spacer(),
+
+          const ProfileLiveTimer(),
+
+          const SizedBox(width: 20),
         ],
       ),
     );
@@ -314,6 +321,18 @@ class EmployeeProfileView extends StatelessWidget {
                                 ),
                               ),
 
+                              if (activity['actor_name'] != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 3),
+                                  child: Text(
+                                    'by  (${activity['activity_source']?.toString().toUpperCase()})',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Color(0xFF64748B),
+                                    ),
+                                  ),
+                                ),
+
                               const SizedBox(height: 4),
 
                               Text(
@@ -339,15 +358,11 @@ class EmployeeProfileView extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: ViewAllButton(
                 onPressed: () async {
-                  final hrController = Get.find<HrController>();
-
-                  hrController.changeIndex(HrController.employeeActivities);
-
-                  Get.find<EmployeeManagementController>().isProfileOpen.value =
-                      false;
                   await controller.resetActivities(
                     controller.employee.value!['id'],
                   );
+
+                  Get.find<EmployeeManagementController>().openActivities();
                 },
               ),
             ),
@@ -564,5 +579,99 @@ class EmployeeProfileHeader extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class ProfileLiveTimer extends StatelessWidget {
+  const ProfileLiveTimer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = Get.find<EmployeeProfileController>();
+
+    return Obx(() {
+      final attendance = controller.todayAttendance.value;
+
+      if (attendance == null) {
+        return const SizedBox();
+      }
+
+      final state = attendance['current_state'] ?? '';
+
+      if (state == 'Completed' || state == 'Awaiting Check-In') {
+        return const SizedBox();
+      }
+
+      final bool onBreak = state == 'On Break';
+
+      final duration = onBreak
+          ? controller.breakDuration.value
+          : controller.workDuration.value;
+
+      return AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+        decoration: BoxDecoration(
+          color: onBreak ? const Color(0xFFFFF7ED) : const Color(0xFFECFDF5),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: onBreak ? const Color(0xFFF59E0B) : const Color(0xFF10B981),
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color:
+                  (onBreak ? const Color(0xFFF59E0B) : const Color(0xFF10B981))
+                      .withOpacity(.08),
+              blurRadius: 14,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 14,
+              height: 14,
+              decoration: BoxDecoration(
+                color: onBreak ? Colors.orange : Colors.green,
+                shape: BoxShape.circle,
+              ),
+            ),
+
+            const SizedBox(width: 16),
+
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  onBreak ? "BREAK TIMER" : "LIVE WORK TIMER",
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF64748B),
+                    letterSpacing: 0.8,
+                  ),
+                ),
+
+                const SizedBox(height: 6),
+
+                Text(
+                  controller.formatDuration(duration),
+                  style: const TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w800,
+                    fontFeatures: [FontFeature.tabularFigures()],
+                    color: Color(0xFF0F172A),
+                    letterSpacing: 1,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    });
   }
 }

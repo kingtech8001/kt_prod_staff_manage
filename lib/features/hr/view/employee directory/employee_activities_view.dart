@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../core/utils/activity_formatter.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../controller/employee_profile_controller.dart';
 
@@ -62,24 +63,86 @@ class EmployeeActivitiesView extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final activity = controller.activities[index];
 
-                      return ListTile(
-                        leading: const Icon(Icons.history, color: Colors.blue),
+                      final employee =
+                          controller.employee.value?['full_name'] ?? 'Employee';
 
-                        title: Text(
-                          activity['title'] ?? '',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 18,
-                          ),
+                      final type = activity['activity_type'] ?? '';
+
+                      return Container(
+                        padding: const EdgeInsets.all(20),
+
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: const Color(0xFFE5E7EB)),
                         ),
 
-                        subtitle: Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Text(
-                            DateFormatter.formatDateTime(
-                              activity['activity_time']?.toString(),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+
+                          children: [
+                            Container(
+                              width: 52,
+                              height: 52,
+
+                              decoration: BoxDecoration(
+                                color: ActivityIcon.color(
+                                  type,
+                                ).withValues(alpha: .12),
+
+                                shape: BoxShape.circle,
+                              ),
+
+                              child: Icon(
+                                ActivityIcon.icon(type),
+                                color: ActivityIcon.color(type),
+                              ),
                             ),
-                          ),
+
+                            const SizedBox(width: 18),
+
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+
+                                children: [
+                                  Text(
+                                    ActivityFormatter.title(activity),
+
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 8),
+
+                                  Text(
+                                    ActivityFormatter.description(
+                                      activity,
+                                      employee,
+                                    ),
+
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      color: Color(0xFF64748B),
+                                      height: 1.5,
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 14),
+
+                                  Text(
+                                    DateFormatter.formatDateTime(
+                                      activity['activity_time'],
+                                    ),
+
+                                    style: const TextStyle(color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       );
                     },

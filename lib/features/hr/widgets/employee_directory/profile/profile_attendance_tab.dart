@@ -4,8 +4,39 @@ import 'package:intl/intl.dart';
 import '../../../../../core/utils/date_formatter.dart';
 import '../../../controller/employee_profile_controller.dart';
 
-class ProfileAttendanceTab extends StatelessWidget {
+class ProfileAttendanceTab extends StatefulWidget {
   const ProfileAttendanceTab({super.key});
+
+  @override
+  State<ProfileAttendanceTab> createState() => _ProfileAttendanceTabState();
+}
+
+class _ProfileAttendanceTabState extends State<ProfileAttendanceTab> {
+  final ScrollController scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    scrollController.addListener(() {
+      if (!scrollController.hasClients) return;
+
+      final controller = Get.find<EmployeeProfileController>();
+
+      if (scrollController.position.pixels >=
+              scrollController.position.maxScrollExtent - 250 &&
+          controller.hasMoreAttendance.value &&
+          !controller.isLoadingAttendance.value) {
+        controller.loadMoreAttendance();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +149,24 @@ class ProfileAttendanceTab extends StatelessWidget {
 
           const Divider(height: 1),
 
-          ...controller.attendanceHistory.map((attendance) => _row(attendance)),
+          ListView.builder(
+            controller: scrollController,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount:
+                controller.attendanceHistory.length +
+                (controller.hasMoreAttendance.value ? 1 : 0),
+            itemBuilder: (context, index) {
+              if (index == controller.attendanceHistory.length) {
+                return const Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+
+              return _row(controller.attendanceHistory[index]);
+            },
+          ),
         ],
       ),
     );

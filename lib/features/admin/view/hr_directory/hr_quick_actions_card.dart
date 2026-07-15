@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../hr/view/employee directory/add_employee_dialog.dart';
 import '../../view/hr_management_view.dart';
 
 class HrQuickActionsCard extends StatelessWidget {
@@ -35,7 +36,10 @@ class HrQuickActionsCard extends StatelessWidget {
                 foregroundColor: Colors.white,
               ),
               onPressed: () {
-                // Add HR dialog later
+                showDialog(
+                  context: context,
+                  builder: (_) => const AddEmployeeDialog(role: "HR"),
+                );
               },
             ),
           ),

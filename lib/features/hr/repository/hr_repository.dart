@@ -1,9 +1,13 @@
+import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../core/controllers/auth_controller.dart';
 
 class HrRepository {
   final _supabase = Supabase.instance.client;
   static const int pendingLeavePageSize = 10;
   static const int employeePageSize = 10;
+  final AuthController authController = Get.find<AuthController>();
 
   Future<List<Map<String, dynamic>>> getEmployees({
     String search = '',
@@ -28,6 +32,26 @@ class HrRepository {
     return List<Map<String, dynamic>>.from(response);
   }
 
+  Future<Map<String, dynamic>?> getTodayAttendance(String employeeId) async {
+    final today = DateTime.now().toIso8601String().split('T').first;
+
+    return await _supabase
+        .from('attendance')
+        .select()
+        .eq('employee_id', employeeId)
+        .eq('attendance_date', today)
+        .maybeSingle();
+  }
+
+  Future<Map<String, dynamic>?> getActiveBreak(String attendanceId) async {
+    return await _supabase
+        .from('attendance_breaks')
+        .select()
+        .eq('attendance_id', attendanceId)
+        .isFilter('break_end', null)
+        .maybeSingle();
+  }
+
   Future<Map<String, dynamic>?> getEmployeeById(String employeeId) async {
     final response = await _supabase
         .from('profiles')
@@ -49,6 +73,8 @@ class HrRepository {
     String employeeId, {
     int? month,
     int? year,
+    int page = 0,
+    int limit = 10,
   }) async {
     final now = DateTime.now();
 
@@ -61,13 +87,17 @@ class HrRepository {
         ? DateTime(selectedYear + 1, 1, 1)
         : DateTime(selectedYear, selectedMonth + 1, 1);
 
+    final from = page * limit;
+    final to = from + limit - 1;
+
     final response = await _supabase
         .from('attendance')
         .select()
         .eq('employee_id', employeeId)
         .gte('attendance_date', startDate.toIso8601String().split('T').first)
         .lt('attendance_date', endDate.toIso8601String().split('T').first)
-        .order('attendance_date', ascending: false);
+        .order('attendance_date', ascending: false)
+        .range(from, to);
 
     return List<Map<String, dynamic>>.from(response);
   }
@@ -148,7 +178,7 @@ class HrRepository {
         .from('employee_activity_logs')
         .select()
         .eq('employee_id', employeeId)
-        .order('activity_time', ascending: false)
+        .order('created_at', ascending: false)
         .range(from, to);
 
     return List<Map<String, dynamic>>.from(response);
@@ -225,13 +255,16 @@ class HrRepository {
       });
     }
 
-    await _supabase.from('employee_activity_logs').insert({
-      'employee_id': employeeId,
-      'title': 'Marked $status',
-      'activity_type': 'ATTENDANCE_UPDATE',
-      'activity_source': 'hr',
-      'activity_time': DateTime.now().toIso8601String(),
-    });
+    final actor = authController.currentUser.value;
+
+    await logActivity(
+      employeeId: employeeId,
+      title: 'Marked $status',
+      activityType: 'ATTENDANCE_UPDATE',
+      activitySource: actor?.role.toLowerCase() ?? 'system',
+      actorId: actor?.id,
+      actorName: actor?.fullName,
+    );
   }
 
   Future<void> markAbsent(String employeeId) async {
@@ -242,13 +275,16 @@ class HrRepository {
       'current_state': 'Absent',
     });
 
-    await _supabase.from('employee_activity_logs').insert({
-      'employee_id': employeeId,
-      'title': 'Marked Absent',
-      'activity_type': 'ATTENDANCE_UPDATE',
-      'activity_source': 'hr',
-      'activity_time': DateTime.now().toIso8601String(),
-    });
+    final actor = authController.currentUser.value;
+
+    await logActivity(
+      employeeId: employeeId,
+      title: 'Marked Absent',
+      activityType: 'ATTENDANCE_UPDATE',
+      activitySource: actor?.role.toLowerCase() ?? 'system',
+      actorId: actor?.id,
+      actorName: actor?.fullName,
+    );
   }
 
   Future<void> approveLatestLeave(String employeeId, String approverId) async {
@@ -279,49 +315,6 @@ class HrRepository {
     if (leave == null) return;
 
     await rejectLeave(leave['id'], approverId);
-  }
-
-  Future<void> createEmployee({
-    required String firstName,
-    required String lastName,
-    required String email,
-    required String phone,
-    required String designation,
-  }) async {
-    final fullName = '$firstName $lastName';
-
-    final employeeCode =
-        'EMP-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
-
-    final authUser = await _supabase.auth.signUp(
-      email: email,
-      password: 'Temp@123456',
-    );
-
-    final userId = authUser.user?.id;
-
-    if (userId == null) {
-      throw Exception('Failed to create employee account');
-    }
-
-    await _supabase.from('profiles').insert({
-      'id': userId,
-      'employee_code': employeeCode,
-      'full_name': fullName,
-      'email': email,
-      'phone': phone,
-      'designation': designation,
-      'role': 'employee',
-      'is_active': true,
-    });
-
-    await _supabase.from('employee_activity_logs').insert({
-      'employee_id': userId,
-      'title': 'Employee profile created',
-      'activity_type': 'PROFILE_CREATED',
-      'activity_source': 'hr',
-      'activity_time': DateTime.now().toIso8601String(),
-    });
   }
 
   Future<List<Map<String, dynamic>>> getLiveActivities({
@@ -365,24 +358,16 @@ class HrRepository {
         })
         .eq('id', employeeId);
 
-    await _supabase.from('employee_activity_logs').insert({
-      'employee_id': employeeId,
-      'title': 'Employee profile updated by HR',
-      'activity_source': 'hr',
-      'activity_time': DateTime.now().toIso8601String(),
-    });
+    final actor = authController.currentUser.value;
 
-    final result = await _supabase
-        .from('profiles')
-        .update({
-          'full_name': fullName,
-          'email': email,
-          'phone': phone,
-          'designation': designation,
-          'is_active': isActive,
-        })
-        .eq('id', employeeId)
-        .select();
+    await logActivity(
+      employeeId: employeeId,
+      title: 'Employee profile updated',
+      activityType: 'PROFILE_UPDATED',
+      activitySource: actor?.role.toLowerCase() ?? 'system',
+      actorId: actor?.id,
+      actorName: actor?.fullName,
+    );
   }
 
   Future<Map<String, int>> getDashboardStats() async {
@@ -431,5 +416,49 @@ class HrRepository {
         .limit(8);
 
     return List<Map<String, dynamic>>.from(response);
+  }
+
+  Future<void> logActivity({
+    required String employeeId,
+    required String title,
+    required String activityType,
+    required String activitySource,
+    String? actorId,
+    String? actorName,
+  }) async {
+    await _supabase.from('employee_activity_logs').insert({
+      'employee_id': employeeId,
+      'title': title,
+      'activity_type': activityType,
+      'activity_source': activitySource,
+      'actor_id': actorId,
+      'actor_name': actorName,
+      'activity_time': DateTime.now().toUtc().toIso8601String(),
+    });
+  }
+
+  Future<void> createUser({
+    required String fullName,
+    required String email,
+    required String password,
+    required String phone,
+    required String designation,
+    required String role,
+  }) async {
+    final response = await _supabase.functions.invoke(
+      "create_new_user",
+      body: {
+        "full_name": fullName,
+        "email": email,
+        "password": password,
+        "phone": phone,
+        "designation": designation,
+        "role": role,
+      },
+    );
+
+    if (response.data["success"] != true) {
+      throw Exception(response.data["message"]);
+    }
   }
 }
