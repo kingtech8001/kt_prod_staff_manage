@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../../../core/utils/date_formatter.dart';
+import '../../../../../shared/month_year_picker_dialog.dart';
 import '../../../controller/employee_profile_controller.dart';
 
 class ProfileAttendanceTab extends StatefulWidget {
@@ -12,29 +13,13 @@ class ProfileAttendanceTab extends StatefulWidget {
 }
 
 class _ProfileAttendanceTabState extends State<ProfileAttendanceTab> {
-  final ScrollController scrollController = ScrollController();
-
   @override
   void initState() {
     super.initState();
-
-    scrollController.addListener(() {
-      if (!scrollController.hasClients) return;
-
-      final controller = Get.find<EmployeeProfileController>();
-
-      if (scrollController.position.pixels >=
-              scrollController.position.maxScrollExtent - 250 &&
-          controller.hasMoreAttendance.value &&
-          !controller.isLoadingAttendance.value) {
-        controller.loadMoreAttendance();
-      }
-    });
   }
 
   @override
   void dispose() {
-    scrollController.dispose();
     super.dispose();
   }
 
@@ -52,25 +37,13 @@ class _ProfileAttendanceTabState extends State<ProfileAttendanceTab> {
         );
       }
 
-      if (controller.attendanceHistory.isEmpty) {
-        return Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(40),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFFE5E7EB)),
-          ),
-          child: const Center(child: Text('No attendance records found')),
-        );
-      }
-
       return _attendanceTable(controller);
     });
   }
 
   Widget _attendanceTable(EmployeeProfileController controller) {
     return Container(
+      height: 600,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -89,56 +62,84 @@ class _ProfileAttendanceTabState extends State<ProfileAttendanceTab> {
                   ),
                 ),
 
-                Obx(() {
-                  final month = controller.selectedMonth.value;
+                GetX<EmployeeProfileController>(
+                  builder: (controller) {
+                    final month = controller.selectedMonth.value;
 
-                  return InkWell(
-                    borderRadius: BorderRadius.circular(12),
-                    onTap: () async {
-                      final picked = await showDatePicker(
-                        context: Get.context!,
-                        initialDate: month,
-                        firstDate: DateTime(2020),
-                        lastDate: DateTime(2035),
-                        initialDatePickerMode: DatePickerMode.year,
-                      );
-
-                      if (picked != null) {
-                        controller.changeAttendanceMonth(
-                          DateTime(picked.year, picked.month),
-                        );
-                      }
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 18,
-                        vertical: 10,
-                      ),
+                    return Container(
                       decoration: BoxDecoration(
                         color: const Color(0xFFF8FAFC),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(14),
                         border: Border.all(color: const Color(0xFFE5E7EB)),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.calendar_month_outlined, size: 18),
-
-                          const SizedBox(width: 10),
-
-                          Text(
-                            DateFormat('MMMM yyyy').format(month),
-                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          IconButton(
+                            icon: const Icon(Icons.chevron_left_rounded),
+                            onPressed: () {
+                              controller.changeAttendanceMonth(
+                                DateTime(month.year, month.month - 1),
+                              );
+                            },
                           ),
 
-                          const SizedBox(width: 8),
+                          InkWell(
+                            borderRadius: BorderRadius.circular(10),
 
-                          const Icon(Icons.keyboard_arrow_down_rounded),
+                            onTap: () async {
+                              final selected = await showDialog<DateTime>(
+                                context: context,
+
+                                builder: (_) =>
+                                    MonthYearPickerDialog(initialDate: month),
+                              );
+
+                              if (selected != null) {
+                                controller.changeAttendanceMonth(selected);
+                              }
+                            },
+
+                            child: SizedBox(
+                              width: 165,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    DateFormat("MMMM yyyy").format(month),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+
+                                  const SizedBox(width: 6),
+
+                                  const Icon(
+                                    Icons.keyboard_arrow_down_rounded,
+                                    size: 18,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          IconButton(
+                            icon: const Icon(Icons.chevron_right_rounded),
+                            onPressed:
+                                month.year == DateTime.now().year &&
+                                    month.month == DateTime.now().month
+                                ? null
+                                : () {
+                                    controller.changeAttendanceMonth(
+                                      DateTime(month.year, month.month + 1),
+                                    );
+                                  },
+                          ),
                         ],
                       ),
-                    ),
-                  );
-                }),
+                    );
+                  },
+                ),
               ],
             ),
           ),
@@ -149,23 +150,134 @@ class _ProfileAttendanceTabState extends State<ProfileAttendanceTab> {
 
           const Divider(height: 1),
 
-          ListView.builder(
-            controller: scrollController,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount:
-                controller.attendanceHistory.length +
-                (controller.hasMoreAttendance.value ? 1 : 0),
-            itemBuilder: (context, index) {
-              if (index == controller.attendanceHistory.length) {
-                return const Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Center(child: CircularProgressIndicator()),
+          Expanded(
+            child: Obx(() {
+              if (controller.isLoadingAttendance.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (controller.attendanceHistory.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.event_busy_outlined,
+                        size: 60,
+                        color: Colors.grey,
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      const Text(
+                        "No attendance records",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      Text(
+                        "No records for ${DateFormat('MMMM yyyy').format(controller.selectedMonth.value)}",
+                        style: TextStyle(color: Colors.grey.shade600),
+                      ),
+                    ],
+                  ),
                 );
               }
 
-              return _row(controller.attendanceHistory[index]);
-            },
+              return ListView.builder(
+                itemCount: controller.attendanceHistory.length,
+                itemBuilder: (_, index) {
+                  return _row(controller.attendanceHistory[index]);
+                },
+              );
+            }),
+          ),
+
+          const Divider(height: 1),
+
+          _buildPagination(controller),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPagination(EmployeeProfileController controller) {
+    final start = controller.attendanceHistory.isEmpty
+        ? 0
+        : controller.currentAttendancePage.value *
+                  controller.rowsPerPage.value +
+              1;
+
+    final end = (start + controller.attendanceHistory.length - 1).clamp(
+      0,
+      controller.totalRecords.value,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+      child: Row(
+        children: [
+          const Text(
+            "Rows per page",
+            style: TextStyle(
+              color: Color(0xFF64748B),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+
+          const SizedBox(width: 12),
+
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8FAFC),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: const Color(0xFFE5E7EB)),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<int>(
+                dropdownColor: Colors.white,
+                value: controller.rowsPerPage.value,
+                items: const [
+                  DropdownMenuItem(value: 5, child: Text("5")),
+                  DropdownMenuItem(value: 10, child: Text("10")),
+                  DropdownMenuItem(value: 20, child: Text("20")),
+                  DropdownMenuItem(value: 50, child: Text("50")),
+                ],
+                onChanged: (value) {
+                  if (value != null) {
+                    controller.changeRowsPerPage(value);
+                  }
+                },
+              ),
+            ),
+          ),
+
+          const Spacer(),
+
+          Text(
+            "$start-$end of ${controller.totalRecords.value}",
+            style: const TextStyle(color: Color(0xFF64748B)),
+          ),
+
+          const SizedBox(width: 20),
+
+          IconButton(
+            icon: const Icon(Icons.chevron_left),
+            onPressed: controller.currentAttendancePage.value == 0
+                ? null
+                : controller.previousAttendancePage,
+          ),
+
+          IconButton(
+            icon: const Icon(Icons.chevron_right),
+            onPressed: end >= controller.totalRecords.value
+                ? null
+                : controller.nextAttendancePage,
           ),
         ],
       ),
@@ -243,14 +355,12 @@ class _ProfileAttendanceTabState extends State<ProfileAttendanceTab> {
           ),
 
           Expanded(
-            child: Text(
-              ((attendance['total_hours'] ?? 0) as num).toStringAsFixed(1),
-            ),
+            child: Text(DateFormatter.formatHours(attendance['total_hours'])),
           ),
 
           Expanded(
             child: Text(
-              ((attendance['overtime_hours'] ?? 0) as num).toStringAsFixed(1),
+              DateFormatter.formatHours(attendance['overtime_hours']),
             ),
           ),
 

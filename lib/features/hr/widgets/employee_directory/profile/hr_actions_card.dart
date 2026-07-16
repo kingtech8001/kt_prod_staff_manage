@@ -21,7 +21,10 @@ class HrActionsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('HR Actions', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600)),
+          const Text(
+            'HR Actions',
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+          ),
 
           const SizedBox(height: 20),
 
@@ -31,11 +34,25 @@ class HrActionsCard extends StatelessWidget {
               onPressed: () {
                 showDialog(
                   context: context,
-                  builder: (_) => AttendanceActionDialog(title: 'Mark Present', onConfirm: controller.markPresent),
+                  builder: (_) => AttendanceActionDialog(
+                    title: 'Mark Present',
+                    onConfirm: controller.markPresent,
+                    showTimePicker: true,
+                  ),
                 );
               },
-              style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black), foregroundColor: WidgetStatePropertyAll(Colors.white)),
-              child: Row(mainAxisAlignment: .center, children: [Icon(Icons.check), SizedBox(width: 5), const Text('Mark as Present')]),
+              style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll(Colors.black),
+                foregroundColor: WidgetStatePropertyAll(Colors.white),
+              ),
+              child: Row(
+                mainAxisAlignment: .center,
+                children: [
+                  Icon(Icons.check),
+                  SizedBox(width: 5),
+                  const Text('Mark as Present'),
+                ],
+              ),
             ),
           ),
 
@@ -47,11 +64,25 @@ class HrActionsCard extends StatelessWidget {
               onPressed: () {
                 showDialog(
                   context: context,
-                  builder: (_) => AttendanceActionDialog(title: 'Mark Absent', onConfirm: controller.markAbsent),
+                  builder: (_) => AttendanceActionDialog(
+                    title: 'Mark Absent',
+                    onConfirm: controller.markAbsent,
+                    showTimePicker: false,
+                  ),
                 );
               },
-              style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black), foregroundColor: WidgetStatePropertyAll(Colors.white)),
-              child: Row(mainAxisAlignment: .center, children: [Icon(Icons.close), SizedBox(width: 5), const Text('Mark as Absent')]),
+              style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll(Colors.black),
+                foregroundColor: WidgetStatePropertyAll(Colors.white),
+              ),
+              child: Row(
+                mainAxisAlignment: .center,
+                children: [
+                  Icon(Icons.close),
+                  SizedBox(width: 5),
+                  const Text('Mark as Absent'),
+                ],
+              ),
             ),
           ),
 
@@ -63,11 +94,25 @@ class HrActionsCard extends StatelessWidget {
               onPressed: () {
                 showDialog(
                   context: context,
-                  builder: (_) => AttendanceActionDialog(title: 'Mark Leave', onConfirm: controller.markLeave),
+                  builder: (_) => AttendanceActionDialog(
+                    title: 'Mark Leave',
+                    onConfirm: controller.markLeave,
+                    showTimePicker: false,
+                  ),
                 );
               },
-              style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.black), foregroundColor: WidgetStatePropertyAll(Colors.white)),
-              child: Row(mainAxisAlignment: .center, children: [Icon(Icons.check), SizedBox(width: 5), const Text('Mark as Leave')]),
+              style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll(Colors.black),
+                foregroundColor: WidgetStatePropertyAll(Colors.white),
+              ),
+              child: Row(
+                mainAxisAlignment: .center,
+                children: [
+                  Icon(Icons.check),
+                  SizedBox(width: 5),
+                  const Text('Mark as Leave'),
+                ],
+              ),
             ),
           ),
         ],

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -69,7 +70,7 @@ class HrRepository {
         .eq('id', employeeId);
   }
 
-  Future<List<Map<String, dynamic>>> getEmployeeAttendance(
+  Future<Map<String, dynamic>> getEmployeeAttendance(
     String employeeId, {
     int? month,
     int? year,
@@ -90,7 +91,7 @@ class HrRepository {
     final from = page * limit;
     final to = from + limit - 1;
 
-    final response = await _supabase
+    final data = await _supabase
         .from('attendance')
         .select()
         .eq('employee_id', employeeId)
@@ -99,7 +100,17 @@ class HrRepository {
         .order('attendance_date', ascending: false)
         .range(from, to);
 
-    return List<Map<String, dynamic>>.from(response);
+    final allRows = await _supabase
+        .from('attendance')
+        .select('id')
+        .eq('employee_id', employeeId)
+        .gte('attendance_date', startDate.toIso8601String().split('T').first)
+        .lt('attendance_date', endDate.toIso8601String().split('T').first);
+
+    return {
+      'data': List<Map<String, dynamic>>.from(data),
+      'count': allRows.length,
+    };
   }
 
   Future<List<Map<String, dynamic>>> getAttendanceBreaks(
@@ -204,6 +215,8 @@ class HrRepository {
     required String employeeId,
     required DateTime date,
     required String status,
+    TimeOfDay? punchIn,
+    TimeOfDay? punchOut,
   }) async {
     final dateString = date.toIso8601String().split('T').first;
 
@@ -217,18 +230,36 @@ class HrRepository {
     Map<String, dynamic> attendanceData = {};
 
     if (status == 'Present') {
-      final punchIn = DateTime(date.year, date.month, date.day, 9, 0);
+      final inDateTime = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        punchIn!.hour,
+        punchIn.minute,
+      );
 
-      final punchOut = DateTime(date.year, date.month, date.day, 18, 0);
+      final outDateTime = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        punchOut!.hour,
+        punchOut.minute,
+      );
+
+      final totalHours = outDateTime.difference(inDateTime).inMinutes / 60.0;
+
+      final overtime = totalHours > 8 ? totalHours - 8 : 0;
 
       attendanceData = {
         'status': 'Present',
         'current_state': 'Completed',
-        'punch_in': punchIn.toUtc().toIso8601String(),
-        'punch_out': punchOut.toUtc().toIso8601String(),
-        'total_hours': 9.0,
-        'overtime_hours': 0.0,
-        'is_late': false,
+        'punch_in': inDateTime.toUtc().toIso8601String(),
+        'punch_out': outDateTime.toUtc().toIso8601String(),
+        'total_hours': totalHours,
+        'overtime_hours': overtime,
+        'is_late':
+            inDateTime.hour > 9 ||
+            (inDateTime.hour == 9 && inDateTime.minute > 15),
       };
     } else {
       attendanceData = {

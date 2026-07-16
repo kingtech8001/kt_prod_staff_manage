@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../../../core/widgets/view_all_button.dart';
 import '../../../../shared/employee_management_controller.dart';
+import '../../../admin/controller/attendance_analysis_controller.dart';
+import '../../../admin/view/attendance_analysis_view.dart';
 import '../../controller/employee_profile_controller.dart';
 import '../../controller/hr_controller.dart';
 import '../../widgets/employee_directory/edit_employee_dialog.dart';
@@ -26,6 +28,7 @@ class EmployeeProfileView extends StatelessWidget {
       backgroundColor: const Color(0xFFF5F7FA),
       body: Obx(() {
         final profileController = Get.find<EmployeeProfileController>();
+        Get.put(AttendanceAnalysisController(), permanent: false);
         final employee = controller.selectedEmployee.value;
 
         if (employee == null) return const SizedBox.shrink();
@@ -373,7 +376,7 @@ class EmployeeProfileView extends StatelessWidget {
   }
 
   Widget _profileTabs() {
-    final tabs = ['Overview', 'Attendance'];
+    final tabs = ['Overview', 'Attendance', 'Analysis'];
 
     return Obx(
       () => Container(
@@ -444,11 +447,16 @@ class EmployeeProfileView extends StatelessWidget {
   }
 
   Widget _tabContent() {
-    if (controller.selectedTab.value == 'Attendance') {
-      return const ProfileAttendanceTab();
-    }
+    switch (controller.selectedTab.value) {
+      case 'Attendance':
+        return const ProfileAttendanceTab();
 
-    return const EmploymentInformationCard();
+      case 'Analysis':
+        return const AttendanceAnalysisView();
+
+      default:
+        return const EmploymentInformationCard();
+    }
   }
 }
 
@@ -544,6 +552,26 @@ class EmployeeProfileHeader extends StatelessWidget {
               ),
             ),
           ),
+
+          const SizedBox(width: 12),
+
+          Obx(() {
+            final controller = Get.find<EmployeeProfileController>();
+
+            return IconButton(
+              tooltip: "Refresh",
+              onPressed: controller.isRefreshing.value
+                  ? null
+                  : controller.refreshProfile,
+              icon: controller.isRefreshing.value
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.refresh_rounded),
+            );
+          }),
 
           const SizedBox(width: 12),
 

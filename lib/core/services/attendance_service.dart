@@ -23,8 +23,12 @@ class AttendanceService {
     required int page,
     required int limit,
   }) async {
+    print("Get attendance Called");
     final from = page * limit;
     final to = from + limit - 1;
+
+    print("Employee ID = $employeeId");
+    print("Range = $from -> $to");
 
     final response = await supabase
         .from('attendance')
@@ -32,6 +36,9 @@ class AttendanceService {
         .eq('employee_id', employeeId)
         .order('attendance_date', ascending: false)
         .range(from, to);
+
+    print("Attendance Count = ${response.length}");
+    print(response);
 
     return List<Map<String, dynamic>>.from(response);
   }
