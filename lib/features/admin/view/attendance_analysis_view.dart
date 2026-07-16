@@ -105,44 +105,15 @@ class AttendanceAnalysisView extends StatelessWidget {
                     controller.changeMonth(selected);
                   }
                 } else {
-                  final picked = await showDatePicker(
+                  final selected = await showDialog<DateTime>(
                     context: Get.context!,
-                    initialDate: controller.selectedWeek.value,
-                    firstDate: DateTime(2020),
-                    lastDate: DateTime.now(),
-
-                    builder: (context, child) {
-                      return Theme(
-                        data: Theme.of(context).copyWith(
-                          colorScheme: const ColorScheme.light(
-                            primary: Color(0xFF0B1633),
-                            onPrimary: Colors.white,
-                            surface: Colors.white,
-                            onSurface: Color(0xFF111827),
-                          ),
-
-                          dialogTheme: DialogThemeData(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                          ),
-
-                          textButtonTheme: TextButtonThemeData(
-                            style: TextButton.styleFrom(
-                              foregroundColor: const Color(0xFF0B1633),
-                              textStyle: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                        child: child!,
-                      );
-                    },
+                    builder: (_) => WeekPickerDialog(
+                      initialDate: controller.selectedWeek.value,
+                    ),
                   );
 
-                  if (picked != null) {
-                    controller.changeWeek(picked);
+                  if (selected != null) {
+                    controller.changeWeek(selected);
                   }
                 }
               },

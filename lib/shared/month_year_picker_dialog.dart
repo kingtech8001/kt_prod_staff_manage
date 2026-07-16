@@ -218,3 +218,257 @@ class _MonthYearPickerDialogState extends State<MonthYearPickerDialog> {
     );
   }
 }
+
+class WeekPickerDialog extends StatefulWidget {
+  final DateTime initialDate;
+
+  const WeekPickerDialog({super.key, required this.initialDate});
+
+  @override
+  State<WeekPickerDialog> createState() => _WeekPickerDialogState();
+}
+
+class _WeekPickerDialogState extends State<WeekPickerDialog> {
+  late int selectedYear;
+  late int selectedMonth;
+  late DateTime selectedWeekStart;
+
+  @override
+  void initState() {
+    super.initState();
+
+    selectedYear = widget.initialDate.year;
+    selectedMonth = widget.initialDate.month;
+
+    selectedWeekStart = _startOfWeek(widget.initialDate);
+  }
+
+  DateTime _startOfWeek(DateTime date) {
+    return date.subtract(Duration(days: date.weekday - 1));
+  }
+
+  List<DateTime> get weeks {
+    final firstDay = DateTime(selectedYear, selectedMonth, 1);
+
+    final lastDay = DateTime(selectedYear, selectedMonth + 1, 0);
+
+    final List<DateTime> result = [];
+
+    DateTime weekStart = _startOfWeek(firstDay);
+
+    while (weekStart.isBefore(lastDay) || weekStart.month == selectedMonth) {
+      result.add(weekStart);
+      weekStart = weekStart.add(const Duration(days: 7));
+    }
+
+    return result;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final currentYear = DateTime.now().year;
+
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: Container(
+        width: 520,
+        constraints: const BoxConstraints(maxHeight: 700),
+        padding: const EdgeInsets.all(28),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: const Color(0xFFE5E7EB)),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Select Week",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+              ),
+
+              const SizedBox(height: 8),
+
+              const Text(
+                "Choose a month and week.",
+                style: TextStyle(color: Color(0xFF64748B)),
+              ),
+
+              const SizedBox(height: 28),
+
+              const Text("Year", style: TextStyle(fontWeight: FontWeight.w600)),
+
+              const SizedBox(height: 10),
+
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFFE5E7EB)),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<int>(
+                    value: selectedYear,
+                    isExpanded: true,
+                    dropdownColor: Colors.white,
+                    items: List.generate(currentYear - 2019 + 1, (index) {
+                      final year = currentYear - index;
+
+                      return DropdownMenuItem(
+                        value: year,
+                        child: Text(year.toString()),
+                      );
+                    }),
+                    onChanged: (value) {
+                      if (value == null) return;
+
+                      setState(() {
+                        selectedYear = value;
+                      });
+                    },
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 28),
+
+              const Text(
+                "Month",
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+
+              const SizedBox(height: 14),
+
+              GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: 12,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  childAspectRatio: 2.5,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                ),
+                itemBuilder: (_, index) {
+                  final month = index + 1;
+
+                  final selected = month == selectedMonth;
+
+                  return InkWell(
+                    borderRadius: BorderRadius.circular(14),
+                    onTap: () {
+                      setState(() {
+                        selectedMonth = month;
+                      });
+                    },
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      decoration: BoxDecoration(
+                        color: selected
+                            ? const Color(0xFF0B1633)
+                            : const Color(0xFFF8FAFC),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: selected
+                              ? const Color(0xFF0B1633)
+                              : const Color(0xFFE5E7EB),
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          DateFormat.MMM().format(DateTime(2024, month)),
+                          style: TextStyle(
+                            color: selected
+                                ? Colors.white
+                                : const Color(0xFF111827),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+
+              const SizedBox(height: 28),
+
+              const Text("Week", style: TextStyle(fontWeight: FontWeight.w600)),
+
+              const SizedBox(height: 12),
+
+              ...weeks.map((week) {
+                final selected = week == selectedWeekStart;
+
+                final end = week.add(const Duration(days: 6));
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(14),
+                    onTap: () {
+                      setState(() {
+                        selectedWeekStart = week;
+                      });
+                    },
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: selected
+                            ? const Color(0xFF0B1633)
+                            : const Color(0xFFF8FAFC),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: selected
+                              ? const Color(0xFF0B1633)
+                              : const Color(0xFFE5E7EB),
+                        ),
+                      ),
+                      child: Text(
+                        "${DateFormat('dd MMM').format(week)} - ${DateFormat('dd MMM').format(end)}",
+                        style: TextStyle(
+                          color: selected
+                              ? Colors.white
+                              : const Color(0xFF111827),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }),
+
+              const SizedBox(height: 24),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("Cancel"),
+                  ),
+
+                  const SizedBox(width: 12),
+
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context, selectedWeekStart);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF0B1633),
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text("Apply"),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
