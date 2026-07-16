@@ -30,7 +30,9 @@ class AttendanceAnalysisView extends StatelessWidget {
             Expanded(
               child: controller.isLoading.value
                   ? const Center(child: CircularProgressIndicator())
-                  : controller.chartData.isEmpty
+                  : controller.chartData.every(
+                      (e) => e.totalHours == 0 && e.overtimeHours == 0,
+                    )
                   ? _emptyState(controller)
                   : AttendanceBarChart(data: controller.chartData),
             ),
