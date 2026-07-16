@@ -167,4 +167,9 @@ class AttendanceAnalysisController extends GetxController {
     selectedMonth.value = month;
     await loadChart();
   }
+
+  Future<void> changeWeek(DateTime selectedDate) async {
+    selectedWeek.value = _startOfWeek(selectedDate);
+    await loadChart();
+  }
 }

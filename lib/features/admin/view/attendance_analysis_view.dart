@@ -92,20 +92,60 @@ class AttendanceAnalysisView extends StatelessWidget {
 
             return InkWell(
               borderRadius: BorderRadius.circular(10),
-              onTap: isMonthly
-                  ? () async {
-                      final selected = await showDialog<DateTime>(
-                        context: Get.context!,
-                        builder: (_) => MonthYearPickerDialog(
-                          initialDate: controller.selectedMonth.value,
-                        ),
-                      );
+              onTap: () async {
+                if (isMonthly) {
+                  final selected = await showDialog<DateTime>(
+                    context: Get.context!,
+                    builder: (_) => MonthYearPickerDialog(
+                      initialDate: controller.selectedMonth.value,
+                    ),
+                  );
 
-                      if (selected != null) {
-                        controller.changeMonth(selected);
-                      }
-                    }
-                  : null,
+                  if (selected != null) {
+                    controller.changeMonth(selected);
+                  }
+                } else {
+                  final picked = await showDatePicker(
+                    context: Get.context!,
+                    initialDate: controller.selectedWeek.value,
+                    firstDate: DateTime(2020),
+                    lastDate: DateTime.now(),
+
+                    builder: (context, child) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: const ColorScheme.light(
+                            primary: Color(0xFF0B1633),
+                            onPrimary: Colors.white,
+                            surface: Colors.white,
+                            onSurface: Color(0xFF111827),
+                          ),
+
+                          dialogTheme: DialogThemeData(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                          ),
+
+                          textButtonTheme: TextButtonThemeData(
+                            style: TextButton.styleFrom(
+                              foregroundColor: const Color(0xFF0B1633),
+                              textStyle: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                        child: child!,
+                      );
+                    },
+                  );
+
+                  if (picked != null) {
+                    controller.changeWeek(picked);
+                  }
+                }
+              },
               child: SizedBox(
                 width: 180,
                 child: Row(
