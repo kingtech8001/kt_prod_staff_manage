@@ -62,19 +62,7 @@ class LoginController extends GetxController {
 
       Get.find<AuthController>().setUser(userModel);
 
-      switch (selectedRole.value) {
-        case 'Employee':
-          Get.offAllNamed(AppRoutes.employee);
-          break;
-
-        case 'HR':
-          Get.offAllNamed(AppRoutes.hr);
-          break;
-
-        case 'Admin':
-          Get.offAllNamed(AppRoutes.admin);
-          break;
-      }
+      Get.offAllNamed(AppRoutes.dashboard);
     } catch (e) {
       CommonSnackbar.error('Error', e.toString());
     } finally {

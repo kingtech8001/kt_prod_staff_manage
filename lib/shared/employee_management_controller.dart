@@ -15,6 +15,8 @@ class EmployeeManagementController extends GetxController {
   final isProfileOpen = false.obs;
   final isActivityOpen = false.obs;
 
+  bool get shouldShowHeader => !isProfileOpen.value && !isActivityOpen.value;
+
   Future<void> openEmployeeProfile(
     Map<String, dynamic> employee, {
     String role = 'Employee',
@@ -46,5 +48,11 @@ class EmployeeManagementController extends GetxController {
   void backToProfile() {
     isActivityOpen.value = false;
     isProfileOpen.value = true;
+  }
+
+  void resetNavigationState() {
+    isProfileOpen.value = false;
+    isActivityOpen.value = false;
+    selectedEmployee.value = null;
   }
 }

@@ -1,9 +1,14 @@
+import 'package:staff_managememt_system/core/models/user_role.dart';
+
 class UserModel {
   final String id;
   final String employeeCode;
   final String fullName;
   final String email;
   final String role;
+
+  UserRole get userRole => UserRoleExtension.fromString(role);
+
   final String? department;
   final String? designation;
   final String? phone;

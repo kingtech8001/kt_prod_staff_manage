@@ -1,55 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:staff_managememt_system/features/hr/controller/hr_controller.dart';
-
-import '../../../core/controllers/auth_controller.dart';
 import '../../../core/widgets/common_helper.dart';
-import '../../../shared/employee_management_controller.dart';
+import 'sidebar_config.dart';
 
-class HrSidebar extends StatelessWidget {
-  HrSidebar({super.key});
+class DashboardSidebar extends StatelessWidget {
+  final SidebarConfig config;
 
-  final hrController = Get.find<HrController>();
-  final controller = Get.find<EmployeeManagementController>();
-  final authController = Get.find<AuthController>();
-
-  final List<Map<String, dynamic>> menuItems = [
-    {'title': 'Dashboard', 'icon': Icons.dashboard_outlined},
-    {'title': 'Operations Center', 'icon': Icons.business_center_outlined},
-    {'title': 'Employee Directory', 'icon': Icons.people_outline},
-    /*{'title': 'Leave Approval', 'icon': Icons.event_note_outlined},*/
-    {'title': 'Settings', 'icon': Icons.settings_outlined},
-  ];
+  const DashboardSidebar({super.key, required this.config});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 300,
-      color: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-      child: Column(
-        children: [
-          Row(
-            children: const [
-              Icon(Icons.work_rounded, size: 32, color: Color(0xFF0B1633)),
-              SizedBox(width: 12),
-              Text(
-                'ProWorkforce',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
+    return Obx(() {
+      final selectedIndex = config.selectedIndex();
+      return Container(
+        width: config.width,
+        color: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        child: Column(
+          children: [
+            const Row(
+              children: [
+                Icon(Icons.work_rounded, size: 32, color: Color(0xFF0B1633)),
 
-          const SizedBox(height: 40),
+                SizedBox(width: 12),
 
-          Expanded(
-            child: Obx(() {
-              final selectedIndex = hrController.selectedIndex.value;
+                Text(
+                  "ProWorkforce",
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
 
-              return ListView.builder(
-                itemCount: menuItems.length,
+            const SizedBox(height: 40),
+
+            Expanded(
+              child: ListView.builder(
+                itemCount: config.items.length,
                 itemBuilder: (context, index) {
-                  final item = menuItems[index];
+                  final item = config.items[index];
+
                   final isSelected = selectedIndex == index;
 
                   return Padding(
@@ -59,25 +48,27 @@ class HrSidebar extends StatelessWidget {
                     ),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12),
-                      onTap: () {
-                        controller.isProfileOpen.value = false;
-                        hrController.changeIndex(index);
-                      },
+
+                      onTap: () => config.onItemSelected(index),
+
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 14,
                         ),
+
                         decoration: BoxDecoration(
                           color: isSelected
                               ? const Color(0xFFE9EDF5)
                               : Colors.transparent,
+
                           borderRadius: BorderRadius.circular(12),
                         ),
+
                         child: Row(
                           children: [
                             Icon(
-                              item['icon'],
+                              item.icon,
                               size: 20,
                               color: const Color(0xFF1E293B),
                             ),
@@ -86,7 +77,7 @@ class HrSidebar extends StatelessWidget {
 
                             Expanded(
                               child: Text(
-                                item['title'],
+                                item.title,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
@@ -104,13 +95,13 @@ class HrSidebar extends StatelessWidget {
                     ),
                   );
                 },
-              );
-            }),
-          ),
+              ),
+            ),
 
-          const LogoutTile(),
-        ],
-      ),
-    );
+            const LogoutTile(),
+          ],
+        ),
+      );
+    });
   }
 }

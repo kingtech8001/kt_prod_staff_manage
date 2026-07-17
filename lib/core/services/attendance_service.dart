@@ -23,12 +23,8 @@ class AttendanceService {
     required int page,
     required int limit,
   }) async {
-    print("Get attendance Called");
     final from = page * limit;
     final to = from + limit - 1;
-
-    print("Employee ID = $employeeId");
-    print("Range = $from -> $to");
 
     final response = await supabase
         .from('attendance')
@@ -37,14 +33,11 @@ class AttendanceService {
         .order('attendance_date', ascending: false)
         .range(from, to);
 
-    print("Attendance Count = ${response.length}");
-    print(response);
-
     return List<Map<String, dynamic>>.from(response);
   }
 
   Future<void> punchIn(String employeeId) async {
-    ///TODO why today variable,  double click safety, check 9,0 in shiftstart variable
+    ///TODO why today variable,  double click safety, check 9,0 in shift_start variable
     final today = DateTime.now().toIso8601String().split('T').first;
 
     final existing = await supabase
