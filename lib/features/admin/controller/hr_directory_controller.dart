@@ -50,8 +50,8 @@ class HrDirectoryController extends GetxController {
 
       if (!hasMoreHr.value) return;
 
-      final result = await repository.getHrStaff(
-        search: searchQuery.value,
+      final result = await repository.getUsers(
+        roles: const ['HR', 'Employee'],
         page: hrPage.value,
         limit: hrPageSize,
       );
@@ -91,7 +91,10 @@ class HrDirectoryController extends GetxController {
 
     _searchDebounce = Timer(const Duration(milliseconds: 350), () async {
       try {
-        final result = await repository.searchHrStaff(value);
+        final result = await repository.searchUsers(
+          search: value,
+          roles: const ['Employee', 'HR'],
+        );
 
         searchResults.assignAll(result);
       } catch (_) {

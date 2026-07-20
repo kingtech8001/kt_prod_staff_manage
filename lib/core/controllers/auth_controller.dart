@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../shared/dashboard/dashboard_binding.dart';
 import '../models/user_model.dart';
 
 class AuthController extends GetxController {
@@ -67,8 +68,9 @@ class AuthController extends GetxController {
   }
 
   Future<void> logout() async {
-    await Supabase.instance.client.auth.signOut();
+    DashboardBinding.reset();
 
+    await Supabase.instance.client.auth.signOut();
     clearUser();
 
     Get.offAllNamed('/');

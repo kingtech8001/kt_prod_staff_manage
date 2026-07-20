@@ -17,7 +17,7 @@ class EmployeeSearchOverlay {
     required Widget child,
     double width = 320,
   }) {
-    hide();
+    if (_overlayEntry != null) return;
 
     final overlay = Overlay.of(context);
 
@@ -30,7 +30,6 @@ class EmployeeSearchOverlay {
                 behavior: HitTestBehavior.translucent,
                 onTap: hide,
               ),
-
               CompositedTransformFollower(
                 link: layerLink,
                 showWhenUnlinked: false,

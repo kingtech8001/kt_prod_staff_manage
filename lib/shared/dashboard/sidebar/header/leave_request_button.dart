@@ -1,124 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/controllers/auth_controller.dart';
-import '../../../../core/utils/app_confirmation_dialog.dart';
-import '../../../../core/widgets/common_helper.dart';
-import '../../../../core/widgets/snackbar.dart';
-import '../../../auth/controller/leave_controller.dart';
 
-class DashboardHeader extends StatelessWidget {
-  const DashboardHeader({super.key});
+import '../../../../core/widgets/snackbar.dart';
+import '../../../../features/auth/controller/leave_controller.dart';
+
+class LeaveRequestButton extends StatelessWidget {
+  const LeaveRequestButton({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final authController = Get.find<AuthController>();
-    return Container(
-      height: 90,
-      padding: const EdgeInsets.symmetric(horizontal: 32),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: Color(0xFFE5E7EB))),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Obx(() {
-              final user = authController.currentUser.value;
-
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${getGreeting()}, ${user?.fullName ?? ''}',
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Color(0xFF111827)),
-                  ),
-
-                  const SizedBox(height: 4),
-
-                  Text(user?.designation ?? 'Employee', style: const TextStyle(fontSize: 13, color: Color(0xFF64748B))),
-                ],
-              );
-            }),
-          ),
-
-          ElevatedButton.icon(
-            onPressed: () => _showApplyLeaveDialog(context),
-            icon: const Icon(Icons.add_circle_outline, size: 18),
-            label: const Text('Request Leave'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF64748B),
-              foregroundColor: Colors.white,
-              minimumSize: const Size(170, 48),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-            ),
-          ),
-
-          const SizedBox(width: 20),
-          InkWell(
-            borderRadius: BorderRadius.circular(14),
-            onTap: () {
-              Get.dialog(
-                Dialog(
-                  backgroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                  child: Container(
-                    width: 400,
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.notifications_active_outlined, size: 30, color: Color(0xFF0B1633)),
-
-                        const SizedBox(height: 16),
-
-                        const Text('Notifications', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-
-                        const SizedBox(height: 10),
-
-                        const Text(
-                          'Notification system is coming soon.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Color(0xFF64748B)),
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        SizedBox(
-                          width: double.infinity,
-                          height: 48,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0B1633), foregroundColor: Colors.white),
-                            onPressed: () => Get.back(),
-                            child: const Text('Got It'),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
-
-            child: Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: const Color(0xFFE5E7EB)),
-              ),
-              child: const Icon(Icons.notifications_none_rounded, color: Color(0xFF111827)),
-            ),
-          ),
-          const SizedBox(width: 16),
-          UserAvatarButton(
-            onTap: () {
-              // TODO Open Profile
-            },
-          ),
-        ],
+    return ElevatedButton.icon(
+      onPressed: () => _showApplyLeaveDialog(context),
+      icon: const Icon(Icons.add_circle_outline, size: 18),
+      label: const Text('Request Leave'),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xFF64748B),
+        foregroundColor: Colors.white,
+        minimumSize: const Size(170, 48),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
     );
   }
@@ -139,13 +39,18 @@ class DashboardHeader extends StatelessWidget {
       StatefulBuilder(
         builder: (context, setState) {
           return Dialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
 
             child: Container(
               width: 550,
               padding: const EdgeInsets.all(28),
 
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+              ),
 
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -157,9 +62,15 @@ class DashboardHeader extends StatelessWidget {
                         width: 52,
                         height: 52,
 
-                        decoration: BoxDecoration(color: const Color(0xFF0B1633), borderRadius: BorderRadius.circular(14)),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF0B1633),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
 
-                        child: const Icon(Icons.event_note_outlined, color: Colors.white),
+                        child: const Icon(
+                          Icons.event_note_outlined,
+                          color: Colors.white,
+                        ),
                       ),
 
                       const SizedBox(width: 16),
@@ -168,11 +79,20 @@ class DashboardHeader extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
 
                         children: [
-                          Text('Apply Leave', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                          Text(
+                            'Apply Leave',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
 
                           SizedBox(height: 4),
 
-                          Text('Submit a leave request', style: TextStyle(color: Color(0xFF64748B))),
+                          Text(
+                            'Submit a leave request',
+                            style: TextStyle(color: Color(0xFF64748B)),
+                          ),
                         ],
                       ),
                     ],
@@ -188,7 +108,10 @@ class DashboardHeader extends StatelessWidget {
 
                       dropdownColor: Colors.white,
 
-                      icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF0B1633)),
+                      icon: const Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        color: Color(0xFF0B1633),
+                      ),
 
                       decoration: InputDecoration(
                         labelText: 'Leave Type',
@@ -196,7 +119,9 @@ class DashboardHeader extends StatelessWidget {
                         filled: true,
                         fillColor: Colors.white,
 
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
 
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
@@ -205,7 +130,10 @@ class DashboardHeader extends StatelessWidget {
 
                         focusedBorder: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(14)),
-                          borderSide: BorderSide(color: Color(0xFF0B1633), width: 2),
+                          borderSide: BorderSide(
+                            color: Color(0xFF0B1633),
+                            width: 2,
+                          ),
                         ),
                       ),
 
@@ -213,7 +141,12 @@ class DashboardHeader extends StatelessWidget {
                           .map(
                             (e) => DropdownMenuItem(
                               value: e,
-                              child: Text(e, style: const TextStyle(fontWeight: FontWeight.w500)),
+                              child: Text(
+                                e,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                             ),
                           )
                           .toList(),
@@ -242,9 +175,15 @@ class DashboardHeader extends StatelessWidget {
                         builder: (context, child) {
                           return Theme(
                             data: Theme.of(context).copyWith(
-                              colorScheme: const ColorScheme.light(primary: Color(0xFF0B1633)),
+                              colorScheme: const ColorScheme.light(
+                                primary: Color(0xFF0B1633),
+                              ),
 
-                              dialogTheme: DialogThemeData(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24))),
+                              dialogTheme: DialogThemeData(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
+                              ),
                             ),
 
                             child: child!,
@@ -273,7 +212,11 @@ class DashboardHeader extends StatelessWidget {
 
                           const SizedBox(width: 12),
 
-                          Text(startDate == null ? 'Select Start Date' : DateFormat('dd MMM yyyy').format(startDate!)),
+                          Text(
+                            startDate == null
+                                ? 'Select Start Date'
+                                : DateFormat('dd MMM yyyy').format(startDate!),
+                          ),
                         ],
                       ),
                     ),
@@ -294,9 +237,15 @@ class DashboardHeader extends StatelessWidget {
                         builder: (context, child) {
                           return Theme(
                             data: Theme.of(context).copyWith(
-                              colorScheme: const ColorScheme.light(primary: Color(0xFF0B1633)),
+                              colorScheme: const ColorScheme.light(
+                                primary: Color(0xFF0B1633),
+                              ),
 
-                              dialogTheme: DialogThemeData(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24))),
+                              dialogTheme: DialogThemeData(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
+                              ),
                             ),
 
                             child: child!,
@@ -325,7 +274,11 @@ class DashboardHeader extends StatelessWidget {
 
                           const SizedBox(width: 12),
 
-                          Text(endDate == null ? 'Select End Date' : DateFormat('dd MMM yyyy').format(endDate!)),
+                          Text(
+                            endDate == null
+                                ? 'Select End Date'
+                                : DateFormat('dd MMM yyyy').format(endDate!),
+                          ),
                         ],
                       ),
                     ),
@@ -342,7 +295,9 @@ class DashboardHeader extends StatelessWidget {
                       labelText: 'Reason',
                       hintText: 'Enter reason for leave',
 
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                     ),
                   ),
 
@@ -370,21 +325,36 @@ class DashboardHeader extends StatelessWidget {
                             backgroundColor: const Color(0xFF0B1633),
                             foregroundColor: Colors.white,
 
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
                           ),
 
                           onPressed: () async {
-                            if (startDate == null || endDate == null || reasonController.text.trim().isEmpty) {
-                              CommonSnackbar.warning('Validation', 'Please fill all fields');
+                            if (startDate == null ||
+                                endDate == null ||
+                                reasonController.text.trim().isEmpty) {
+                              CommonSnackbar.warning(
+                                'Validation',
+                                'Please fill all fields',
+                              );
                               return;
                             }
 
                             try {
-                              await controller.applyLeave(leaveType: selectedLeaveType.value, startDate: startDate!, endDate: endDate!, reason: reasonController.text.trim());
+                              await controller.applyLeave(
+                                leaveType: selectedLeaveType.value,
+                                startDate: startDate!,
+                                endDate: endDate!,
+                                reason: reasonController.text.trim(),
+                              );
 
                               Navigator.pop(context);
 
-                              CommonSnackbar.success('Success', 'Leave request submitted');
+                              CommonSnackbar.success(
+                                'Success',
+                                'Leave request submitted',
+                              );
                             } catch (e) {
                               CommonSnackbar.error('Error', e.toString());
                             }
@@ -402,19 +372,5 @@ class DashboardHeader extends StatelessWidget {
         },
       ),
     );
-  }
-
-  String getGreeting() {
-    final hour = DateTime.now().hour;
-
-    if (hour < 12) {
-      return 'Good Morning';
-    } else if (hour < 17) {
-      return 'Good Afternoon';
-    } else if (hour < 21) {
-      return 'Good Evening';
-    } else {
-      return 'Good Night';
-    }
   }
 }

@@ -14,7 +14,7 @@ class HrDashboardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hrController = Get.find<HrController>();
+    final hrController = Get.put(HrController());
     return Container(
       color: const Color(0xFFF5F7FA),
       child: SingleChildScrollView(

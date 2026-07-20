@@ -5,7 +5,8 @@ class AdminRepository {
 
   static const int hrPageSize = 10;
 
-  Future<List<Map<String, dynamic>>> getHrStaff({
+  Future<List<Map<String, dynamic>>> getUsers({
+    required List<String> roles,
     String search = '',
     int page = 0,
     int limit = hrPageSize,
@@ -13,7 +14,7 @@ class AdminRepository {
     final start = page * limit;
     final end = start + limit - 1;
 
-    final query = _supabase.from('profiles').select().eq('role', 'HR');
+    final query = _supabase.from('profiles').select().inFilter('role', roles);
 
     final response =
         await (search.trim().isEmpty
@@ -27,16 +28,20 @@ class AdminRepository {
     return List<Map<String, dynamic>>.from(response);
   }
 
-  Future<List<Map<String, dynamic>>> searchHrStaff(String search) async {
+  Future<List<Map<String, dynamic>>> searchUsers({
+    required String search,
+    required List<String> roles,
+  }) async {
     if (search.trim().isEmpty) return [];
 
     final response = await _supabase
         .from('profiles')
         .select()
-        .eq('role', 'HR')
+        .inFilter('role', roles)
         .or(
           'full_name.ilike.%$search%,employee_code.ilike.%$search%,designation.ilike.%$search%',
         )
+        .order('full_name')
         .limit(8);
 
     return List<Map<String, dynamic>>.from(response);

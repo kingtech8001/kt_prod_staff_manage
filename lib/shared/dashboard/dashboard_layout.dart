@@ -12,19 +12,22 @@ class DashboardLayout extends StatelessWidget {
     final authController = Get.find<AuthController>();
 
     return Obx(() {
-      DashboardBinding.initialize();
+      final role = authController.currentUser.value?.role;
+      if (role == null) {
+        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      }
+
+      DashboardBinding.initialize(role);
       final config = DashboardFactory.create(authController);
 
       return Scaffold(
         body: Row(
           children: [
             config.sidebarBuilder(),
-
             Expanded(
               child: Column(
                 children: [
                   if (config.showHeader()) config.headerBuilder(),
-
                   Expanded(child: config.bodyBuilder()),
                 ],
               ),

@@ -13,48 +13,61 @@ import '../../features/hr/controller/operations_controller.dart';
 import '../employee_management_controller.dart';
 
 class DashboardBinding {
-  static bool _initialized = false;
+  static String? _initializedRole;
 
-  static void initialize() {
-    if (!Get.isRegistered<EmployeeController>()) {
-      Get.put(EmployeeController());
-    }
+  static void initialize(String? role) {
+    if (role == null) return; // wait for real data, don't guess
+    if (_initializedRole == role) return; // already correct, skip
 
-    final auth = Get.find<AuthController>();
-
-    switch (auth.currentUser.value?.role) {
+    switch (role) {
       case 'Admin':
         _registerAdmin();
         break;
-
       case 'HR':
         _registerHr();
         break;
-
       default:
         _registerEmployee();
     }
 
-    _initialized = true;
-  }
-
-  static void _registerEmployee() {
-    Get.put(EmployeeController());
-  }
-
-  static void _registerHr() {
-    Get.put(HrController());
-    Get.put(OperationsController());
-    Get.put(EmployeeManagementController());
-  }
-
-  static void _registerAdmin() {
-    Get.put(AdminController());
-    Get.put(EmployeeManagementController());
-    Get.put(HrDirectoryController());
+    _initializedRole = role;
   }
 
   static void reset() {
-    _initialized = false;
+    _initializedRole = null;
+  }
+
+  static void _registerEmployee() {
+    if (!Get.isRegistered<EmployeeController>()) {
+      Get.put(EmployeeController());
+    }
+  }
+
+  static void _registerHr() {
+    if (!Get.isRegistered<HrController>()) {
+      Get.put(HrController());
+    }
+
+    if (!Get.isRegistered<OperationsController>()) {
+      Get.put(OperationsController());
+    }
+
+    if (!Get.isRegistered<EmployeeManagementController>()) {
+      Get.put(EmployeeManagementController());
+    }
+  }
+
+  static void _registerAdmin() {
+    if (!Get.isRegistered<AdminController>()) {
+      Get.put(AdminController());
+    }
+
+    if (!Get.isRegistered<EmployeeManagementController>()) {
+      Get.put(EmployeeManagementController());
+    }
+
+    if (!Get.isRegistered<HrDirectoryController>()) {
+      Get.put(HrDirectoryController());
+    }
   }
 }
