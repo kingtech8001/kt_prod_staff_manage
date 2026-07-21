@@ -1,6 +1,10 @@
+import 'package:get/get.dart';
+import '../../../../features/admin/controller/hr_directory_controller.dart';
+import '../../../../features/hr/controller/employee_directory_controller.dart';
+import '../../search/search_widget.dart';
+import '../../search/tiles/admin_search_tile.dart';
+import '../../search/tiles/employee_search_tile.dart';
 import 'dashboard_header.dart';
-import 'employee_search_widget.dart';
-import 'hr_search_widget.dart';
 import 'leave_request_button.dart';
 import 'header_config.dart';
 
@@ -19,7 +23,17 @@ class HeaderFactory {
   static DashboardHeader hr() {
     return DashboardHeader(
       config: HeaderConfig(
-        actionWidget: EmployeeSearchWidget(),
+        actionWidget: SearchWidget(
+          controller: Get.find<EmployeeDirectoryController>(),
+          hintText: 'Search employees...',
+          loadingTitle: 'Searching employees',
+          loadingSubtitle: 'Looking for matching employees...',
+          emptyTitle: 'No employees found',
+          emptySubtitle: 'Try another name, employee ID or designation.',
+          itemBuilder: (context, employee, onTap) {
+            return EmployeeSearchTile(employee: employee, onTap: onTap);
+          },
+        ),
         showNotification: true,
       ),
     );
@@ -28,7 +42,17 @@ class HeaderFactory {
   static DashboardHeader admin() {
     return DashboardHeader(
       config: HeaderConfig(
-        actionWidget: HrSearchWidget(),
+        actionWidget: SearchWidget(
+          controller: Get.find<HrDirectoryController>(),
+          hintText: 'Search HR & Employees...',
+          loadingTitle: 'Searching staff',
+          loadingSubtitle: 'Looking for matching staff...',
+          emptyTitle: 'No staff found',
+          emptySubtitle: 'Try another name, employee ID or designation.',
+          itemBuilder: (context, user, onTap) {
+            return AdminSearchTile(user: user, onTap: onTap);
+          },
+        ),
         showNotification: false,
       ),
     );

@@ -17,7 +17,7 @@ class EmployeeSearchOverlay {
     required Widget child,
     double width = 320,
   }) {
-    if (_overlayEntry != null) return;
+    hide();
 
     final overlay = Overlay.of(context);
 

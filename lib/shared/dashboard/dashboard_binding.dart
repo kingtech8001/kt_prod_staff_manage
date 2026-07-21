@@ -16,8 +16,8 @@ class DashboardBinding {
   static String? _initializedRole;
 
   static void initialize(String? role) {
-    if (role == null) return; // wait for real data, don't guess
-    if (_initializedRole == role) return; // already correct, skip
+    if (role == null) return;
+    if (_initializedRole == role) return;
 
     switch (role) {
       case 'Admin':

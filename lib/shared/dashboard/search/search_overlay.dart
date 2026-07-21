@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class AdminEmployeeSearchOverlay {
+class SearchOverlay {
   OverlayEntry? _overlayEntry;
 
   final LayerLink layerLink = LayerLink();
@@ -30,7 +30,6 @@ class AdminEmployeeSearchOverlay {
                 behavior: HitTestBehavior.translucent,
                 onTap: hide,
               ),
-
               CompositedTransformFollower(
                 link: layerLink,
                 showWhenUnlinked: false,

@@ -17,6 +17,12 @@ class EmployeeManagementController extends GetxController {
 
   bool get shouldShowHeader => !isProfileOpen.value && !isActivityOpen.value;
 
+  @override
+  void onInit() {
+    super.onInit();
+    print("EmployeeManagementController initialized");
+  }
+
   Future<void> openEmployeeProfile(
     Map<String, dynamic> employee, {
     String role = 'Employee',

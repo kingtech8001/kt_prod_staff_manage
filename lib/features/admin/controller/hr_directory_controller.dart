@@ -1,10 +1,9 @@
 import 'dart:async';
-
 import 'package:get/get.dart';
-
+import '../../../shared/dashboard/search/search_controller_base.dart';
 import '../repository/admin_repository.dart';
 
-class HrDirectoryController extends GetxController {
+class HrDirectoryController extends SearchControllerBase {
   final repository = AdminRepository();
 
   static const hrPageSize = 10;

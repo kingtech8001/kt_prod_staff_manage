@@ -1,12 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../shared/dashboard/search/search_controller_base.dart';
 import '../repository/hr_repository.dart';
 import 'dart:async';
 
-class EmployeeDirectoryController extends GetxController {
-  final searchController = TextEditingController();
-  final searchFocusNode = FocusNode();
-
+class EmployeeDirectoryController extends SearchControllerBase {
   final repository = HrRepository();
   final liveActivities = <Map<String, dynamic>>[].obs;
   final employees = <Map<String, dynamic>>[].obs;
