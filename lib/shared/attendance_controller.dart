@@ -1,7 +1,5 @@
 import 'dart:async';
-
 import 'package:get/get.dart';
-
 import '../core/controllers/auth_controller.dart';
 import '../core/services/attendance_service.dart';
 import '../core/widgets/snackbar.dart';
@@ -13,6 +11,8 @@ class AttendanceController extends GetxController {
   final todayAttendance = Rxn<Map<String, dynamic>>();
 
   final attendanceHistory = <Map<String, dynamic>>[].obs;
+
+  final weeklyAttendance = <Map<String, dynamic>>[].obs;
 
   RxList<Map<String, dynamic>> get attendanceList => attendanceHistory;
 
@@ -33,10 +33,11 @@ class AttendanceController extends GetxController {
   final workDuration = Duration.zero.obs;
   final breakDuration = Duration.zero.obs;
 
-  static const attendancePageSize = 10;
-  final attendancePage = 0.obs;
-  final hasMoreAttendance = true.obs;
-  final isLoadingMore = false.obs;
+  final currentAttendancePage = 0.obs;
+  final rowsPerPage = 10.obs;
+  final totalRecords = 0.obs;
+  final selectedMonth = DateTime.now().obs;
+  final isLoadingAttendance = false.obs;
 
   Timer? _timer;
 
@@ -48,7 +49,7 @@ class AttendanceController extends GetxController {
       if (user != null) {
         loadAttendance(user.id);
       } else {
-        _clearState();
+        weeklyAttendance.clear();
       }
     });
 
@@ -63,6 +64,7 @@ class AttendanceController extends GetxController {
 
       await loadTodayAttendance(employeeId);
 
+      await loadWeeklyAttendance(employeeId);
       await resetAttendance(employeeId);
 
       _calculateAttendanceMetrics();
@@ -75,37 +77,87 @@ class AttendanceController extends GetxController {
     String employeeId, {
     bool refresh = false,
   }) async {
-    if (isLoadingMore.value) return;
+    if (isLoadingAttendance.value) return;
 
-    isLoadingMore.value = true;
+    isLoadingAttendance.value = true;
 
     try {
       if (refresh) {
-        attendancePage.value = 0;
-        hasMoreAttendance.value = true;
         attendanceHistory.clear();
       }
 
-      if (!hasMoreAttendance.value) return;
-
       final data = await service.getAttendance(
         employeeId,
-        page: attendancePage.value,
-        limit: attendancePageSize,
+        month: selectedMonth.value.month,
+        year: selectedMonth.value.year,
+        page: currentAttendancePage.value,
+        limit: rowsPerPage.value,
       );
 
-      attendanceHistory.addAll(data);
+      attendanceHistory.assignAll(
+        List<Map<String, dynamic>>.from(data['data']),
+      );
 
-      if (data.length < attendancePageSize) {
-        hasMoreAttendance.value = false;
-      } else {
-        attendancePage.value++;
-      }
+      totalRecords.value = data['count'];
 
       _calculateAttendanceMetrics();
     } finally {
-      isLoadingMore.value = false;
+      isLoadingAttendance.value = false;
     }
+  }
+
+  Future<void> nextAttendancePage() async {
+    final user = authController.user;
+
+    if (user == null) return;
+
+    final totalPages = (totalRecords.value / rowsPerPage.value).ceil();
+
+    if (currentAttendancePage.value >= totalPages - 1) return;
+
+    currentAttendancePage.value++;
+
+    await loadAttendanceHistory(user.id);
+  }
+
+  Future<void> previousAttendancePage() async {
+    final user = authController.user;
+
+    if (user == null) return;
+
+    if (currentAttendancePage.value == 0) return;
+
+    currentAttendancePage.value--;
+
+    await loadAttendanceHistory(user.id);
+  }
+
+  Future<void> changeRowsPerPage(int value) async {
+    final user = authController.user;
+
+    if (user == null) return;
+
+    rowsPerPage.value = value;
+
+    currentAttendancePage.value = 0;
+
+    await loadAttendanceHistory(user.id, refresh: true);
+  }
+
+  Future<void> changeAttendanceMonth(DateTime month) async {
+    selectedMonth.value = month;
+
+    currentAttendancePage.value = 0;
+
+    final user = authController.user;
+
+    if (user == null) return;
+
+    await resetAttendance(user.id);
+  }
+
+  Future<void> loadWeeklyAttendance(String employeeId) async {
+    weeklyAttendance.assignAll(await service.getWeeklyAttendance(employeeId));
   }
 
   Future<void> loadMoreAttendance() async {
@@ -225,27 +277,6 @@ class AttendanceController extends GetxController {
     }
 
     currentStreak.value = streak;
-  }
-
-  void _clearState() {
-    todayAttendance.value = null;
-    attendanceHistory.clear();
-
-    workDuration.value = Duration.zero;
-    breakDuration.value = Duration.zero;
-
-    attendancePercentage.value = 0;
-    workingDays.value = 0;
-    lateDays.value = 0;
-    overtimeHours.value = 0;
-    averageHours.value = 0;
-    longestDayHours.value = 0;
-    averageArrivalTime.value = '--';
-    currentStreak.value = 0;
-
-    attendanceMap.clear();
-
-    _timer?.cancel();
   }
 
   Future<void> punchIn() async {

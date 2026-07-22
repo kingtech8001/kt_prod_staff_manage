@@ -60,11 +60,21 @@ class AnnouncementsView extends StatelessWidget {
                   }
 
                   return ListView.separated(
-                    itemCount: controller.announcements.length,
+                    controller: controller.announcementScrollController,
+                    itemCount:
+                        controller.announcements.length +
+                        (controller.hasMoreAnnouncements.value ? 1 : 0),
 
                     separatorBuilder: (_, __) => const Divider(height: 16),
 
                     itemBuilder: (context, index) {
+                      if (index == controller.announcements.length) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20),
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      }
+
                       final item = controller.announcements[index];
 
                       return ListTile(
@@ -72,7 +82,6 @@ class AnnouncementsView extends StatelessWidget {
                           Icons.campaign_outlined,
                           color: Colors.blue,
                         ),
-
                         title: Text(
                           item['title'] ?? '',
                           style: const TextStyle(
@@ -80,7 +89,6 @@ class AnnouncementsView extends StatelessWidget {
                             fontSize: 18,
                           ),
                         ),
-
                         subtitle: Padding(
                           padding: const EdgeInsets.only(top: 8),
                           child: Text(item['description'] ?? ''),
@@ -92,34 +100,6 @@ class AnnouncementsView extends StatelessWidget {
               ),
 
               const SizedBox(height: 20),
-
-              Obx(() {
-                if (controller.isLoadingAnnouncements.value) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (!controller.hasMoreAnnouncements.value) {
-                  return const Text(
-                    'No more announcements',
-                    style: TextStyle(
-                      color: Color(0xFF64748B),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  );
-                }
-
-                return SizedBox(
-                  width: 180,
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(Colors.black),
-                      foregroundColor: WidgetStatePropertyAll(Colors.white),
-                    ),
-                    onPressed: controller.loadMoreAnnouncements,
-                    child: const Text('Load More'),
-                  ),
-                );
-              }),
             ],
           ),
         ),

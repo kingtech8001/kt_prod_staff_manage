@@ -18,20 +18,62 @@ class AttendanceService {
     return response;
   }
 
-  Future<List<Map<String, dynamic>>> getAttendance(
+  Future<Map<String, dynamic>> getAttendance(
     String employeeId, {
+    required int month,
+    required int year,
     required int page,
     required int limit,
   }) async {
     final from = page * limit;
     final to = from + limit - 1;
 
+    final start = DateTime(year, month, 1).toIso8601String().split('T').first;
+
+    final end = DateTime(year, month + 1, 0).toIso8601String().split('T').first;
+
+    final allRecords = await supabase
+        .from('attendance')
+        .select()
+        .eq('employee_id', employeeId)
+        .gte('attendance_date', start)
+        .lte('attendance_date', end);
+
+    final pageData = await supabase
+        .from('attendance')
+        .select()
+        .eq('employee_id', employeeId)
+        .gte('attendance_date', start)
+        .lte('attendance_date', end)
+        .order('attendance_date', ascending: false)
+        .range(from, to);
+
+    return {
+      'data': List<Map<String, dynamic>>.from(pageData),
+      'count': allRecords.length,
+    };
+  }
+
+  Future<List<Map<String, dynamic>>> getWeeklyAttendance(
+    String employeeId,
+  ) async {
+    final now = DateTime.now();
+
+    final startOfWeek = DateTime(
+      now.year,
+      now.month,
+      now.day - (now.weekday - 1),
+    );
+
+    final endOfWeek = startOfWeek.add(const Duration(days: 6));
+
     final response = await supabase
         .from('attendance')
         .select()
         .eq('employee_id', employeeId)
-        .order('attendance_date', ascending: false)
-        .range(from, to);
+        .gte('attendance_date', startOfWeek.toIso8601String().split('T').first)
+        .lte('attendance_date', endOfWeek.toIso8601String().split('T').first)
+        .order('attendance_date', ascending: true);
 
     return List<Map<String, dynamic>>.from(response);
   }

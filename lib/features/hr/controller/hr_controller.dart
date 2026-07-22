@@ -17,6 +17,7 @@ class HrController extends GetxController {
   static const pendingRequests = 6;
   static const liveActivities = 7;
   static const employeeActivities = 8;
+  static const holidays = 9;
 
   @override
   void onInit() {
@@ -92,6 +93,10 @@ class HrController extends GetxController {
           title: 'Employee Activities',
           subtitle: 'Activity history',
         );
+        break;
+
+      case holidays:
+        updateHeader(title: 'Upcoming Holidays', subtitle: ' ');
         break;
     }
   }

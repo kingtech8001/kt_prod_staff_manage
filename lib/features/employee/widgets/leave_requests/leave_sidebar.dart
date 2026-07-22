@@ -12,10 +12,10 @@ class LeaveSidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
-        children: const [
+        children: [
           LeaveBalanceCard(),
           SizedBox(height: 20),
-          UpcomingHolidaysCard(),
+          UpcomingHolidaysCard(onViewAll: () {}),
           SizedBox(height: 20),
           RecentActivityCard(),
         ],

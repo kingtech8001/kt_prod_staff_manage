@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:staff_managememt_system/features/employee/widgets/dashboard/upcoming_holidays_card.dart';
 
 import '../controller/employee_controller.dart';
 
@@ -33,6 +34,11 @@ class EmployeeContent extends StatelessWidget {
             },
           ),
           ActivitiesView(
+            onBack: () {
+              controller.changeIndex(EmployeeController.dashboard);
+            },
+          ),
+          HolidaysView(
             onBack: () {
               controller.changeIndex(EmployeeController.dashboard);
             },

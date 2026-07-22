@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/controllers/auth_controller.dart';
 import '../../../core/services/dashboard_service.dart';
@@ -15,7 +16,13 @@ class DashboardController extends GetxController {
   final leaveService = LeaveService();
   final authController = Get.find<AuthController>();
 
-  static const int announcementPageSize = 5;
+  final expectedWorkHours = 8.0.obs;
+  final breakAllowanceHours = 1.0.obs;
+
+  final announcementScrollController = ScrollController();
+  final activityScrollController = ScrollController();
+
+  static const int announcementPageSize = 10;
   final announcementPage = 0.obs;
   final hasMoreAnnouncements = true.obs;
   final isLoadingAnnouncements = false.obs;
@@ -25,22 +32,65 @@ class DashboardController extends GetxController {
   final hasMoreActivities = true.obs;
   final isLoadingActivities = false.obs;
 
+  static const int holidayPageSize = 10;
+  final holidayPage = 0.obs;
+  final hasMoreHolidays = true.obs;
+  final isLoadingHolidays = false.obs;
+  final holidayScrollController = ScrollController();
+
+  static const int employeeActivityPageSize = 5;
+  final employeeActivityPage = 0.obs;
+  final hasMoreEmployeeActivities = true.obs;
+  final isLoadingEmployeeActivities = false.obs;
+  final employeeActivities = <Map<String, dynamic>>[].obs;
+
   @override
   void onInit() {
     super.onInit();
 
     final authController = Get.find<AuthController>();
 
-    // React whenever currentUser changes (including on restore)
     ever(authController.currentUser, (user) {
       if (user != null) {
         loadDashboardData(user.id);
       }
     });
 
-    // Also load immediately if user is already available
     if (authController.user != null) {
       loadDashboardData(authController.user!.id);
+    }
+
+    announcementScrollController.addListener(_announcementScrollListener);
+    activityScrollController.addListener(_activityScrollListener);
+    holidayScrollController.addListener(_holidayScrollListener);
+  }
+
+  @override
+  void onClose() {
+    announcementScrollController.dispose();
+    activityScrollController.dispose();
+    holidayScrollController.dispose();
+    super.onClose();
+  }
+
+  void _announcementScrollListener() {
+    if (announcementScrollController.position.pixels >=
+        announcementScrollController.position.maxScrollExtent - 200) {
+      loadMoreAnnouncements();
+    }
+  }
+
+  void _activityScrollListener() {
+    if (activityScrollController.position.pixels >=
+        activityScrollController.position.maxScrollExtent - 200) {
+      loadMoreActivities();
+    }
+  }
+
+  void _holidayScrollListener() {
+    if (holidayScrollController.position.pixels >=
+        holidayScrollController.position.maxScrollExtent - 200) {
+      loadMoreHolidays();
     }
   }
 
@@ -49,9 +99,12 @@ class DashboardController extends GetxController {
 
     await loadActivities(employeeId, refresh: true);
 
-    holidays.value = await dashboardService.getUpcomingHolidays();
+    await loadEmployeeActivities(refresh: true);
+
+    await loadHolidays(refresh: true);
 
     schedules.value = await scheduleService.getUpcomingSchedule(employeeId);
+    await loadScheduleSettings(employeeId);
 
     final balance = await leaveService.getLeaveBalance(employeeId);
 
@@ -60,6 +113,18 @@ class DashboardController extends GetxController {
           (balance['annual_leave'] ?? 0) +
           (balance['sick_leave'] ?? 0) +
           (balance['casual_leave'] ?? 0);
+    }
+  }
+
+  Future<void> loadScheduleSettings(String employeeId) async {
+    final schedule = await scheduleService.getScheduleSettings(employeeId);
+
+    if (schedule != null) {
+      expectedWorkHours.value =
+          (schedule['expected_work_hours'] as num?)?.toDouble() ?? 8.0;
+
+      breakAllowanceHours.value =
+          (schedule['break_allowance_hours'] as num?)?.toDouble() ?? 1.0;
     }
   }
 
@@ -153,5 +218,79 @@ class DashboardController extends GetxController {
     recentActivities.clear();
 
     await loadActivities(user.id, refresh: true);
+  }
+
+  Future<void> loadHolidays({bool refresh = false}) async {
+    if (isLoadingHolidays.value) return;
+
+    isLoadingHolidays.value = true;
+
+    try {
+      if (refresh) {
+        holidayPage.value = 0;
+        hasMoreHolidays.value = true;
+        holidays.clear();
+      }
+
+      if (!hasMoreHolidays.value) return;
+
+      final data = await dashboardService.getUpcomingHolidays(
+        page: holidayPage.value,
+        limit: holidayPageSize,
+      );
+
+      holidays.addAll(data);
+
+      if (data.length < holidayPageSize) {
+        hasMoreHolidays.value = false;
+      } else {
+        holidayPage.value++;
+      }
+    } finally {
+      isLoadingHolidays.value = false;
+    }
+  }
+
+  Future<void> loadMoreHolidays() async {
+    await loadHolidays();
+  }
+
+  Future<void> resetHolidays() async {
+    holidayPage.value = 0;
+    hasMoreHolidays.value = true;
+    holidays.clear();
+
+    await loadHolidays(refresh: true);
+  }
+
+  Future<void> loadEmployeeActivities({bool refresh = false}) async {
+    if (isLoadingEmployeeActivities.value) return;
+
+    isLoadingEmployeeActivities.value = true;
+
+    try {
+      if (refresh) {
+        employeeActivityPage.value = 0;
+        hasMoreEmployeeActivities.value = true;
+        employeeActivities.clear();
+      }
+
+      if (!hasMoreEmployeeActivities.value) return;
+
+      final data = await dashboardService.getRecentEmployeeActivities(
+        page: employeeActivityPage.value,
+        limit: employeeActivityPageSize,
+      );
+
+      employeeActivities.addAll(data);
+
+      if (data.length < employeeActivityPageSize) {
+        hasMoreEmployeeActivities.value = false;
+      } else {
+        employeeActivityPage.value++;
+      }
+    } finally {
+      isLoadingEmployeeActivities.value = false;
+    }
   }
 }

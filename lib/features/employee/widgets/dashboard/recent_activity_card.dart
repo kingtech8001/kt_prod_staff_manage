@@ -67,8 +67,8 @@ class RecentActivityCard extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: ViewAllButton(
               onPressed: () async {
-                await controller.resetActivities();
                 onViewAll();
+                await controller.resetActivities();
               },
             ),
           ),

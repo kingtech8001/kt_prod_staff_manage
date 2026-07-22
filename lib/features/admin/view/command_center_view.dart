@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'admin_dashboard_view.dart';
+
 class CommandCenterView extends StatelessWidget {
   const CommandCenterView({super.key});
 
@@ -36,7 +38,7 @@ class CommandCenterView extends StatelessWidget {
                     Row(
                       children: const [
                         Expanded(
-                          child: _StatCard(
+                          child: StatCard(
                             title: 'Total Employees',
                             value: '124',
                             icon: Icons.people_outline,
@@ -46,7 +48,7 @@ class CommandCenterView extends StatelessWidget {
                         SizedBox(width: 16),
 
                         Expanded(
-                          child: _StatCard(
+                          child: StatCard(
                             title: 'HR Managers',
                             value: '8',
                             icon: Icons.badge_outlined,
@@ -56,7 +58,7 @@ class CommandCenterView extends StatelessWidget {
                         SizedBox(width: 16),
 
                         Expanded(
-                          child: _StatCard(
+                          child: StatCard(
                             title: 'Present Today',
                             value: '118',
                             icon: Icons.check_circle_outline,
@@ -66,7 +68,7 @@ class CommandCenterView extends StatelessWidget {
                         SizedBox(width: 16),
 
                         Expanded(
-                          child: _StatCard(
+                          child: StatCard(
                             title: 'Pending Leaves',
                             value: '5',
                             icon: Icons.event_note_outlined,
@@ -214,49 +216,6 @@ class CommandCenterView extends StatelessWidget {
           const SizedBox(height: 20),
 
           child,
-        ],
-      ),
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  final String title;
-  final String value;
-  final IconData icon;
-
-  const _StatCard({
-    required this.title,
-    required this.value,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 250,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
-      ),
-      child: Column(
-        mainAxisAlignment: .start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon),
-
-          const SizedBox(height: 16),
-
-          Text(
-            value,
-            style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-          ),
-
-          const SizedBox(height: 6),
-
-          Text(title, style: const TextStyle(color: Color(0xFF64748B))),
         ],
       ),
     );

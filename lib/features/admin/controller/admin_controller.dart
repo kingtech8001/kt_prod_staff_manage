@@ -11,31 +11,36 @@ class AdminController extends GetxController {
 
     switch (index) {
       case 0:
-        pageTitle.value = 'Command Center';
+        pageTitle.value = 'Dashboard';
         pageSubtitle.value = 'Global Workforce Overview';
         break;
 
       case 1:
+        pageTitle.value = 'Command Center';
+        pageSubtitle.value = 'Global Workforce Overview';
+        break;
+
+      case 2:
         pageTitle.value = 'Employee Management';
         pageSubtitle.value = 'Manage employee accounts';
         break;
 
-      case 2:
+      case 3:
         pageTitle.value = 'HR Management';
         pageSubtitle.value = 'Manage HR accounts';
         break;
 
-      case 3:
+      case 4:
         pageTitle.value = 'Access Control';
         pageSubtitle.value = 'Roles and permissions';
         break;
 
-      case 4:
+      case 5:
         pageTitle.value = 'Audit Logs';
         pageSubtitle.value = 'System activity history';
         break;
 
-      case 5:
+      case 6:
         pageTitle.value = 'Settings';
         pageSubtitle.value = 'System configuration';
         break;

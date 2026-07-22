@@ -10,6 +10,7 @@ class EmployeeController extends GetxController {
   static const policies = 4;
   static const announcements = 5;
   static const activities = 6;
+  static const holidays = 7;
 
   void changeIndex(int index) {
     selectedIndex.value = index;

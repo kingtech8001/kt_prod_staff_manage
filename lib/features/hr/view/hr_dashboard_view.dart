@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:staff_managememt_system/features/employee/view/attendance_view.dart';
 
+import '../../employee/controller/dashboard_controller.dart';
 import '../../employee/widgets/dashboard/attendance_table.dart';
 import '../../employee/widgets/dashboard/company_announcements_card.dart';
 import '../../employee/widgets/dashboard/quick_status_row.dart';
@@ -14,6 +16,7 @@ class HrDashboardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dashboardController = Get.put(DashboardController());
     final hrController = Get.put(HrController());
     return Container(
       color: const Color(0xFFF5F7FA),
@@ -30,11 +33,11 @@ class HrDashboardView extends StatelessWidget {
 
                   const SizedBox(height: 24),
 
-                  const QuickStatsRow(),
+                  QuickStatsRow(controller: dashboardController),
 
                   const SizedBox(height: 24),
 
-                  const AttendanceTable(),
+                  const AttendanceViewTable(),
                 ],
               ),
             ),
@@ -53,7 +56,11 @@ class HrDashboardView extends StatelessWidget {
 
                   const SizedBox(height: 24),
 
-                  const UpcomingHolidaysCard(),
+                  UpcomingHolidaysCard(
+                    onViewAll: () {
+                      hrController.changeIndex(9);
+                    },
+                  ),
 
                   const SizedBox(height: 24),
 

@@ -19,11 +19,17 @@ class LoginForm extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Welcome Back', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+            const Text(
+              'Welcome Back',
+              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+            ),
 
             const SizedBox(height: 8),
 
-            const Text('Sign in to continue to ProWorkforce', style: TextStyle(color: Colors.grey)),
+            const Text(
+              'Sign in to continue to ProWorkforce',
+              style: TextStyle(color: Colors.grey),
+            ),
 
             const SizedBox(height: 32),
 
@@ -44,7 +50,12 @@ class LoginForm extends StatelessWidget {
 
                   const SizedBox(width: 24),
 
-                  Radio<String>(activeColor: const Color(0xFF0B1633), value: 'HR', groupValue: controller.selectedRole.value, onChanged: (value) => controller.changeRole(value!)),
+                  Radio<String>(
+                    activeColor: const Color(0xFF0B1633),
+                    value: 'HR',
+                    groupValue: controller.selectedRole.value,
+                    onChanged: (value) => controller.changeRole(value!),
+                  ),
                   const Text('HR'),
 
                   const SizedBox(width: 24),
@@ -62,33 +73,68 @@ class LoginForm extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            AppTextField(controller: controller.emailController, hint: 'Enter work email', prefixIcon: Icons.email_outlined),
+            AppTextField(
+              controller: controller.emailController,
+              hint: 'Enter work email',
+              prefixIcon: Icons.email_outlined,
+            ),
 
             const SizedBox(height: 16),
 
-            AppTextField(controller: controller.passwordController, hint: 'Enter password', prefixIcon: Icons.lock_outline, obscureText: true),
+            AppTextField(
+              controller: controller.passwordController,
+              hint: 'Enter password',
+              prefixIcon: Icons.lock_outline,
+              obscureText: true,
+            ),
 
             const SizedBox(height: 12),
 
             Align(
               alignment: Alignment.centerRight,
-              child: TextButton(onPressed: () {}, child: const Text('Forgot Password?')),
+              child: TextButton(
+                onPressed: () {},
+                child: const Text('Forgot Password?'),
+              ),
             ),
 
             const SizedBox(height: 16),
 
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF0B1633),
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            Obx(
+              () => SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0B1633),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  onPressed: controller.isLoading.value
+                      ? null
+                      : controller.login,
+                  child: controller.isLoading.value
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        )
+                      : const Text(
+                          'Sign In',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                 ),
-                onPressed: controller.login,
-                child: const Text('Sign In', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               ),
             ),
           ],

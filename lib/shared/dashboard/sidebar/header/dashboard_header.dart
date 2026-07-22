@@ -64,11 +64,7 @@ class DashboardHeader extends StatelessWidget {
 
           const SizedBox(width: 16),
 
-          UserAvatarButton(
-            onTap: () {
-              // TODO Profile
-            },
-          ),
+          UserAvatarButton(),
         ],
       ),
     );

@@ -11,6 +11,7 @@ import '../../hr/view/employee directory/employee_directory_view.dart';
 import '../../hr/view/employee directory/employee_profile_view.dart';
 
 import 'access_control_view.dart';
+import 'admin_dashboard_view.dart';
 import 'admin_settings_view.dart';
 import 'audit_log_view.dart';
 import 'command_center_view.dart';
@@ -36,6 +37,7 @@ class AdminContent extends StatelessWidget {
         indexedContent: IndexedStack(
           index: controller.selectedIndex.value,
           children: [
+            AdminDashboardView(),
             const CommandCenterView(),
             EmployeeDirectoryView(),
             const HrManagementView(),

@@ -73,11 +73,21 @@ class _ActivitiesViewState extends State<ActivitiesView> {
                   }
 
                   return ListView.separated(
-                    itemCount: controller.recentActivities.length,
+                    controller: controller.activityScrollController,
+                    itemCount:
+                        controller.recentActivities.length +
+                        (controller.hasMoreActivities.value ? 1 : 0),
 
                     separatorBuilder: (_, __) => const Divider(height: 16),
 
                     itemBuilder: (context, index) {
+                      if (index == controller.recentActivities.length) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20),
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      }
+
                       final activity = controller.recentActivities[index];
 
                       return ListTile(
@@ -106,36 +116,6 @@ class _ActivitiesViewState extends State<ActivitiesView> {
               ),
 
               const SizedBox(height: 20),
-
-              Obx(() {
-                if (controller.isLoadingActivities.value) {
-                  return const CircularProgressIndicator();
-                }
-
-                if (!controller.hasMoreActivities.value) {
-                  return const Text(
-                    'No more activities',
-                    style: TextStyle(
-                      color: Color(0xFF64748B),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  );
-                }
-
-                return SizedBox(
-                  width: 180,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      foregroundColor: Colors.white,
-                    ),
-
-                    onPressed: controller.loadMoreActivities,
-
-                    child: const Text("Load More"),
-                  ),
-                );
-              }),
             ],
           ),
         ),

@@ -77,8 +77,8 @@ class CompanyAnnouncementsCard extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: ViewAllButton(
               onPressed: () async {
-                await controller.resetAnnouncements();
                 onViewAll();
+                await controller.resetAnnouncements();
               },
             ),
           ),

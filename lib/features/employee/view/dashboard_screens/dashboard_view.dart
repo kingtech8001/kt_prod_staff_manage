@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:staff_managememt_system/features/employee/view/attendance_view.dart';
+import '../../controller/dashboard_controller.dart';
 import '../../controller/employee_controller.dart';
 import '../../widgets/dashboard/attendance_table.dart';
 import '../../widgets/dashboard/company_announcements_card.dart';
@@ -14,6 +16,7 @@ class DashboardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dashboardController = Get.put(DashboardController());
     final employeeController = Get.put(EmployeeController());
     return Container(
       color: const Color(0xFFF5F7FA),
@@ -31,11 +34,11 @@ class DashboardView extends StatelessWidget {
                       children: [
                         ShiftCard(),
                         const SizedBox(height: 24),
-                        const QuickStatsRow(),
+                        QuickStatsRow(controller: dashboardController),
                         const SizedBox(height: 24),
-                        const AttendanceTable(),
-                        const SizedBox(height: 24),
-                        const BottomMetricsRow(),
+                        const AttendanceViewTable(),
+                        /*const SizedBox(height: 24),
+                        const BottomMetricsRow(),*/
                       ],
                     ),
                   ),
@@ -53,7 +56,13 @@ class DashboardView extends StatelessWidget {
                           },
                         ),
                         const SizedBox(height: 24),
-                        const UpcomingHolidaysCard(),
+                        UpcomingHolidaysCard(
+                          onViewAll: () {
+                            employeeController.changeIndex(
+                              EmployeeController.holidays,
+                            );
+                          },
+                        ),
                         const SizedBox(height: 24),
                         RecentActivityCard(
                           onViewAll: () {

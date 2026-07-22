@@ -23,15 +23,21 @@ class DashboardService {
     return List<Map<String, dynamic>>.from(response);
   }
 
-  Future<List<Map<String, dynamic>>> getUpcomingHolidays() async {
+  Future<List<Map<String, dynamic>>> getUpcomingHolidays({
+    int page = 0,
+    int limit = 10,
+  }) async {
     final today = DateTime.now().toIso8601String().split('T').first;
+
+    final start = page * limit;
+    final end = start + limit - 1;
 
     final response = await supabase
         .from('company_holidays')
         .select()
         .gte('holiday_date', today)
         .order('holiday_date', ascending: true)
-        .limit(3);
+        .range(start, end);
 
     return List<Map<String, dynamic>>.from(response);
   }
@@ -48,6 +54,22 @@ class DashboardService {
         .from('employee_activity_logs')
         .select()
         .eq('employee_id', employeeId)
+        .order('activity_time', ascending: false)
+        .range(start, end);
+
+    return List<Map<String, dynamic>>.from(response);
+  }
+
+  Future<List<Map<String, dynamic>>> getRecentEmployeeActivities({
+    int page = 0,
+    int limit = 5,
+  }) async {
+    final start = page * limit;
+    final end = start + limit - 1;
+
+    final response = await supabase
+        .from('employee_activity_logs')
+        .select()
         .order('activity_time', ascending: false)
         .range(start, end);
 

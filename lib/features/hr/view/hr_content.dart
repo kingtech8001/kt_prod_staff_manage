@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:staff_managememt_system/features/employee/widgets/dashboard/upcoming_holidays_card.dart';
 import '../../../shared/dashboard/role_content.dart';
 import '../../../shared/employee_management_controller.dart';
 import '../controller/hr_controller.dart';
@@ -71,6 +72,11 @@ class HrContent extends StatelessWidget {
                 hrController.changeIndex(management.previousIndex.value);
 
                 management.isProfileOpen.value = true;
+              },
+            ),
+            HolidaysView(
+              onBack: () {
+                hrController.changeIndex(HrController.dashboard);
               },
             ),
           ],
