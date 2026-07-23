@@ -50,7 +50,7 @@ class HrDirectoryController extends SearchControllerBase {
       if (!hasMoreHr.value) return;
 
       final result = await repository.getUsers(
-        roles: const ['HR', 'Employee'],
+        roles: const ['HR'],
         page: hrPage.value,
         limit: hrPageSize,
       );

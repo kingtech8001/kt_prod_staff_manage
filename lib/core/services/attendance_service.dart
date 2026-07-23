@@ -8,7 +8,7 @@ class AttendanceService {
   Future<Map<String, dynamic>> _getCompanySettings() async {
     return await supabase.from('company_settings').select('''
         expected_work_hours,
-        break_allowance_hours,
+        expected_break_minutes,
         shift_start_time,
         shift_end_time,
         late_grace_minutes,
@@ -232,7 +232,7 @@ class AttendanceService {
     final totalWorkedMinutes = now.difference(punchIn).inMinutes;
 
     final allowedBreakMinutes =
-        ((settings['break_allowance_hours'] as num).toDouble() * 60).round();
+        ((settings['expected_break_minutes'] as num).toDouble()).round();
 
     int extraBreakMinutes = 0;
 
@@ -254,7 +254,6 @@ class AttendanceService {
     if (totalHours >= expectedHours + minimumOtHours) {
       overtimeHours = totalHours - expectedHours;
     }
-    print('Saving punch out: ${now.toIso8601String()}');
 
     await supabase
         .from('attendance')
@@ -271,14 +270,6 @@ class AttendanceService {
       title: 'Punched Out',
       activityType: 'PUNCH_OUT',
     );
-
-    final saved = await supabase
-        .from('attendance')
-        .select('punch_out')
-        .eq('id', attendanceId)
-        .single();
-
-    print('Saved punch out: ${saved['punch_out']}');
   }
 
   Future<Map<String, dynamic>?> getActiveBreak(String attendanceId) async {

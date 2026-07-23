@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:staff_managememt_system/features/hr/widgets/employee_directory/quick_actions_card.dart';
 import '../../../../shared/employee_management_controller.dart';
-import '../../controller/employee_directory_controller.dart';
-import '../../widgets/employee_directory/employee_filters.dart';
 import '../../widgets/employee_directory/employee_list_card.dart';
 import '../../widgets/employee_directory/employee_stats_row.dart';
-import '../../widgets/employee_directory/live_activity_feed.dart';
 
 class EmployeeDirectoryView extends StatelessWidget {
   // final controller = Get.put(EmployeeDirectoryController());
