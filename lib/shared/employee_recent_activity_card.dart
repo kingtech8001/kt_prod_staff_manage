@@ -20,7 +20,7 @@ class EmployeeRecentActivityCard extends StatelessWidget {
     return Container(
       width: 400,
       height: 300,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -36,7 +36,46 @@ class EmployeeRecentActivityCard extends StatelessWidget {
 
           const SizedBox(height: 18),
 
-          if (activities.isEmpty)
+          SizedBox(
+            height: 170,
+            child: activities.isEmpty
+                ? const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 40),
+                    child: Center(
+                      child: Text(
+                        "No recent activities",
+                        style: TextStyle(color: Color(0xFF64748B)),
+                      ),
+                    ),
+                  )
+                : ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: EdgeInsets.zero,
+                    itemCount: activities.take(3).length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final activity = activities.take(3).toList()[index];
+
+                      final employee =
+                          activity['employee'] as Map<String, dynamic>?;
+
+                      final fullName =
+                          employee?['full_name']?.toString() ?? 'Unknown';
+
+                      return _ActivityTile(
+                        avatar: fullName.substring(0, 1).toUpperCase(),
+                        name: fullName,
+                        action: activity['title'] ?? '',
+                        time: DateFormatter.formatRelativeTime(
+                          activity['activity_time']?.toString(),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+
+          /*if (activities.isEmpty)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 40),
               child: Center(
@@ -73,8 +112,7 @@ class EmployeeRecentActivityCard extends StatelessWidget {
                   );
                 },
               ),
-            ),
-
+            ),*/
           Container(
             margin: EdgeInsets.symmetric(horizontal: 20),
             width: .infinity,
