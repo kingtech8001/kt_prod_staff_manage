@@ -104,7 +104,7 @@ class DashboardController extends GetxController {
     await loadHolidays(refresh: true);
 
     schedules.value = await scheduleService.getUpcomingSchedule(employeeId);
-    await loadScheduleSettings(employeeId);
+    await loadCompanySettings();
 
     final balance = await leaveService.getLeaveBalance(employeeId);
 
@@ -116,15 +116,15 @@ class DashboardController extends GetxController {
     }
   }
 
-  Future<void> loadScheduleSettings(String employeeId) async {
-    final schedule = await scheduleService.getScheduleSettings(employeeId);
+  Future<void> loadCompanySettings() async {
+    final settings = await dashboardService.getCompanySettings();
 
-    if (schedule != null) {
+    if (settings != null) {
       expectedWorkHours.value =
-          (schedule['expected_work_hours'] as num?)?.toDouble() ?? 8.0;
+          (settings['expected_work_hours'] as num?)?.toDouble() ?? 8.0;
 
       breakAllowanceHours.value =
-          (schedule['break_allowance_hours'] as num?)?.toDouble() ?? 1.0;
+          ((settings['expected_break_minutes'] as num?)?.toDouble() ?? 60) / 60;
     }
   }
 
@@ -280,6 +280,7 @@ class DashboardController extends GetxController {
       final data = await dashboardService.getRecentEmployeeActivities(
         page: employeeActivityPage.value,
         limit: employeeActivityPageSize,
+        role: '',
       );
 
       employeeActivities.addAll(data);

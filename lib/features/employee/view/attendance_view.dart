@@ -459,43 +459,40 @@ class AttendanceViewTable extends StatelessWidget {
   }
 
   Widget _buildPagination(AttendanceController controller) {
-    final start = controller.attendanceList.isEmpty
-        ? 0
-        : controller.currentAttendancePage.value *
-                  controller.rowsPerPage.value +
-              1;
+    return Obx(() {
+      final total = controller.totalRecords.value;
+      final page = controller.currentAttendancePage.value;
+      final rows = controller.rowsPerPage.value;
+      final count = controller.attendanceList.length;
 
-    final end = (start + controller.attendanceList.length - 1).clamp(
-      0,
-      controller.totalRecords.value,
-    );
+      final start = total == 0 ? 0 : page * rows + 1;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-      child: Row(
-        children: [
-          const Text(
-            "Rows per page",
-            style: TextStyle(
-              color: Color(0xFF64748B),
-              fontWeight: FontWeight.w500,
+      final end = total == 0 ? 0 : (page * rows + count).clamp(1, total);
+
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+        child: Row(
+          children: [
+            const Text(
+              "Rows per page",
+              style: TextStyle(
+                color: Color(0xFF64748B),
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
 
-          const SizedBox(width: 12),
+            const SizedBox(width: 12),
 
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF8FAFC),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: const Color(0xFFE5E7EB)),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: Obx(
-                () => DropdownButton<int>(
-                  dropdownColor: Colors.white,
-                  value: controller.rowsPerPage.value,
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFFE5E7EB)),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<int>(
+                  value: rows,
                   items: const [
                     DropdownMenuItem(value: 5, child: Text("5")),
                     DropdownMenuItem(value: 10, child: Text("10")),
@@ -510,38 +507,28 @@ class AttendanceViewTable extends StatelessWidget {
                 ),
               ),
             ),
-          ),
 
-          const Spacer(),
+            const Spacer(),
 
-          Obx(
-            () => Text(
-              "$start-$end of ${controller.totalRecords.value}",
+            Text(
+              "$start-$end of $total",
               style: const TextStyle(color: Color(0xFF64748B)),
             ),
-          ),
 
-          const SizedBox(width: 20),
+            const SizedBox(width: 20),
 
-          Obx(
-            () => IconButton(
+            IconButton(
               icon: const Icon(Icons.chevron_left),
-              onPressed: controller.currentAttendancePage.value == 0
-                  ? null
-                  : controller.previousAttendancePage,
+              onPressed: page == 0 ? null : controller.previousAttendancePage,
             ),
-          ),
 
-          Obx(
-            () => IconButton(
+            IconButton(
               icon: const Icon(Icons.chevron_right),
-              onPressed: end >= controller.totalRecords.value
-                  ? null
-                  : controller.nextAttendancePage,
+              onPressed: end >= total ? null : controller.nextAttendancePage,
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 }

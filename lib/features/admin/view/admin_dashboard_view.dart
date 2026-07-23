@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:staff_managememt_system/features/employee/view/attendance_view.dart';
+import '../../../shared/employee_management_controller.dart';
+import '../../../shared/employee_recent_activity_card.dart';
 import '../../employee/widgets/dashboard/attendance_table.dart';
 import '../../employee/widgets/dashboard/shift_card.dart';
+import '../controller/admin_dashboard_controller.dart';
+import 'employee_activity_list_view.dart';
 
 class AdminDashboardView extends StatelessWidget {
-  const AdminDashboardView({super.key});
+  AdminDashboardView({super.key});
+
+  final controller = Get.put(AdminDashboardController());
 
   @override
   Widget build(BuildContext context) {
@@ -22,51 +30,53 @@ class AdminDashboardView extends StatelessWidget {
 
                   const SizedBox(height: 24),
 
-                  Expanded(
-                    flex: 3,
-                    child: Row(
-                      children: const [
-                        StatCard(
-                          title: 'Total Employees',
-                          value: '124',
-                          icon: Icons.people_outline,
+                  Obx(
+                    () => Row(
+                      children: [
+                        Expanded(
+                          child: StatCard(
+                            title: 'Total Employees',
+                            value: controller.totalEmployees.value.toString(),
+                            icon: Icons.people_outline,
+                          ),
                         ),
 
-                        SizedBox(width: 16),
+                        const SizedBox(width: 16),
 
                         Expanded(
                           child: StatCard(
                             title: 'HR Managers',
-                            value: '8',
+                            value: controller.totalHrManagers.value.toString(),
                             icon: Icons.badge_outlined,
                           ),
                         ),
 
-                        SizedBox(width: 16),
+                        const SizedBox(width: 16),
 
                         Expanded(
                           child: StatCard(
                             title: 'Present Today',
-                            value: '118',
+                            value: controller.presentToday.value.toString(),
                             icon: Icons.check_circle_outline,
                           ),
                         ),
 
-                        SizedBox(width: 16),
+                        const SizedBox(width: 16),
 
                         Expanded(
                           child: StatCard(
                             title: 'Pending Leaves',
-                            value: '5',
+                            value: controller.pendingLeaves.value.toString(),
                             icon: Icons.event_note_outlined,
                           ),
                         ),
                       ],
                     ),
                   ),
+
                   const SizedBox(height: 24),
 
-                  const AttendanceTable(),
+                  const AttendanceViewTable(),
                 ],
               ),
             ),
@@ -77,10 +87,33 @@ class AdminDashboardView extends StatelessWidget {
               flex: 3,
               child: Column(
                 children: [
-                  // RecentEmployeeActivityCard()
+                  Obx(() {
+                    return EmployeeRecentActivityCard(
+                      title: "Recent Employee Activity",
+                      activities: controller.employeeActivities.toList(),
+                      onViewAll: () {
+                        controller.openEmployeeActivities();
+                        final management =
+                            Get.find<EmployeeManagementController>();
+                        management.openAdminActivity();
+                      },
+                    );
+                  }),
+
                   const SizedBox(height: 24),
 
-                  // RecentHrActivityCard()
+                  Obx(() {
+                    return EmployeeRecentActivityCard(
+                      title: "Recent Hr Activity",
+                      activities: controller.hrActivities.toList(),
+                      onViewAll: () {
+                        controller.openHrActivities();
+                        final management =
+                            Get.find<EmployeeManagementController>();
+                        management.openAdminActivity();
+                      },
+                    );
+                  }),
                 ],
               ),
             ),

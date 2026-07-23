@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:staff_managememt_system/core/widgets/view_all_button.dart';
+
+import '../core/utils/date_formatter.dart';
 
 class EmployeeRecentActivityCard extends StatelessWidget {
   final String title;
   final List<Map<String, dynamic>> activities;
-  final VoidCallback? onViewAll;
+  final VoidCallback onViewAll;
 
   const EmployeeRecentActivityCard({
     super.key,
     required this.title,
     required this.activities,
-    this.onViewAll,
+    required this.onViewAll,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: 400,
+      height: 300,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -26,13 +31,14 @@ class EmployeeRecentActivityCard extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 18),
 
           if (activities.isEmpty)
-            const Expanded(
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 40),
               child: Center(
                 child: Text(
                   "No recent activities",
@@ -43,34 +49,36 @@ class EmployeeRecentActivityCard extends StatelessWidget {
           else
             Expanded(
               child: ListView.separated(
-                padding: EdgeInsets.zero,
+                shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: activities.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 18),
+                padding: EdgeInsets.zero,
+                itemCount: activities.take(3).length,
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
-                  final activity = activities[index];
+                  final activity = activities.take(3).toList()[index];
+
+                  final employee =
+                      activity['employee'] as Map<String, dynamic>?;
+
+                  final fullName =
+                      employee?['full_name']?.toString() ?? 'Unknown';
 
                   return _ActivityTile(
-                    avatar: (activity['actor_name'] ?? '?')
-                        .toString()
-                        .substring(0, 1)
-                        .toUpperCase(),
-                    name: activity['actor_name'] ?? '',
+                    avatar: fullName.substring(0, 1).toUpperCase(),
+                    name: fullName,
                     action: activity['title'] ?? '',
-                    time: activity['activity_time'] ?? '',
+                    time: DateFormatter.formatRelativeTime(
+                      activity['activity_time']?.toString(),
+                    ),
                   );
                 },
               ),
             ),
 
-          const SizedBox(height: 24),
-
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton(
-              onPressed: onViewAll,
-              child: const Text("View All"),
-            ),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 20),
+            width: .infinity,
+            child: ViewAllButton(onPressed: onViewAll),
           ),
         ],
       ),
@@ -96,7 +104,7 @@ class _ActivityTile extends StatelessWidget {
     return Row(
       children: [
         CircleAvatar(
-          radius: 22,
+          radius: 20,
           backgroundColor: const Color(0xFFE9EDF5),
           child: Text(
             avatar,

@@ -82,9 +82,10 @@ class SidebarFactory {
           },
 
           items: const [
+            SidebarItem(title: 'Dashboard', icon: Icons.dashboard_outlined),
             SidebarItem(
               title: 'Command Center',
-              icon: Icons.dashboard_outlined,
+              icon: Icons.space_dashboard_outlined,
             ),
             SidebarItem(
               title: 'Employee Management',

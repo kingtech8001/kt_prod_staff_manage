@@ -9,6 +9,7 @@ class EmployeeManagementController extends GetxController {
   final profileController = Get.put(EmployeeProfileController());
   final selectedEmployee = Rxn<Map>();
   final selectedTab = 'Overview'.obs;
+  final isAdminActivityOpen = false.obs;
 
   final previousIndex = 0.obs;
 
@@ -60,5 +61,13 @@ class EmployeeManagementController extends GetxController {
     isProfileOpen.value = false;
     isActivityOpen.value = false;
     selectedEmployee.value = null;
+  }
+
+  void openAdminActivity() {
+    isAdminActivityOpen.value = true;
+  }
+
+  void closeAdminActivity() {
+    isAdminActivityOpen.value = false;
   }
 }

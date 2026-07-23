@@ -5,6 +5,17 @@ import '../../features/hr/repository/hr_repository.dart';
 class AttendanceService {
   final supabase = Supabase.instance.client;
 
+  Future<Map<String, dynamic>> _getCompanySettings() async {
+    return await supabase.from('company_settings').select('''
+        expected_work_hours,
+        break_allowance_hours,
+        shift_start_time,
+        shift_end_time,
+        late_grace_minutes,
+        minimum_overtime_hours
+        ''').single();
+  }
+
   Future<Map<String, dynamic>?> getTodayAttendance(String employeeId) async {
     final today = DateTime.now().toIso8601String().split('T').first;
 
@@ -79,7 +90,6 @@ class AttendanceService {
   }
 
   Future<void> punchIn(String employeeId) async {
-    ///TODO why today variable,  double click safety, check 9,0 in shift_start variable
     final today = DateTime.now().toIso8601String().split('T').first;
 
     final existing = await supabase
@@ -93,11 +103,23 @@ class AttendanceService {
       throw Exception('Already punched in today');
     }
 
+    final settings = await _getCompanySettings();
+
     final now = DateTime.now();
 
-    final shiftStart = DateTime(now.year, now.month, now.day, 9, 0);
+    final shiftTime = settings['shift_start_time'].toString().split(':');
 
-    final isLate = now.difference(shiftStart).inMinutes > 15;
+    final shiftStart = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      int.parse(shiftTime[0]),
+      int.parse(shiftTime[1]),
+    );
+
+    final graceMinutes = (settings['late_grace_minutes'] as num).toInt();
+
+    final isLate = now.difference(shiftStart).inMinutes > graceMinutes;
 
     await supabase.from('attendance').insert({
       'employee_id': employeeId,
@@ -190,6 +212,8 @@ class AttendanceService {
         .eq('id', attendanceId)
         .single();
 
+    final settings = await _getCompanySettings();
+
     final now = DateTime.now().toUtc();
 
     final punchIn = DateTime.parse(attendance['punch_in']);
@@ -207,20 +231,28 @@ class AttendanceService {
 
     final totalWorkedMinutes = now.difference(punchIn).inMinutes;
 
+    final allowedBreakMinutes =
+        ((settings['break_allowance_hours'] as num).toDouble() * 60).round();
+
     int extraBreakMinutes = 0;
 
-    if (totalBreakMinutes > 60) {
-      extraBreakMinutes = totalBreakMinutes - 60;
+    if (totalBreakMinutes > allowedBreakMinutes) {
+      extraBreakMinutes = totalBreakMinutes - allowedBreakMinutes;
     }
 
     final effectiveMinutes = totalWorkedMinutes - extraBreakMinutes;
 
     final totalHours = effectiveMinutes / 60.0;
 
+    final expectedHours = (settings['expected_work_hours'] as num).toDouble();
+
+    final minimumOtHours = (settings['minimum_overtime_hours'] as num)
+        .toDouble();
+
     double overtimeHours = 0;
 
-    if (totalHours >= 10) {
-      overtimeHours = totalHours - 8;
+    if (totalHours >= expectedHours + minimumOtHours) {
+      overtimeHours = totalHours - expectedHours;
     }
     print('Saving punch out: ${now.toIso8601String()}');
 

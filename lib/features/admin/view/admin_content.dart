@@ -15,6 +15,7 @@ import 'admin_dashboard_view.dart';
 import 'admin_settings_view.dart';
 import 'audit_log_view.dart';
 import 'command_center_view.dart';
+import 'employee_activity_list_view.dart';
 import 'hr_management_view.dart';
 
 class AdminContent extends StatelessWidget {
@@ -25,8 +26,11 @@ class AdminContent extends StatelessWidget {
     final controller = Get.find<AdminController>();
     final management = Get.find<EmployeeManagementController>();
 
-    return Obx(
-      () => RoleContent(
+    return Obx(() {
+      if (management.isAdminActivityOpen.value) {
+        return EmployeeActivityListView(onBack: management.closeAdminActivity);
+      }
+      return RoleContent(
         profileOpen: management.isProfileOpen.value,
         activityOpen: management.isActivityOpen.value,
 
@@ -46,7 +50,7 @@ class AdminContent extends StatelessWidget {
             const AdminSettingsView(),
           ],
         ),
-      ),
-    );
+      );
+    });
   }
 }

@@ -53,4 +53,37 @@ class DateFormatter {
 
     return '${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}';
   }
+
+  static String formatRelativeTime(String? value) {
+    if (value == null || value.isEmpty) return '--';
+
+    try {
+      final date = DateTime.parse(value).toLocal();
+      final difference = DateTime.now().difference(date);
+
+      if (difference.inSeconds < 60) {
+        return 'Just now';
+      }
+
+      if (difference.inMinutes < 60) {
+        return '${difference.inMinutes} min ago';
+      }
+
+      if (difference.inHours < 24) {
+        return '${difference.inHours} hrs ago';
+      }
+
+      if (difference.inDays == 1) {
+        return 'Yesterday';
+      }
+
+      if (difference.inDays < 7) {
+        return '${difference.inDays} days ago';
+      }
+
+      return DateFormat('dd MMM').format(date);
+    } catch (_) {
+      return '--';
+    }
+  }
 }
