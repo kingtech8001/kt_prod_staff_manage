@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../../../core/widgets/confirmation_dialog.dart';
 import '../../../../../core/widgets/snackbar.dart';
@@ -149,8 +150,8 @@ class CompanyAnnouncementDialog extends StatelessWidget {
                             confirmText: "Publish",
                             confirmColor: Colors.black,
                             onConfirm: () {
-                              Navigator.pop(context);
-                              Navigator.pop(context);
+                              Get.back();
+                              // Navigator.pop(context);
 
                               CommonSnackbar.success(
                                 "Announcement Published",

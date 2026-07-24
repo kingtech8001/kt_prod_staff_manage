@@ -281,18 +281,6 @@ void _showRuleEditor(BuildContext context, {String? title, String? value}) {
                                   "Rule Added",
                                   "Attendance rule added successfully.",
                                 );
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              behavior: SnackBarBehavior.floating,
-                              backgroundColor: const Color(0xFF111827),
-                              content: Text(
-                                isEditing
-                                    ? "Rule updated successfully."
-                                    : "Rule added successfully.",
-                              ),
-                            ),
-                          );
                         },
                       ),
                     );

@@ -388,12 +388,12 @@ void _showHolidayEditor(
 
                               isEditing
                                   ? CommonSnackbar.success(
-                                      "Holiday Deleted",
-                                      "The holiday has been removed.",
-                                    )
-                                  : CommonSnackbar.success(
                                       "Holiday Added",
                                       "The holiday has been added successfully.",
+                                    )
+                                  : CommonSnackbar.success(
+                                      "Holiday Deleted",
+                                      "The holiday has been removed.",
                                     );
 
                               // TODO:

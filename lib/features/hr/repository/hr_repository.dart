@@ -407,6 +407,7 @@ class HrRepository {
     final employees = await _supabase
         .from('profiles')
         .select('id')
+        .eq('role', 'Employee')
         .eq('is_active', true);
 
     final attendance = await _supabase
