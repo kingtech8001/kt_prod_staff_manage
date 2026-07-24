@@ -1,26 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import '../../../core/utils/date_formatter.dart';
-import '../controller/admin_dashboard_controller.dart';
+import '../controller/activity_paging_controller.dart';
 
 class EmployeeActivityListView extends StatelessWidget {
+  const EmployeeActivityListView({
+    super.key,
+    required this.role,
+    required this.onBack,
+  });
+
+  final String role;
   final VoidCallback onBack;
-
-  EmployeeActivityListView({super.key, required this.onBack}) {
-    scrollController.addListener(() {
-      if (scrollController.position.pixels >=
-          scrollController.position.maxScrollExtent - 200) {
-        controller.loadEmployeeActivities(role: 'Employee');
-      }
-    });
-  }
-
-  final controller = Get.find<AdminDashboardController>();
-  final ScrollController scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<ActivityPagingController>(
+      tag: role.toLowerCase(),
+    );
+
     return Container(
       color: const Color(0xFFF5F7FA),
 
@@ -47,16 +46,13 @@ class EmployeeActivityListView extends StatelessWidget {
 
                   const SizedBox(width: 12),
 
-                  Obx(
-                    () => Text(
-                      controller.selectedActivityView.value ==
-                              ActivityViewType.employee
-                          ? "Employee Activities"
-                          : "HR Activities",
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  Text(
+                    role == "Employee"
+                        ? "Employee Activities"
+                        : "HR Activities",
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],
@@ -65,90 +61,99 @@ class EmployeeActivityListView extends StatelessWidget {
               const SizedBox(height: 24),
 
               Expanded(
-                child: Obx(() {
-                  final activities =
-                      controller.selectedActivityView.value ==
-                          ActivityViewType.employee
-                      ? controller.employeeActivities
-                      : controller.hrActivities;
+                child: PagingListener(
+                  controller: controller.pagingController,
+                  builder: (context, state, fetchNextPage) {
+                    return PagedListView<int, Map<String, dynamic>>.separated(
+                      state: state,
+                      fetchNextPage: fetchNextPage,
 
-                  if (activities.isEmpty) {
-                    return Center(
-                      child: Text(
-                        controller.selectedActivityView.value ==
-                                ActivityViewType.employee
-                            ? "No employee activities"
-                            : "No HR activities",
-                        style: const TextStyle(color: Color(0xFF64748B)),
-                      ),
-                    );
-                  }
+                      separatorBuilder: (_, __) => const Divider(height: 16),
 
-                  return ListView.separated(
-                    controller: scrollController,
-                    itemCount:
-                        activities.length +
-                        (controller.hasMoreEmployeeActivities.value ? 1 : 0),
-                    separatorBuilder: (_, __) => const Divider(height: 16),
+                      builderDelegate:
+                          PagedChildBuilderDelegate<Map<String, dynamic>>(
+                            animateTransitions: true,
 
-                    itemBuilder: (context, index) {
-                      if (index == activities.length) {
-                        return const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 20),
-                          child: Center(child: CircularProgressIndicator()),
-                        );
-                      }
+                            itemBuilder: (context, item, index) {
+                              return EmployeeActivityTile(activity: item);
+                            },
 
-                      final activity = activities[index];
+                            firstPageProgressIndicatorBuilder: (_) =>
+                                const Center(
+                                  child: CircularProgressIndicator(),
+                                ),
 
-                      final employee =
-                          activity['employee'] as Map<String, dynamic>?;
+                            newPageProgressIndicatorBuilder: (_) =>
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 20),
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                ),
 
-                      final fullName =
-                          employee?['full_name']?.toString() ?? 'Unknown';
+                            firstPageErrorIndicatorBuilder: (_) => const Center(
+                              child: Text("Something went wrong"),
+                            ),
 
-                      return ListTile(
-                        leading: CircleAvatar(
-                          radius: 22,
-                          backgroundColor: const Color(0xFFE9EDF5),
-                          child: Text(
-                            fullName.substring(0, 1).toUpperCase(),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF0B1633),
+                            noItemsFoundIndicatorBuilder: (_) => const Center(
+                              child: Text("No activities found"),
                             ),
                           ),
-                        ),
-
-                        title: Text(
-                          fullName,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 18,
-                          ),
-                        ),
-
-                        subtitle: Padding(
-                          padding: const EdgeInsets.only(top: 6),
-                          child: Text(
-                            activity['title'] ?? '',
-                            style: const TextStyle(color: Color(0xFF64748B)),
-                          ),
-                        ),
-
-                        trailing: Text(
-                          DateFormatter.formatDateTime(
-                            activity['activity_time']?.toString(),
-                          ),
-                          style: const TextStyle(color: Color(0xFF64748B)),
-                        ),
-                      );
-                    },
-                  );
-                }),
+                    );
+                  },
+                ),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class EmployeeActivityTile extends StatelessWidget {
+  const EmployeeActivityTile({super.key, required this.activity});
+
+  final Map<String, dynamic> activity;
+
+  @override
+  Widget build(BuildContext context) {
+    final employee = activity['employee'] as Map<String, dynamic>?;
+
+    final fullName = employee?['full_name']?.toString() ?? 'Unknown';
+
+    final title = activity['title']?.toString() ?? '';
+
+    final activityTime = activity['activity_time']?.toString();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: ListTile(
+        leading: CircleAvatar(
+          radius: 22,
+          backgroundColor: const Color(0xFFE9EDF5),
+          child: Text(
+            fullName.isNotEmpty ? fullName.substring(0, 1).toUpperCase() : "?",
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF0B1633),
+            ),
+          ),
+        ),
+
+        title: Text(
+          fullName,
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+        ),
+
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 6),
+          child: Text(title, style: const TextStyle(color: Color(0xFF64748B))),
+        ),
+
+        trailing: Text(
+          DateFormatter.formatDateTime(activityTime),
+          style: const TextStyle(color: Color(0xFF64748B)),
         ),
       ),
     );

@@ -69,7 +69,7 @@ class DashboardService {
   Future<List<Map<String, dynamic>>> getRecentEmployeeActivities({
     required String role,
     int page = 0,
-    int limit = 5,
+    int limit = 8,
   }) async {
     final start = page * limit;
     final end = start + limit - 1;
@@ -80,21 +80,17 @@ class DashboardService {
       title,
       activity_time,
       activity_type,
-      employee:profiles!employee_activity_logs_employee_id_fkey(
+      employee:profiles!employee_activity_logs_employee_id_fkey!inner(
         full_name,
         profile_image,
         role
       )
     ''')
+        .eq('employee.role', role)
         .order('activity_time', ascending: false)
         .range(start, end);
 
-    final data = List<Map<String, dynamic>>.from(response);
-
-    return data.where((item) {
-      final employee = item['employee'] as Map<String, dynamic>?;
-      return employee != null && employee['role'] == role;
-    }).toList();
+    return List<Map<String, dynamic>>.from(response);
   }
 
   Future<int> getEmployeeCount() async {

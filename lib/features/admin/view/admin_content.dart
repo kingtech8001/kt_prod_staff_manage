@@ -10,6 +10,7 @@ import '../../hr/view/employee directory/employee_activities_view.dart';
 import '../../hr/view/employee directory/employee_directory_view.dart';
 import '../../hr/view/employee directory/employee_profile_view.dart';
 
+import '../controller/admin_dashboard_controller.dart';
 import 'access_control_view.dart';
 import 'admin_dashboard_view.dart';
 import 'admin_settings_view.dart';
@@ -28,7 +29,14 @@ class AdminContent extends StatelessWidget {
 
     return Obx(() {
       if (management.isAdminActivityOpen.value) {
-        return EmployeeActivityListView(onBack: management.closeAdminActivity);
+        return EmployeeActivityListView(
+          onBack: management.closeAdminActivity,
+          role:
+              Get.find<AdminDashboardController>().selectedActivityView.value ==
+                  ActivityViewType.employee
+              ? "Employee"
+              : "HR",
+        );
       }
       return RoleContent(
         profileOpen: management.isProfileOpen.value,

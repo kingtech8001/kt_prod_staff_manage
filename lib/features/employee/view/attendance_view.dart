@@ -390,7 +390,7 @@ class AttendanceViewTable extends StatelessWidget {
                         Expanded(
                           child: Text(
                             DateFormatter.formatHours(
-                              item['total_hours'] as num?,
+                              item['overtime_hours'] as num?,
                             ),
                           ),
                         ),
